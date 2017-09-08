@@ -14,6 +14,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
+
+	"weblogic-operator/pkg/server"
 	"weblogic-operator/pkg/controllers"
 	"weblogic-operator/pkg/types"
 )
@@ -36,7 +38,7 @@ func NewWeblogicOperator(restConfig *rest.Config) (*Operator, error) {
 		return nil, err
 	}
 
-	serverController, err := controllers.NewController(clientSet, restClient, 30*time.Second, v1.NamespaceAll)
+	serverController, err := server.NewController(clientSet, restClient, 30*time.Second, v1.NamespaceAll)
 	if err != nil {
 		return nil, err
 	}

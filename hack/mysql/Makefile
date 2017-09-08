@@ -56,7 +56,7 @@ cluster-status:
 	@echo "======================================================================="
 	kubectl get statefulsets
 	kubectl get pods -o wide
-	kubectl exec -it mysql-0 -- mysqlsh --log-level=DEBUG3 --uri root:password@mysql-$(MASTER):3306 --py -e \
+	kubectl exec -it mysql-0 -- mysqlsh --log-level=DEBUG3 --uri root:password@mysql-$(MASTER):7001 --py -e \
 	    "import json; \
 	     status = dba.get_cluster('devCluster').status(); \
 	     parsed = json.loads(str(status)); \

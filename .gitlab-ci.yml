@@ -16,7 +16,7 @@ build-normal:
   before_script:
     - mkdir -p /go/src/gitlab-odx.oracle.com/odx/
     - cp -a $CI_PROJECT_DIR /go/src/gitlab-odx.oracle.com/odx/weblogic-operator/
-    - cd /go/src/gitlab-odx.oracle.com/odx/mysql-operator
+    - cd /go/src/weblogic-operator
   stage: build
   script:
     - make build
@@ -33,7 +33,7 @@ build-release:
   before_script:
     - mkdir -p /go/src/gitlab-odx.oracle.com/odx/
     - cp -r $CI_PROJECT_DIR /go/src/gitlab-odx.oracle.com/odx/weblogic-operator/
-    - cd /go/src/gitlab-odx.oracle.com/odx/mysql-operator
+    - cd /go/src/weblogic-operator
   stage: build
   script:
     - make build
@@ -50,7 +50,7 @@ unit-tests:
   before_script:
     - mkdir -p /go/src/gitlab-odx.oracle.com/odx/
     - cp -r $CI_PROJECT_DIR /go/src/gitlab-odx.oracle.com/odx/weblogic-operator/
-    - cd /go/src/gitlab-odx.oracle.com/odx/mysql-operator
+    - cd /go/src/weblogic-operator
   stage: test
   dependencies:
     - build-release

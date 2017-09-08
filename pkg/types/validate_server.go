@@ -4,10 +4,10 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func validateServer(s *WeblogicServer) field.ErrorList {
+func validateServer(c *WeblogicServer) field.ErrorList {
 	allErrs := field.ErrorList{}
-	allErrs = append(allErrs, validateServerSpec(s.Spec, field.NewPath("spec"))...)
-	allErrs = append(allErrs, validateServerStatus(s.Status, field.NewPath("status"))...)
+	allErrs = append(allErrs, validateServerSpec(c.Spec, field.NewPath("spec"))...)
+	allErrs = append(allErrs, validateServerStatus(c.Status, field.NewPath("status"))...)
 	return allErrs
 }
 

@@ -8,25 +8,23 @@ import (
 	"weblogic-operator/pkg/types"
 )
 
-type MySQLV1Interface interface {
+type WeblogicV1Interface interface {
 	RESTClient() rest.Interface
-	MySQLClustersGetter
-	MySQLBackupsGetter
-	MySQLRestoresGetter
+	WeblogicServersGetter
 }
 
-// MySQLV1Client is used to interact with features provided by the group.
-type MySQLV1Client struct {
+// WeblogicV1Client is used to interact with features provided by the group.
+type WeblogicV1Client struct {
 	restClient rest.Interface
 }
 
-// New creates a new MySQLV1Client for the given RESTClient.
-func New(c rest.Interface) *MySQLV1Client {
-	return &MySQLV1Client{c}
+// New creates a new WeblogicV1Client for the given RESTClient.
+func New(c rest.Interface) *WeblogicV1Client {
+	return &WeblogicV1Client{c}
 }
 
-// NewForConfig creates a new MySQLV1Client for the given config.
-func NewForConfig(c *rest.Config) (*MySQLV1Client, error) {
+// NewForConfig creates a new WeblogicV1Client for the given config.
+func NewForConfig(c *rest.Config) (*WeblogicV1Client, error) {
 	config := *c
 	if err := setConfigDefaults(&config); err != nil {
 		return nil, err
@@ -35,7 +33,7 @@ func NewForConfig(c *rest.Config) (*MySQLV1Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &MySQLV1Client{client}, nil
+	return &WeblogicV1Client{client}, nil
 }
 
 func setConfigDefaults(config *rest.Config) error {
@@ -55,27 +53,15 @@ func setConfigDefaults(config *rest.Config) error {
 	return nil
 }
 
-// MySQLClusters returns a MySQLClusterInterface used to interact with
-// MySQLCluster custom resources.
-func (c *MySQLV1Client) MySQLClusters(namespace string) MySQLClusterInterface {
-	return newMySQLClusters(c, namespace)
-}
-
-// MySQLBackups returns a MySQLBackupInterface used to interact with
-// MySQLBackup custom resources.
-func (c *MySQLV1Client) MySQLBackups(namespace string) MySQLBackupInterface {
-	return newMySQLBackups(c, namespace)
-}
-
-// MySQLRestores returns a MySQLRestoreInterface used to interact with
-// MySQLRestore custom resources.
-func (c *MySQLV1Client) MySQLRestores(namespace string) MySQLRestoreInterface {
-	return newMySQLRestores(c, namespace)
+// WeblogicServers returns a WeblogicServerInterface used to interact with
+// WeblogicServer custom resources.
+func (c *WeblogicV1Client) WeblogicServers(namespace string) WeblogicServerInterface {
+	return newWeblogicServers(c, namespace)
 }
 
 // RESTClient returns a RESTClient that is used to communicate with the API
 // server used by this client implementation.
-func (c *MySQLV1Client) RESTClient() rest.Interface {
+func (c *WeblogicV1Client) RESTClient() rest.Interface {
 	if c == nil {
 		return nil
 	}

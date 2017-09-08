@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	groupName                     = "weblogic.oracle.com"
-	schemeVersion                 = "v1"
+	groupName                   = "weblogic.oracle.com"
+	schemeVersion               = "v1"
 	WeblogicServerCRDResourceKind = "WeblogicServer"
 )
 
@@ -41,27 +41,27 @@ func registerDefaults(scheme *runtime.Scheme) error {
 // TODO currently unused
 
 func defaultWeblogicServerList(obj interface{}) {
-	serverList := obj.(*WeblogicServerList)
-	for _, server := range serverList.Items {
-		defaultWeblogicServer(server)
+	clusterList := obj.(*WeblogicServerList)
+	for _, cluster := range clusterList.Items {
+		defaultWeblogicServer(cluster)
 	}
 }
 
 func defaultWeblogicServer(obj interface{}) {
-	server := obj.(*WeblogicServer)
-	server.Spec.Replicas = defaultReplicas
-	server.Spec.Version = defaultVersion
-	defaultWeblogicServerStatus(server.Status)
+	cluster := obj.(*WeblogicServer)
+	cluster.Spec.Replicas = defaultReplicas
+	cluster.Spec.Version = defaultVersion
+	defaultWeblogicServerStatus(cluster.Status)
 }
 
 func defaultWeblogicServerStatus(obj interface{}) {
-	serverStatus := obj.(*WeblogicServerStatus)
-	serverStatus.Phase = WeblogicServerUnknown
-	serverStatus.Errors = []string{}
+	clusterStatus := obj.(*WeblogicServerStatus)
+	clusterStatus.Phase = WeblogicServerUnknown
+	clusterStatus.Errors = []string{}
 }
 
 func init() {
-	glog.Info("Registering Types for Weblogic")
+	glog.Info("Registering Types")
 	addKnownTypes(scheme.Scheme)
 	registerDefaults(scheme.Scheme)
 	glog.V(4).Infof("All types: %#v", scheme.Scheme.AllKnownTypes())

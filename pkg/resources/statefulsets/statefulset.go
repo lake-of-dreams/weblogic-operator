@@ -2,19 +2,15 @@ package statefulsets
 
 import (
 	"fmt"
-	"os"
-
 	"k8s.io/api/apps/v1beta1"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/intstr"
-
 	"weblogic-operator/pkg/constants"
 	"weblogic-operator/pkg/types"
 )
 
-// BaseImageName is the base Docker image for the operator (mysql-ee-server).
-const BaseImageName = "registry.oracledx.com/skeppare/mysql-enterprise-server"
+// WeblogicImageName is the base Docker image for the operator (weblogic-ee-server).
+const WeblogicImageName = "store/oracle/weblogic"
 
 func serverNameEnvVar(server *types.WeblogicServer) v1.EnvVar {
 	return v1.EnvVar{Name: "WEBLOGIC_SERVER_NAME", Value: server.Name}
@@ -36,8 +32,8 @@ func weblogicOperatorContainer(server *types.WeblogicServer) v1.Container {
 	return v1.Container{
 		Name: "weblogic",
 		// TODO(apryde): Add BaseImage to server CRD.
-		Image:        fmt.Sprintf("%s:%s", BaseImageName, server.Spec.Version),
-		Ports:        []v1.ContainerPort{{ContainerPort: 3306}},
+		Image: fmt.Sprintf("%s:%s", WeblogicImageName, server.Spec.Version),
+		Ports: []v1.ContainerPort{{ContainerPort: 7001}},
 		Env: []v1.EnvVar{
 			serverNameEnvVar(server),
 			namespaceEnvVar(),
@@ -68,11 +64,8 @@ func NewForServer(server *types.WeblogicServer, serviceName string) *v1beta1.Sta
 					},
 				},
 				Spec: v1.PodSpec{
-					// FIXME: LIMITED TO DEFAULT NAMESPACE. Need to dynamically
-					// create service accounts and (server role bindings?)
-					// for each namespace.
-					NodeSelector:     server.Spec.NodeSelector,
-					Containers:       containers,
+					NodeSelector: server.Spec.NodeSelector,
+					Containers:   containers,
 				},
 			},
 			ServiceName: serviceName,

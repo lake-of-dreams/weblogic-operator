@@ -6,9 +6,9 @@ metadata:
     app: mysql
 spec:
   ports:
-  - port: 3306
+  - port: 7001
     name: mysql
-  - port: 13306
+  - port: 17001
     name: mysql-replication
   clusterIP: None
   selector:

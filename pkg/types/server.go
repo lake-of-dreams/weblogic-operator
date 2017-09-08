@@ -24,7 +24,7 @@ var validVersions = []string{
 type WeblogicServerSpec struct {
 	// Version defines the Weblogic Docker image version
 	Version string `json:"version"`
-	// Replicas defines the number of running Weblogic instances
+	// Replicas defines the number of running Weblogic instances in a server
 	Replicas int32 `json:"replicas,omitempty"`
 	// NodeSelector is a selector which must be true for the pod to fit on a node.
 	// Selector which must match a node's labels for the pod to be scheduled on that node.
@@ -44,12 +44,12 @@ const (
 	WeblogicServerPending WeblogicServerPhase = "Pending"
 	// WeblogicServerRunning means the server has been created, all of it's
 	// required components are present, and there is at least one endpoint that
-	// we can connect to.
+	// weblogic client can connect to.
 	WeblogicServerRunning WeblogicServerPhase = "Running"
-	// WeblogicServerSucceeded means that all containers in the pod have
+	// WeblogicServerStopped means that all containers in the pod have
 	// voluntarily terminated with a container exit code of 0, and the system
 	// is not going to restart any of these containers.
-	WeblogicServerSucceeded WeblogicServerPhase = "Stopped"
+	WeblogicServerStopped WeblogicServerPhase = "Stopped"
 	// WeblogicServerFailed means that all containers in the pod have terminated,
 	// and at least one container has terminated in a failure (exited with a
 	// non-zero exit code or was stopped by the system).
@@ -62,7 +62,7 @@ const (
 
 var WeblogicServerValidPhases = []WeblogicServerPhase{WeblogicServerPending,
 	WeblogicServerRunning,
-	WeblogicServerSucceeded,
+	WeblogicServerStopped,
 	WeblogicServerFailed,
 	WeblogicServerUnknown}
 
