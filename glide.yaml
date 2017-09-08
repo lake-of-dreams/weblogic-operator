@@ -1,4 +1,4 @@
-package: weblogic-operator
+package: gitlab-odx.oracle.com/odx/mysql-operator
 import:
 - package: k8s.io/client-go
   version: 1850dd66e4213a26bd70d0b85fee4176d324b845
@@ -10,6 +10,5 @@ import:
   version: ~1.0.0
 - package: github.com/robfig/cron
   version: ~1.0.0
-- package: k8s.io/apiserver
 - package: gopkg.in/ini.v1
   version: ~1.28.2

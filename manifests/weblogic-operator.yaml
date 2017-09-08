@@ -70,7 +70,7 @@ spec:
       containers:
       - name: weblogic-operator-controller
         imagePullPolicy: Always
-        image: registry.oracledx.com/skeppare/mysql-operator:0.1.0
+        image: fmwplt/weblogic-operator:{{VERSION}}
         ports:
         - containerPort: 9999
         args:

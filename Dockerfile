@@ -1,5 +1,5 @@
 FROM oraclelinux:7.3
 
-COPY dist/bin/mysql-operator /
+COPY dist/bin/weblogic-operator /
 
-ENTRYPOINT ["/mysql-operator"]
+ENTRYPOINT ["/weblogic-operator"]
