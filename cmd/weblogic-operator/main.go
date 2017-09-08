@@ -6,9 +6,9 @@ import (
 	"github.com/golang/glog"
 	"github.com/spf13/pflag"
 
-	"weblogic-operator/pkg/operator"
-	"weblogic-operator/pkg/util/flags"
-	"weblogic-operator/pkg/util/logs"
+	"github.com/sczachariah/weblogic-operator/pkg/operator"
+	"github.com/sczachariah/weblogic-operator/pkg/util/flags"
+	"github.com/sczachariah/weblogic-operator/pkg/util/logs"
 )
 
 func main() {

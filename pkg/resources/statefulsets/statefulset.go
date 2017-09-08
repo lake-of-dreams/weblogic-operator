@@ -5,8 +5,8 @@ import (
 	"k8s.io/api/apps/v1beta1"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"weblogic-operator/pkg/constants"
-	"weblogic-operator/pkg/types"
+	"github.com/sczachariah/weblogic-operator/pkg/constants"
+	"github.com/sczachariah/weblogic-operator/pkg/types"
 )
 
 // WeblogicImageName is the base Docker image for the operator (weblogic-ee-server).

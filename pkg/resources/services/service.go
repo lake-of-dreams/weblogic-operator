@@ -1,8 +1,8 @@
 package services
 
 import (
-	"weblogic-operator/pkg/constants"
-	"weblogic-operator/pkg/types"
+	"github.com/sczachariah/weblogic-operator/pkg/constants"
+	"github.com/sczachariah/weblogic-operator/pkg/types"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )

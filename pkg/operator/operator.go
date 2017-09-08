@@ -15,9 +15,9 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 
-	"weblogic-operator/pkg/server"
-	"weblogic-operator/pkg/controllers"
-	"weblogic-operator/pkg/types"
+	"github.com/sczachariah/weblogic-operator/pkg/server"
+	"github.com/sczachariah/weblogic-operator/pkg/controllers"
+	"github.com/sczachariah/weblogic-operator/pkg/types"
 )
 
 // Operator operates things!

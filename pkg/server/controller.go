@@ -11,12 +11,9 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
-
 	"github.com/golang/glog"
-
-	"weblogic-operator/pkg/types"
-
-	"weblogic-operator/pkg/constants"
+	"github.com/sczachariah/weblogic-operator/pkg/types"
+	"github.com/sczachariah/weblogic-operator/pkg/constants"
 )
 
 type StoreToWeblogicServerLister struct {

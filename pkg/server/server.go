@@ -11,11 +11,10 @@ import (
 
 	"github.com/golang/glog"
 
-	"weblogic-operator/pkg/constants"
-	"weblogic-operator/pkg/resources/services"
-	"weblogic-operator/pkg/resources/statefulsets"
-	"weblogic-operator/pkg/types"
-	"k8s.io/apimachinery/pkg/runtime"
+	"github.com/sczachariah/weblogic-operator/pkg/constants"
+	"github.com/sczachariah/weblogic-operator/pkg/resources/services"
+	"github.com/sczachariah/weblogic-operator/pkg/resources/statefulsets"
+	"github.com/sczachariah/weblogic-operator/pkg/types"
 )
 
 // HasServerNameLabel returns true if the given labels map matches the given

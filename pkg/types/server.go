@@ -77,6 +77,7 @@ type WeblogicServer struct {
 	metav1.ObjectMeta           `json:"metadata"`
 	Spec   WeblogicServerSpec   `json:"spec"`
 	Status WeblogicServerStatus `json:"status"`
+	Object []string
 }
 
 type WeblogicServerList struct {

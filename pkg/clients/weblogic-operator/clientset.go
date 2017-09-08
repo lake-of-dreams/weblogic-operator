@@ -4,7 +4,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/util/flowcontrol"
 
-	weblogicopv1 "weblogic-operator/pkg/clients/weblogic-operator/v1"
+	weblogicopv1 "github.com/sczachariah/weblogic-operator/pkg/clients/weblogic-operator/v1"
 )
 
 // Interface for the weblogic operator client.

@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	groupName                   = "weblogic.oracle.com"
-	schemeVersion               = "v1"
+	groupName                     = "weblogic.oracle.com"
+	schemeVersion                 = "v1"
 	WeblogicServerCRDResourceKind = "WeblogicServer"
 )
 
@@ -41,23 +41,23 @@ func registerDefaults(scheme *runtime.Scheme) error {
 // TODO currently unused
 
 func defaultWeblogicServerList(obj interface{}) {
-	clusterList := obj.(*WeblogicServerList)
-	for _, cluster := range clusterList.Items {
-		defaultWeblogicServer(cluster)
+	serverList := obj.(*WeblogicServerList)
+	for _, server := range serverList.Items {
+		defaultWeblogicServer(server)
 	}
 }
 
 func defaultWeblogicServer(obj interface{}) {
-	cluster := obj.(*WeblogicServer)
-	cluster.Spec.Replicas = defaultReplicas
-	cluster.Spec.Version = defaultVersion
-	defaultWeblogicServerStatus(cluster.Status)
+	server := obj.(*WeblogicServer)
+	server.Spec.Replicas = defaultReplicas
+	server.Spec.Version = defaultVersion
+	defaultWeblogicServerStatus(server.Status)
 }
 
 func defaultWeblogicServerStatus(obj interface{}) {
-	clusterStatus := obj.(*WeblogicServerStatus)
-	clusterStatus.Phase = WeblogicServerUnknown
-	clusterStatus.Errors = []string{}
+	serverStatus := obj.(*WeblogicServerStatus)
+	serverStatus.Phase = WeblogicServerUnknown
+	serverStatus.Errors = []string{}
 }
 
 func init() {
