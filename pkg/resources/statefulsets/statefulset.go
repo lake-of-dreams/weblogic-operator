@@ -9,7 +9,7 @@ import (
 	"github.com/sczachariah/weblogic-operator/pkg/types"
 )
 
-// WeblogicImageName is the base Docker image for the operator (weblogic-ee-server).
+// WeblogicImageName is the base Docker image for the operator.
 const WeblogicImageName = "store/oracle/weblogic"
 
 func serverNameEnvVar(server *types.WeblogicServer) v1.EnvVar {
