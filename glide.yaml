@@ -1,43 +1,15 @@
-package: github.com/sczachariah/weblogic-operator
+package: weblogic-operator
 import:
-- package: flag
-- package: fmt
-- package: github.com/golang/glog
-- package: github.com/sczachariah/weblogic-operator
-  subpackages:
-  - pkg/clients/weblogic-operator/v1
-  - pkg/constants
-  - pkg/controllers
-  - pkg/resources/services
-  - pkg/resources/statefulsets
-  - pkg/server
-  - pkg/types
-- package: github.com/spf13/pflag
-- package: k8s.io/api
-  subpackages:
-  - apps/v1beta1
-  - core/v1
-- package: k8s.io/apimachinery
-  subpackages:
-  - pkg/api/errors
-  - pkg/apis/meta/v1
-  - pkg/fields
-  - pkg/runtime
-  - pkg/runtime/schema
-  - pkg/runtime/serializer
-  - pkg/util/validation/field
-  - pkg/util/wait
-  - pkg/watch
 - package: k8s.io/client-go
-  subpackages:
-  - kubernetes
-  - kubernetes/scheme
-  - rest
-  - tools/cache
-  - tools/clientcmd
-  - util/flowcontrol
-- package: log
-- package: os
-- package: os/signal
-- package: syscall
-- package: time
+  version: 1850dd66e4213a26bd70d0b85fee4176d324b845
+- package: k8s.io/api
+  version: e532fdb5587debfd7aade56dabe9eb5df9544baf
+- package: k8s.io/apimachinery
+  version: a13245d02534abe88286859b547d041816f9a3f4
+- package: github.com/spf13/pflag
+  version: ~1.0.0
+- package: github.com/robfig/cron
+  version: ~1.0.0
+- package: k8s.io/apiserver
+- package: gopkg.in/ini.v1
+  version: ~1.28.2

@@ -4,7 +4,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"weblogic-operator/pkg/clients/weblogic-operator/v1"
 )
 
 var _ = runtime.Object(&WeblogicServer{})
@@ -32,16 +31,6 @@ type WeblogicServerSpec struct {
 	// More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 	// +optional
 	NodeSelector map[string]string `json:"nodeSelector,omitempty"`
-	// If specified, affinity will define the pod's scheduling constraints
-	// +optional
-	Affinity *v1.Affinity `json:"affinity,omitempty"`
-	// VolumeClaimTemplate allows a user to specify how volumes inside a MySQL cluster
-	// +optional
-	VolumeClaimTemplate *v1.PersistentVolumeClaim `json:"volumeClaimTemplate,omitempty"`
-	// If defined, we use this secret for configuring the MYSQL_ROOT_PASSWORD
-	// If it is not set we generate a secret dynamically
-	// +optional
-	SecretRef *MySQLSecretRef `json:"secretRef,omitempty"`
 }
 
 // WeblogicServerPhase describes the state of the server.
@@ -88,14 +77,12 @@ type WeblogicServer struct {
 	metav1.ObjectMeta           `json:"metadata"`
 	Spec   WeblogicServerSpec   `json:"spec"`
 	Status WeblogicServerStatus `json:"status"`
-	runtime.Object
 }
 
 type WeblogicServerList struct {
 	metav1.TypeMeta        `json:",inline"`
 	metav1.ListMeta        `json:"metadata"`
 	Items []WeblogicServer `json:"items"`
-	runtime.Object
 }
 
 // Validate returns an error if a server is invalid
