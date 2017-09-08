@@ -1,0 +1,8 @@
+apiVersion: "mysql.oracle.com/v1"
+kind: MySQLBackup
+metadata:
+  name: example-snapshot-backup
+cluster:
+  name: example-mysql-cluster-with-volume
+secretRef:
+  name: bmcs-upload-credentials

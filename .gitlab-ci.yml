@@ -1,0 +1,86 @@
+variables:
+  http_proxy: http://www-proxy.us.oracle.com:80
+  https_proxy: http://www-proxy.us.oracle.com:80
+
+cache:
+  paths:
+  - dist
+
+stages:
+  - build
+  - test
+  - push
+
+build-normal:
+  image: registry.oracledx.com/skeppare/bristol-mysql-operator-gitlab-ci-build:1.0.0
+  before_script:
+    - mkdir -p /go/src/gitlab-odx.oracle.com/odx/
+    - cp -a $CI_PROJECT_DIR /go/src/gitlab-odx.oracle.com/odx/weblogic-operator/
+    - cd /go/src/gitlab-odx.oracle.com/odx/mysql-operator
+  stage: build
+  script:
+    - make build
+  artifacts:
+    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
+    paths:
+      - dist/mysql-operator.yaml
+    expire_in: 1 week
+  except:
+    - tags
+
+build-release:
+  image: registry.oracledx.com/skeppare/bristol-mysql-operator-gitlab-ci-build:1.0.0
+  before_script:
+    - mkdir -p /go/src/gitlab-odx.oracle.com/odx/
+    - cp -r $CI_PROJECT_DIR /go/src/gitlab-odx.oracle.com/odx/weblogic-operator/
+    - cd /go/src/gitlab-odx.oracle.com/odx/mysql-operator
+  stage: build
+  script:
+    - make build
+  artifacts:
+    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
+    paths:
+      - dist/mysql-operator.yaml
+    expire_in: 100 years
+  only:
+    - tags
+
+unit-tests:
+  image: registry.oracledx.com/skeppare/bristol-mysql-operator-gitlab-ci-build:1.0.0
+  before_script:
+    - mkdir -p /go/src/gitlab-odx.oracle.com/odx/
+    - cp -r $CI_PROJECT_DIR /go/src/gitlab-odx.oracle.com/odx/weblogic-operator/
+    - cd /go/src/gitlab-odx.oracle.com/odx/mysql-operator
+  stage: test
+  dependencies:
+    - build-release
+  script:
+    - make test
+
+push-normal:
+  image: registry.oracledx.com/skeppare/bristol-mysql-operator-gitlab-ci-docker:1.0.0
+  stage: push
+  dependencies:
+    - build-normal
+  script:
+    - make push
+  except:
+    - tags
+
+push-release:
+  image: registry.oracledx.com/skeppare/bristol-mysql-operator-gitlab-ci-docker:1.0.0
+  stage: push
+  dependencies:
+  - build-release
+  script:
+    - make push
+  only:
+    - tags
+
+#system-test-1.7:
+#  stage: system-test
+#  image: registry.oracledx.com/skeppare/bristol-mysql-operator-system-test:1.0.0
+#  script:
+#    - cd test/system
+#    - ./setup.sh
+#    - ./runner.py --cluster-version=1.7.0
