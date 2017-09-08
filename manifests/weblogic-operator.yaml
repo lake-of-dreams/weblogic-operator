@@ -2,25 +2,25 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: mysql-operator
+  name: weblogic-operator
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: mysqlclusters.mysql.oracle.com
+  name: weblogicservers.weblogic.oracle.com
 spec:
-  group: mysql.oracle.com
+  group: weblogic.oracle.com
   version: v1
   scope: Namespaced
   names:
-    kind: MySQLCluster
-    singular: mysqlcluster
-    plural: mysqlclusters
+    kind: WeblogicServer
+    singular: weblogicserver
+    plural: weblogicserers
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
-  name: mysql-operator
+  name: weblogic-operator
 rules:
   - apiGroups:
     - "*"
@@ -32,48 +32,46 @@ rules:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: mysql-operator
-  namespace: mysql-operator
+  name: weblogic-operator
+  namespace: weblogic-operator
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: mysql-operator
-  namespace: mysql-operator
+  name: weblogic-operator
+  namespace: weblogic-operator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: mysql-operator
+  name: weblogic-operator
 subjects:
 - kind: ServiceAccount
-  name: mysql-operator
-  namespace: mysql-operator
+  name: weblogic-operator
+  namespace: weblogic-operator
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: mysql-operator
-  namespace: mysql-operator
+  name: weblogic-operator
+  namespace: weblogic-operator
   labels:
-    app: mysql-operator
+    app: weblogic-operator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mysql-operator
+      app: weblogic-operator
   template:
     metadata:
       labels:
-        app: mysql-operator
+        app: weblogic-operator
     spec:
-      serviceAccountName: mysql-operator
-      imagePullSecrets:
-        - name: odx-docker-pull-secret
+      serviceAccountName: weblogic-operator
       containers:
-      - name: mysql-operator-controller
+      - name: weblogic-operator-controller
         imagePullPolicy: Always
         image: registry.oracledx.com/skeppare/mysql-operator:0.1.0
         ports:
-        - containerPort: 10254
+        - containerPort: 9999
         args:
           - --v=4

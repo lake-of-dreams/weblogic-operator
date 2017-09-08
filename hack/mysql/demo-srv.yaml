@@ -1,15 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql
+  name: weblogic
   labels:
-    app: mysql
+    app: weblogic
 spec:
   ports:
   - port: 7001
-    name: mysql
-  - port: 17001
-    name: mysql-replication
-  clusterIP: None
+    name: weblogic
   selector:
-    app: mysql
+    app: weblogic

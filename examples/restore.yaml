@@ -1,8 +1,0 @@
-apiVersion: "mysql.oracle.com/v1"
-kind: MySQLRestore
-metadata:
-  name: example-snapshot-restore
-cluster:
-  name: example-mysql-cluster-with-volume
-backupRef:
-  name: example-snapshot-backup
