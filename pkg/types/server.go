@@ -88,13 +88,14 @@ type WeblogicServer struct {
 	metav1.ObjectMeta           `json:"metadata"`
 	Spec   WeblogicServerSpec   `json:"spec"`
 	Status WeblogicServerStatus `json:"status"`
-	Object []string
+	runtime.Object
 }
 
 type WeblogicServerList struct {
 	metav1.TypeMeta        `json:",inline"`
 	metav1.ListMeta        `json:"metadata"`
 	Items []WeblogicServer `json:"items"`
+	runtime.Object
 }
 
 // Validate returns an error if a server is invalid
