@@ -14,22 +14,13 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
-
-	"weblogic-operator/pkg/server"
 	"weblogic-operator/pkg/controllers"
 	"weblogic-operator/pkg/types"
 )
 
-// Controller provides an interface for controller executors.
-type Controller interface {
-	// Run executes the controller blocking until it recieves on the
-	// stopChan.
-	Run(stopChan <-chan struct{})
-}
-
 // Operator operates things!
 type Operator struct {
-	Controllers []Controller
+	Controllers []controllers.Controller
 }
 
 // NewWeblogicOperator instantiates a Weblogic Operator.
@@ -45,7 +36,7 @@ func NewWeblogicOperator(restConfig *rest.Config) (*Operator, error) {
 		return nil, err
 	}
 
-	serverController, err := server.NewController(clientSet, restClient, 30*time.Second, v1.NamespaceAll)
+	serverController, err := controllers.NewController(clientSet, restClient, 30*time.Second, v1.NamespaceAll)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +45,7 @@ func NewWeblogicOperator(restConfig *rest.Config) (*Operator, error) {
 }
 
 // NewWithControllers creates an new operator for the given controllers.
-func NewWithControllers(controllers []Controller) *Operator {
+func NewWithControllers(controllers []controllers.Controller) *Operator {
 	return &Operator{Controllers: controllers}
 }
 

@@ -19,35 +19,44 @@ import (
 	"weblogic-operator/pkg/constants"
 )
 
-type StoreToWeblogicServerLister struct {
+// Controller provides an interface for controller executors.
+type Controller interface {
+	// Run executes the controller blocking until it recieves on the
+	// stopChan.
+	Run(stopChan <-chan struct{})
+}
+
+// StoreToMySQLClusterLister TODO add doc strings explaining what this is for
+type StoreToMySQLClusterLister struct {
 	cache.Store
 }
 
-type StoreToWeblogicStatefulSetLister struct {
+// StoreToMySQLStatefulSetLister TODO add doc strings explaining what this is for
+type StoreToMySQLStatefulSetLister struct {
 	cache.Store
 }
 
-// The WeblogicController watches the Kubernetes API for changes to Weblogic resources
-type WeblogicController struct {
-	client                        kubernetes.Interface
-	restClient                    *rest.RESTClient
-	startTime                     time.Time
-	shutdown                      bool
-	weblogicServerController      cache.Controller
-	weblogicServerStore           StoreToWeblogicServerLister
-	weblogicStatefulSetController cache.Controller
-	weblogicStatefulSetStore      StoreToWeblogicStatefulSetLister
+// The MySQLController watches the Kubernetes API for changes to MySQL resources
+type MySQLController struct {
+	client                     kubernetes.Interface
+	restClient                 *rest.RESTClient
+	startTime                  time.Time
+	shutdown                   bool
+	mySQLClusterController     cache.Controller
+	mySQLClusterStore          StoreToMySQLClusterLister
+	mySQLStatefulSetController cache.Controller
+	mySQLStatefulSetStore      StoreToMySQLStatefulSetLister
 }
 
-// NewController creates a new WeblogicController.
-func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient, resyncPeriod time.Duration, namespace string) (controller *WeblogicController, error) {
-	m := WeblogicController{
+// NewController creates a new MySQLController.
+func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient, resyncPeriod time.Duration, namespace string) (*MySQLController, error) {
+	m := MySQLController{
 		client:     kubeClient,
 		restClient: restClient,
 		startTime:  time.Now(),
 	}
 
-	weblogicServerHandlers := cache.ResourceEventHandlerFuncs{
+	mySQLClusterHandlers := cache.ResourceEventHandlerFuncs{
 		AddFunc:    m.onAdd,
 		DeleteFunc: m.onDelete,
 		UpdateFunc: m.onUpdate,
