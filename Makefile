@@ -68,8 +68,8 @@ vet: ${GO_SRC}
 vendor:
 	#glide install -v
 	$(GO) get -u github.com/golang/dep/cmd/dep
-    dep init
-    dep ensure
+    #dep init -v
+    dep ensure -v
 
 .PHONY: clean
 clean:
