@@ -129,7 +129,8 @@ minikube service weblogic --url
 
 
 #Cleanup
-kubectl delete weblogicservers
+kubectl delete weblogicservers --all
+kubectl delete -n weblogic-operator deployment weblogic-operator
 
 
 ```
