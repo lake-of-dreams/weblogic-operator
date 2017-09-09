@@ -1,4 +1,4 @@
-package: gitlab-odx.oracle.com/odx/mysql-operator
+package: github.com/sczachariah/weblogic-operator
 import:
 - package: k8s.io/client-go
   version: 1850dd66e4213a26bd70d0b85fee4176d324b845
