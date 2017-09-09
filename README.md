@@ -89,7 +89,8 @@ kubectl delete deployment hello-server
 ```
 #######################################################
 
-
+#######################################################  
+##**Build and create docker image for our operator**  
 ```
 kubectl create -f manifests/gojam-server-crd    #Create CustomResourceRefinition
 /apis/gojam.com/v1/namespaces/*/jamservers/
@@ -104,20 +105,31 @@ Pre-req
 ----------
 minikube 1.7
 go 1.9
-dep
+go get -u github.com/golang/dep/cmd/dep
 glide-v0.12.3
 GNU make
 
-go get -u github.com/golang/dep/cmd/dep
-dep init
-dep ensure
-
+minikube start
+eval $(minikube docker-env --shell=bash)
 docker login
 
 make clean
 make vendor
 make build
 make image
+make push
+
+kubectl apply -f dist/weblogic-operator.yaml
+kubectl -n weblogic-operator get pods
+
+kubectl apply -f examples/server.yaml
+kubectl get weblogicservers
+
+minikube service weblogic --url
+
+
+#Cleanup
+kubectl delete weblogicservers
 
 
 ```

@@ -9,14 +9,14 @@ GOOS ?= linux
 LD_FLAGS ?= -extldflags "-static"
 
 BUILD_DIR := dist
-VERSION := ${USER}-$(shell date +%Y%m%d%H%M%S)
+VERSION := $(shell date +%Y%m%d%H%M%S)
 
 BIN_DIR := ${BUILD_DIR}/bin
 MANIFEST_DIR := ${BUILD_DIR}/manifest
 
 GO_SRC := $(shell find . -name "*.go")
 
-DOCKER_REGISTRY ?= hub.docker.com
+DOCKER_REGISTRY ?= docker.io
 DOCKER_USER ?= fmwplt
 
 # weblogic-operator
@@ -66,10 +66,9 @@ vet: ${GO_SRC}
 
 .PHONY: vendor
 vendor:
-	#glide install -v
-	$(GO) get -u github.com/golang/dep/cmd/dep
-    #dep init -v
-    dep ensure -v
+	@$(GO) get -u github.com/golang/dep/cmd/dep
+	#@dep init -v
+	@$(GOPATH)/bin/dep ensure -v
 
 .PHONY: clean
 clean:

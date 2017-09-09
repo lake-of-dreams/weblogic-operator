@@ -9,7 +9,7 @@ import (
 var _ = runtime.Object(&WeblogicServer{})
 
 const (
-	defaultVersion  = "12.2.1.2.0"
+	defaultVersion  = "12.2.1.2"
 	defaultReplicas = 1
 )
 

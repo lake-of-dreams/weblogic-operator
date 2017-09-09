@@ -15,7 +15,7 @@ spec:
   names:
     kind: WeblogicServer
     singular: weblogicserver
-    plural: weblogicserers
+    plural: weblogicservers
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
