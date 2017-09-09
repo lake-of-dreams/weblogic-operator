@@ -1,8 +1,8 @@
 # Common
 ###############################################################################
 
-http_proxy := "http://www-proxy.us.oracle.com:80"
-https_proxy := "http://www-proxy.us.oracle.com:80"
+#http_proxy := "http://www-proxy.us.oracle.com:80"
+#https_proxy := "http://www-proxy.us.oracle.com:80"
 
 GO ?= go
 GOOS ?= linux
@@ -43,13 +43,13 @@ ${BIN_DIR}/${OPERATOR_BIN_NAME}: ${GO_SRC}
 image: ${BIN_DIR}/${OPERATOR_BIN_NAME}
 	sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator.yaml > \
 		$(BUILD_DIR)/weblogic-operator.yaml
-	docker build \
+	@docker build \
 		--build-arg=http_proxy \
 		--build-arg=https_proxy \
 		-t ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} \
 		-f Dockerfile \
 		.
-	docker tag ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
+	@docker tag ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
 
 .PHONY: push
 push: image
@@ -66,7 +66,10 @@ vet: ${GO_SRC}
 
 .PHONY: vendor
 vendor:
-	glide install -v
+	#glide install -v
+	$(GO) get -u github.com/golang/dep/cmd/dep
+    dep init
+    dep ensure
 
 .PHONY: clean
 clean:

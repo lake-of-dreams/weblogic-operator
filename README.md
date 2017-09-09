@@ -100,5 +100,25 @@ kubectl get jamserver
 
 kubectl exec -it my-pod --container main-app -- /bin/bash
 
+Pre-req
+----------
+minikube 1.7
+go 1.9
+dep
+glide-v0.12.3
+GNU make
+
+go get -u github.com/golang/dep/cmd/dep
+dep init
+dep ensure
+
+docker login
+
+make clean
+make vendor
+make build
+make image
+
+
 ```
 
