@@ -33,8 +33,7 @@ OPERATOR_DOCKER_IMAGE_TAG ?= ${VERSION}
 all: build
 
 .PHONY: build
-build: clean
-	${BIN_DIR}/${OPERATOR_BIN_NAME}
+build: ${BIN_DIR}/${OPERATOR_BIN_NAME}
 
 ${BIN_DIR}/${OPERATOR_BIN_NAME}: ${GO_SRC}
 	@mkdir -p ${BIN_DIR}

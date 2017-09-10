@@ -75,3 +75,6 @@ spec:
         - containerPort: 9999
         args:
           - --v=4
+          - --alsologtostderr=true
+          - --log_dir=""
+          - --kubeconfig=""
