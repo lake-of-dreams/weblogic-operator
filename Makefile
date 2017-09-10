@@ -9,7 +9,7 @@ GOOS ?= linux
 LD_FLAGS ?= -extldflags "-static"
 
 BUILD_DIR := dist
-VERSION := $(shell date +%Y%m%d%H%M%S)
+VERSION := $(shell date +%y%m%d%H%M)
 
 BIN_DIR := ${BUILD_DIR}/bin
 MANIFEST_DIR := ${BUILD_DIR}/manifest
