@@ -120,7 +120,6 @@ func createWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.In
 }
 
 func updateWeblogicServer(server *types.WeblogicServer, restClient *rest.RESTClient) error {
-	// TODO(apryde): Use retry.RetryOnConflict()?
 	result := restClient.Put().
 		Resource(types.ServerCRDResourcePlural).
 		Namespace(server.Namespace).
