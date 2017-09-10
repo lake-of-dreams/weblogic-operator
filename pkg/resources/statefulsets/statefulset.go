@@ -41,7 +41,7 @@ func weblogicOperatorContainer(server *types.WeblogicServer) v1.Container {
 		Lifecycle: &v1.Lifecycle{
 			PreStop: &v1.Handler{
 				Exec: &v1.ExecAction{
-					Command: []string{"/bin/bash","/u01/oracle/user_projects/domains/base_domain/stopWebLogic.sh"},
+					Command: []string{"/bin/bash", "/u01/oracle/user_projects/domains/base_domain/stopWebLogic.sh"},
 				},
 			},
 		},
@@ -70,8 +70,8 @@ func NewForServer(server *types.WeblogicServer, serviceName string) *v1beta1.Sta
 					},
 				},
 				Spec: v1.PodSpec{
-					NodeSelector: server.Spec.NodeSelector,
-					Containers:   containers,
+					NodeSelector:                  server.Spec.NodeSelector,
+					Containers:                    containers,
 					TerminationGracePeriodSeconds: &timeOut,
 				},
 			},

@@ -2,7 +2,7 @@ package weblogicoperator
 
 import (
 	"k8s.io/client-go/rest"
-	flowcontrol "k8s.io/client-go/util/flowcontrol"
+	"k8s.io/client-go/util/flowcontrol"
 
 	weblogicoperatorv1 "github.com/sczachariah/weblogic-operator/pkg/clients/weblogicoperator/v1"
 )

@@ -17,7 +17,7 @@ func NewForServer(server *types.WeblogicServer) *v1.Service {
 			Namespace: server.Namespace,
 		},
 		Spec: v1.ServiceSpec{
-			Type: v1.ServiceTypeNodePort,
+			Type:  v1.ServiceTypeNodePort,
 			Ports: []v1.ServicePort{weblogicPort},
 			Selector: map[string]string{
 				constants.WeblogicServerLabel: server.Name,
