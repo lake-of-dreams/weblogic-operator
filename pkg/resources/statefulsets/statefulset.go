@@ -31,18 +31,26 @@ func namespaceEnvVar() v1.EnvVar {
 func weblogicOperatorContainer(server *types.WeblogicServer) v1.Container {
 	return v1.Container{
 		//TODO : Use different container names ???
-		Name: "weblogic",
+		Name:  "weblogic",
 		Image: fmt.Sprintf("%s:%s", WeblogicImageName, server.Spec.Version),
 		Ports: []v1.ContainerPort{{ContainerPort: 7001}},
 		Env: []v1.EnvVar{
 			serverNameEnvVar(server),
 			namespaceEnvVar(),
 		},
+		Lifecycle: &v1.Lifecycle{
+			PreStop: &v1.Handler{
+				Exec: &v1.ExecAction{
+					Command: []string{"/bin/bash","/u01/oracle/user_projects/domains/base_domain/stopWebLogic.sh"},
+				},
+			},
+		},
 	}
 }
 
 // NewForServer creates a new StatefulSet for the given WeblogicServer.
 func NewForServer(server *types.WeblogicServer, serviceName string) *v1beta1.StatefulSet {
+	var timeOut int64 = 120
 	containers := []v1.Container{weblogicOperatorContainer(server)}
 
 	ss := &v1beta1.StatefulSet{
@@ -64,6 +72,7 @@ func NewForServer(server *types.WeblogicServer, serviceName string) *v1beta1.Sta
 				Spec: v1.PodSpec{
 					NodeSelector: server.Spec.NodeSelector,
 					Containers:   containers,
+					TerminationGracePeriodSeconds: &timeOut,
 				},
 			},
 			ServiceName: serviceName,
