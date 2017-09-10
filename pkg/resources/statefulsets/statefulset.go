@@ -30,8 +30,8 @@ func namespaceEnvVar() v1.EnvVar {
 // Builds the Weblogic operator container for a server
 func weblogicOperatorContainer(server *types.WeblogicServer) v1.Container {
 	return v1.Container{
+		//TODO : Use different container names ???
 		Name: "weblogic",
-		// TODO(apryde): Add BaseImage to server CRD.
 		Image: fmt.Sprintf("%s:%s", WeblogicImageName, server.Spec.Version),
 		Ports: []v1.ContainerPort{{ContainerPort: 7001}},
 		Env: []v1.EnvVar{
@@ -43,8 +43,6 @@ func weblogicOperatorContainer(server *types.WeblogicServer) v1.Container {
 
 // NewForServer creates a new StatefulSet for the given WeblogicServer.
 func NewForServer(server *types.WeblogicServer, serviceName string) *v1beta1.StatefulSet {
-	// TODO: statefulSet.Spec.ServiceName
-
 	containers := []v1.Container{weblogicOperatorContainer(server)}
 
 	ss := &v1beta1.StatefulSet{

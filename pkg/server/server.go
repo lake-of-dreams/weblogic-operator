@@ -229,7 +229,6 @@ func setWeblogicServerState(server *types.WeblogicServer, restClient *rest.RESTC
 		modified = true
 	}
 
-	// TODO(apryde): Use retry.RetryOnConflict()?
 	if modified {
 		result := restClient.Put().
 			Resource(types.ServerCRDResourcePlural).
