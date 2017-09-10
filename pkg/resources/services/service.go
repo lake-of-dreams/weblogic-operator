@@ -7,7 +7,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// NewForServer will return a new headless(clusterIP as None) Kubernetes service for a Weblogic Server
+// NewForServer will return a new NodePort Kubernetes service for a Weblogic Server
 func NewForServer(server *types.WeblogicServer) *v1.Service {
 	weblogicPort := v1.ServicePort{Port: 7001}
 	svc := &v1.Service{
@@ -22,7 +22,6 @@ func NewForServer(server *types.WeblogicServer) *v1.Service {
 			Selector: map[string]string{
 				constants.WeblogicServerLabel: server.Name,
 			},
-			ClusterIP: v1.ClusterIPNone,
 		},
 	}
 	return svc
