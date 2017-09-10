@@ -38,7 +38,6 @@ func NewForConfig(c *rest.Config) (*WeblogicV1Client, error) {
 
 func setConfigDefaults(config *rest.Config) error {
 	crScheme := runtime.NewScheme()
-	// TODO(apryde): Is this necessary? Can we do this in one place?
 	if err := types.AddToScheme(crScheme); err != nil {
 		return err
 	}
