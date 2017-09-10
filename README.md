@@ -70,7 +70,6 @@ minikube service manageserver --url
 #Delete Weblogic Server using operator
 kubectl delete weblogicserver managedserver
 
-
 #Cleanup
 kubectl delete weblogicservers --all
 kubectl delete -n weblogic-operator deployment weblogic-operator
