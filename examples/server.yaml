@@ -6,4 +6,4 @@ metadata:
 apiVersion: "weblogic.oracle.com/v1"
 kind: WeblogicServer
 metadata:
-  name: wls_server
+  name: managedserver
