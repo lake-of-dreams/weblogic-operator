@@ -139,6 +139,7 @@ func (m *WeblogicController) onStatefulSetAdd(obj interface{}) {
 	}
 }
 
+//TODO Fix hanldings here. Need to call onStatefulSetAdd ???
 func (m *WeblogicController) onStatefulSetDelete(obj interface{}) {
 	glog.V(4).Info("WeblogicController.onStatefulSetDelete() called")
 	m.onStatefulSetAdd(obj)
