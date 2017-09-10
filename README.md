@@ -58,7 +58,7 @@ make push
 kubectl apply -f dist/weblogic-operator.yaml
 kubectl -n weblogic-operator get pods
 
-#Create Weblogic Servers using operator
+#Start Weblogic Servers using operator
 kubectl apply -f examples/server.yaml
 kubectl get weblogicservers
 
@@ -74,7 +74,6 @@ kubectl delete weblogicserver managedserver
 #Cleanup
 kubectl delete weblogicservers --all
 kubectl delete -n weblogic-operator deployment weblogic-operator
-
-
+kubectl delete ns weblogic-operator
 ```
 
