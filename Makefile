@@ -41,8 +41,8 @@ ${BIN_DIR}/${OPERATOR_BIN_NAME}: ${GO_SRC}
 
 .PHONY: image
 image: ${BIN_DIR}/${OPERATOR_BIN_NAME}
-	sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator.yaml > \
-		$(BUILD_DIR)/weblogic-operator.yaml
+	sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator.yaml > $(BUILD_DIR)/weblogic-operator.yaml
+	cp manifests/weblogic-crd.yaml > $(BUILD_DIR)/weblogic-crd.yaml
 	@docker build \
 		--build-arg=http_proxy \
 		--build-arg=https_proxy \
