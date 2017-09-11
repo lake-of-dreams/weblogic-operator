@@ -1,4 +1,15 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: weblogic-operator
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: weblogic-operator
+  namespace: weblogic-operator
+---
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:

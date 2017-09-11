@@ -8,6 +8,7 @@ apiVersion: "weblogic.oracle.com/v1"
 kind: WeblogicServer
 metadata:
   name: managedserver
+spec:
   version: 12.2.1.2
   replicas: 2
 ---
