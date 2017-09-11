@@ -20,7 +20,7 @@ spec:
       containers:
       - name: weblogic-operator-controller
         imagePullPolicy: Always
-        image: fmwplt/weblogic-operator:{{VERSION}}
+        image: fmwplt/weblogic-operator:1709120105
         ports:
         - containerPort: 9999
         args:
