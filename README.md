@@ -26,7 +26,7 @@ make image
 make push                                       #Pushes to docker hub
 ``` 
 
-**Apply CRD for _weblogic-operator_ into k8s**
+**Apply CRD of type _WeblogicServer_ into k8s**
 ```
 kubectl apply -f dist/weblogic-crd.yaml         #Creates custom object of type WeblogicServer
 ``` 
@@ -43,7 +43,7 @@ kubectl apply -f examples/server.yaml
 kubectl get weblogicservers,services
 ``` 
 
-**Create objects of type _WeblogicServer_**
+**Delete objects of type _WeblogicServer_**
 ```
 kubectl delete weblogicserver managedserver
 ``` 
