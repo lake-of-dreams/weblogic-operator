@@ -2,7 +2,8 @@
 ```
 minikube 1.7
 go 1.9
-dep                                             #Dependency Management (go get -u github.com/golang/dep/cmd/dep)
+dep                                             #Dependency Management 
+                                                (go get -u github.com/golang/dep/cmd/dep)
 ```
 
 **Start minikube and export docker env** 
