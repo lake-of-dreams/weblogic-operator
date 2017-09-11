@@ -24,7 +24,7 @@ var validVersions = []string{
 type WeblogicServerSpec struct {
 	// Version defines the Weblogic Docker image version
 	Version string `json:"version"`
-	// Replicas defines the number of running Weblogic instances in a server
+	// Replicas defines the number of running Weblogic server instances
 	Replicas int32 `json:"replicas,omitempty"`
 	// NodeSelector is a selector which must be true for the pod to fit on a node.
 	// Selector which must match a node's labels for the pod to be scheduled on that node.
