@@ -2,7 +2,7 @@
 ```
 minikube 1.7
 go 1.9
-dep                 #Dependency Management (go get -u github.com/golang/dep/cmd/dep)
+dep                                             #Dependency Management (go get -u github.com/golang/dep/cmd/dep)
 ```
 
 **Start minikube and export docker env** 
@@ -15,19 +15,19 @@ docker login
 **Build _weblogic-operator_**
 ```
 make clean
-make vendor         #Uses dep to populate vendors
-make build          #Build binary and files to dist/
+make vendor                                     #Uses dep to populate vendors
+make build
 ``` 
 
 **Create _weblogic-operator_ image and push** 
 ```
 make image
-make push           #Pushes to docker hub
+make push                                       #Pushes to docker hub
 ``` 
 
 **Apply CRD for _weblogic-operator_ into k8s**
 ```
-kubectl apply -f dist/weblogic-crd.yaml          #Creates custom object of type WeblogicServer
+kubectl apply -f dist/weblogic-crd.yaml         #Creates custom object of type WeblogicServer
 ``` 
 
 **Deploy the _weblogic-operator_ into k8s**
