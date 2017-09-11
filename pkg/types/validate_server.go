@@ -15,8 +15,8 @@ func validateServerSpec(s WeblogicServerSpec, fldPath *field.Path) field.ErrorLi
 	allErrs := field.ErrorList{}
 
 	// Temporary limitation for first release.
-	if s.Replicas != 1 {
-		allErrs = append(allErrs, field.Invalid(fldPath.Child("replicas"), s.Replicas, "replicas can currently only be set to 1"))
+	if s.Replicas < 1 {
+		allErrs = append(allErrs, field.Invalid(fldPath.Child("replicas"), s.Replicas, "replicas should be set to minimum 1"))
 	}
 
 	allErrs = append(allErrs, validateVersion(s.Version, fldPath.Child("version"))...)

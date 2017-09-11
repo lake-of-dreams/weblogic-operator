@@ -28,12 +28,12 @@ make push                                       #Pushes to docker hub
 
 **Create CRD of type _WeblogicServer_ into k8s**
 ```
-kubectl apply -f dist/weblogic-crd.yaml         #Creates custom object of type WeblogicServer
+kubectl apply -f manifests/weblogic-crd.yaml         #Creates custom object of type WeblogicServer
 ``` 
 
 **Deploy _weblogic-operator_ into k8s**
 ```
-kubectl apply -f dist/weblogic-operator.yaml
+kubectl apply -f manifests/weblogic-operator.yaml
 kubectl -n weblogic-operator get pods
 ``` 
 
