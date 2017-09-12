@@ -10,5 +10,5 @@ metadata:
   name: managedserver
 spec:
   version: 12.2.1.2
-  replicas: 2
+  replicas: 1
 ---
