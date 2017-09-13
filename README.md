@@ -15,6 +15,9 @@ docker login
 
 **Build _weblogic-operator_**
 ```
+#Clone the source into $GOPATH/<VERSION_CONTROL_PATH>/weblogic-operator
+#eg: $GOPATH/github.com/sczachariah/weblogic-operator
+
 make clean
 make vendor                                     #Uses dep to populate vendors
 make build
