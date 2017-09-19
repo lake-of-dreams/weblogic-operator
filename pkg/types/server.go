@@ -73,16 +73,16 @@ type WeblogicServerStatus struct {
 
 // WeblogicServer represents a server spec and associated metadata
 type WeblogicServer struct {
-	metav1.TypeMeta             `json:",inline"`
-	metav1.ObjectMeta           `json:"metadata"`
-	Spec   WeblogicServerSpec   `json:"spec"`
-	Status WeblogicServerStatus `json:"status"`
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata"`
+	Spec              WeblogicServerSpec   `json:"spec"`
+	Status            WeblogicServerStatus `json:"status"`
 }
 
 type WeblogicServerList struct {
-	metav1.TypeMeta        `json:",inline"`
-	metav1.ListMeta        `json:"metadata"`
-	Items []WeblogicServer `json:"items"`
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata"`
+	Items           []WeblogicServer `json:"items"`
 }
 
 // Validate returns an error if a server is invalid

@@ -1,10 +1,10 @@
 package services
 
 import (
-	"github.com/sczachariah/weblogic-operator/pkg/constants"
-	"github.com/sczachariah/weblogic-operator/pkg/types"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"weblogic-operator/pkg/constants"
+	"weblogic-operator/pkg/types"
 )
 
 // NewForServer will return a new NodePort Kubernetes service for a Weblogic Server

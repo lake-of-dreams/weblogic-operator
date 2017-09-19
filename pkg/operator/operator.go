@@ -15,9 +15,9 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 
-	"github.com/sczachariah/weblogic-operator/pkg/server"
-	"github.com/sczachariah/weblogic-operator/pkg/controllers"
-	"github.com/sczachariah/weblogic-operator/pkg/types"
+	"weblogic-operator/pkg/controllers"
+	"weblogic-operator/pkg/server"
+	"weblogic-operator/pkg/types"
 )
 
 // Operator operates things!
@@ -69,6 +69,9 @@ func (o *Operator) Run() {
 }
 
 func newRESTClient(config *rest.Config) (*rest.RESTClient, error) {
+	if err := types.AddToScheme(scheme.Scheme); err != nil {
+		return nil, err
+	}
 	config.GroupVersion = &types.SchemeGroupVersion
 	config.APIPath = "/apis"
 	config.ContentType = runtime.ContentTypeJSON

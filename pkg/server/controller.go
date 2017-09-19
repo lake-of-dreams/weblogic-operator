@@ -3,6 +3,7 @@ package server
 import (
 	"time"
 
+	"github.com/golang/glog"
 	"k8s.io/api/apps/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -11,9 +12,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
-	"github.com/golang/glog"
-	"github.com/sczachariah/weblogic-operator/pkg/types"
-	"github.com/sczachariah/weblogic-operator/pkg/constants"
+	"weblogic-operator/pkg/constants"
+	"weblogic-operator/pkg/types"
 )
 
 type StoreToWeblogicServerLister struct {

@@ -11,10 +11,11 @@ import (
 
 	"github.com/golang/glog"
 
-	"github.com/sczachariah/weblogic-operator/pkg/constants"
-	"github.com/sczachariah/weblogic-operator/pkg/resources/services"
-	"github.com/sczachariah/weblogic-operator/pkg/resources/statefulsets"
-	"github.com/sczachariah/weblogic-operator/pkg/types"
+	"k8s.io/client-go/kubernetes/scheme"
+	"weblogic-operator/pkg/constants"
+	"weblogic-operator/pkg/resources/services"
+	"weblogic-operator/pkg/resources/statefulsets"
+	"weblogic-operator/pkg/types"
 )
 
 // HasServerNameLabel returns true if the given labels map matches the given
@@ -137,6 +138,11 @@ func deleteWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.In
 		return err
 	}
 
+	//err = RunStopForWeblogicServer(kubeClient, restClient, server)
+	//if err != nil {
+	//	return err
+	//}
+
 	err = DeleteStatefulSetForWeblogicServer(kubeClient, server)
 	if err != nil {
 		return err
@@ -256,4 +262,84 @@ func updateServerWithStatefulSet(server *types.WeblogicServer, statefulSet *v1be
 		setWeblogicServerState(server, restClient, types.WeblogicServerRunning, nil)
 	}
 	return err
+}
+
+// GetPodForWeblogicServer finds the associated pod for a Weblogic server
+func GetPodForWeblogicServer(server *types.WeblogicServer, clientset kubernetes.Interface) (*v1.Pod, error) {
+	opts := metav1.ListOptions{LabelSelector: getLabelSelectorForServer(server)}
+	pods, err := clientset.CoreV1().Pods(server.Namespace).List(opts)
+	if err != nil {
+		glog.Errorf("Unable to list pods for %s: %s", server.Name, err)
+		return nil, err
+	}
+
+	for _, pod := range pods.Items {
+		if HasServerNameLabel(pod.Labels, server.Name) {
+			return &pod, nil
+		}
+	}
+	return nil, nil
+}
+
+// GetPodForWeblogicServer finds the associated pod for a Weblogic server
+func GetContainerForPod(server *types.WeblogicServer, pod *v1.Pod) (*v1.Container, error) {
+	containers := pod.Spec.Containers
+
+	for _, container := range containers {
+		if container.Name == server.Name {
+			return &container, nil
+		}
+	}
+
+	return nil, nil
+}
+
+// RunStopForWeblogicServer will run stopWebLogic to stop a Weblogic server container in a pod
+func RunStopForWeblogicServer(clientset kubernetes.Interface, restClient *rest.RESTClient, server *types.WeblogicServer) error {
+	pod, err := GetPodForWeblogicServer(server, clientset)
+	if err != nil || pod == nil {
+		glog.Errorf("Could not find pod: %s", err)
+		return err
+	}
+
+	container, err := GetContainerForPod(server, pod)
+	if err != nil || container == nil {
+		glog.Errorf("Could not find container %s in pod %s: %s", server.Name, pod.Name, err)
+		return err
+	}
+
+	glog.V(4).Infof("Running stopWeblogic.sh for container %s in pod %s", server.Name, pod.Name)
+	command := []string{"/u01/oracle/user_projects/domains/base_domain/bin/stopWebLogic.sh"}
+	cmdErr := ExecuteCommandInContainer(restClient, pod, container, command)
+	if cmdErr != nil {
+		glog.Errorf("Error executing command : %s", cmdErr)
+		return cmdErr
+	}
+
+	return nil
+}
+
+// ExecuteCommandInContainer will run a command in a container in a pod
+func ExecuteCommandInContainer(restClient *rest.RESTClient, pod *v1.Pod, container *v1.Container, command []string) error {
+	result := restClient.Post().
+		Resource("pods").
+		Name(pod.Name).
+		Namespace(pod.Namespace).
+		SubResource("exec").
+		Param("container", container.Name).
+		VersionedParams(&v1.PodExecOptions{
+			Container: container.Name,
+			Command:   command,
+		}, scheme.ParameterCodec).
+		Do()
+
+	if result.Error() != nil {
+		glog.Infof("Result of executing command is not nil")
+		//if metav1.Status(result.Error).Status != metav1.StatusSuccess {
+		glog.Errorf("Error executing command: %s", result.Error())
+		return result.Error()
+		//}
+	}
+
+	return nil
 }

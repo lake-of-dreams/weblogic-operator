@@ -5,7 +5,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/client-go/rest"
 
-	"github.com/sczachariah/weblogic-operator/pkg/types"
+	"weblogic-operator/pkg/types"
 )
 
 type WeblogicV1Interface interface {

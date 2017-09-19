@@ -5,12 +5,12 @@ import (
 	"k8s.io/api/apps/v1beta1"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"github.com/sczachariah/weblogic-operator/pkg/constants"
-	"github.com/sczachariah/weblogic-operator/pkg/types"
+	"weblogic-operator/pkg/constants"
+	"weblogic-operator/pkg/types"
 )
 
-// WeblogicImageName is the base Docker image for the operator.
-const WeblogicImageName = "store/oracle/weblogic"
+// WeblogicImageName is the base Docker image used by the operator.
+const WeblogicImageName = "docker.io/store/oracle/weblogic"
 
 func serverNameEnvVar(server *types.WeblogicServer) v1.EnvVar {
 	return v1.EnvVar{Name: "WEBLOGIC_SERVER_NAME", Value: server.Name}
@@ -27,24 +27,25 @@ func namespaceEnvVar() v1.EnvVar {
 	}
 }
 
-// Builds the Weblogic operator container for a server
+// Builds the WeblogicServer container
 func weblogicOperatorContainer(server *types.WeblogicServer) v1.Container {
 	return v1.Container{
 		//TODO : Use different container names ???
-		Name:  "weblogic",
-		Image: fmt.Sprintf("%s:%s", WeblogicImageName, server.Spec.Version),
-		Ports: []v1.ContainerPort{{ContainerPort: 7001}},
+		Name:            server.Name,
+		Image:           fmt.Sprintf("%s:%s", WeblogicImageName, server.Spec.Version),
+		ImagePullPolicy: v1.PullAlways,
+		Ports:           []v1.ContainerPort{{ContainerPort: 7001}},
 		Env: []v1.EnvVar{
 			serverNameEnvVar(server),
 			namespaceEnvVar(),
 		},
-		Lifecycle: &v1.Lifecycle{
-			PreStop: &v1.Handler{
-				Exec: &v1.ExecAction{
-					Command: []string{"/u01/oracle/user_projects/domains/base_domain/bin/stopWebLogic.sh"},
-				},
-			},
-		},
+		//Lifecycle: &v1.Lifecycle{
+		//	PreStop: &v1.Handler{
+		//		Exec: &v1.ExecAction{
+		//			Command: []string{"/u01/oracle/user_projects/domains/base_domain/bin/stopWebLogic.sh"},
+		//		},
+		//	},
+		//},
 	}
 }
 
@@ -70,7 +71,12 @@ func NewForServer(server *types.WeblogicServer, serviceName string) *v1beta1.Sta
 					},
 				},
 				Spec: v1.PodSpec{
-					NodeSelector:                  server.Spec.NodeSelector,
+					NodeSelector: server.Spec.NodeSelector,
+					ImagePullSecrets: []v1.LocalObjectReference{
+						{
+							Name: "weblogic-docker-store",
+						},
+					},
 					Containers:                    containers,
 					TerminationGracePeriodSeconds: &timeOut,
 				},
