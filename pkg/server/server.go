@@ -321,6 +321,7 @@ func RunStopForWeblogicServer(clientset kubernetes.Interface, restClient *rest.R
 
 // ExecuteCommandInContainer will run a command in a container in a pod
 func ExecuteCommandInContainer(restClient *rest.RESTClient, pod *v1.Pod, container *v1.Container, command []string) error {
+	//TODO the restClient to be used should be the k8s one and not weblogic one-------------------
 	result :=
 		restClient.Post().
 			Namespace(pod.Namespace).
