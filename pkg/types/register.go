@@ -14,6 +14,7 @@ const (
 	groupName                     = "weblogic.oracle.com"
 	schemeVersion                 = "v1"
 	WeblogicServerCRDResourceKind = "WeblogicServer"
+	WeblogicDomainCRDResourceKind = "WeblogicDomain"
 )
 
 var (
@@ -28,6 +29,11 @@ func addKnownTypes(s *runtime.Scheme) error {
 	s.AddKnownTypes(SchemeGroupVersion,
 		&WeblogicServer{},
 		&WeblogicServerList{})
+	metav1.AddToGroupVersion(s, SchemeGroupVersion)
+
+	s.AddKnownTypes(SchemeGroupVersion,
+		&WeblogicDomain{},
+		&WeblogicDomainList{})
 	metav1.AddToGroupVersion(s, SchemeGroupVersion)
 	return nil
 }

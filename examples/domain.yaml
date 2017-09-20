@@ -2,7 +2,7 @@
 apiVersion: "weblogic.oracle.com/v1"
 kind: WeblogicDomain
 metadata:
-  name: KubeDomain
+  name: kubedomain
   spec:
     version: 12.2.1.2
     replicas: 1

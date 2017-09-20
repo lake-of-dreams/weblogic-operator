@@ -16,6 +16,10 @@ func serverNameEnvVar(server *types.WeblogicServer) v1.EnvVar {
 	return v1.EnvVar{Name: "WEBLOGIC_SERVER_NAME", Value: server.Name}
 }
 
+func domainNameEnvVar(domain *types.WeblogicDomain) v1.EnvVar {
+	return v1.EnvVar{Name: "WEBLOGIC_DOMAIN_NAME", Value: domain.Name}
+}
+
 func namespaceEnvVar() v1.EnvVar {
 	return v1.EnvVar{
 		Name: "POD_NAMESPACE",
@@ -49,6 +53,27 @@ func weblogicOperatorContainer(server *types.WeblogicServer) v1.Container {
 	}
 }
 
+// Builds the WeblogicServer container
+func buildWeblogicOperatorContainer(domain *types.WeblogicDomain) v1.Container {
+	return v1.Container{
+		Name:            "weblogic",
+		Image:           fmt.Sprintf("%s:%s", WeblogicImageName, domain.Spec.Version),
+		ImagePullPolicy: v1.PullAlways,
+		Ports:           []v1.ContainerPort{{ContainerPort: 7001}},
+		Env: []v1.EnvVar{
+			domainNameEnvVar(domain),
+			namespaceEnvVar(),
+		},
+		Lifecycle: &v1.Lifecycle{
+			PostStart: &v1.Handler{
+				Exec: &v1.ExecAction{
+					Command: []string{"domainSetup.sh /u01/oracle/user_projects/domains/base_domain weblogic welcome1 localhost 7001 2 5556"},
+				},
+			},
+		},
+	}
+}
+
 // NewForServer creates a new StatefulSet for the given WeblogicServer.
 func NewForServer(server *types.WeblogicServer, serviceName string) *v1beta1.StatefulSet {
 	var timeOut int64 = 120
@@ -72,6 +97,44 @@ func NewForServer(server *types.WeblogicServer, serviceName string) *v1beta1.Sta
 				},
 				Spec: v1.PodSpec{
 					NodeSelector: server.Spec.NodeSelector,
+					ImagePullSecrets: []v1.LocalObjectReference{
+						{
+							Name: "weblogic-docker-store",
+						},
+					},
+					Containers:                    containers,
+					TerminationGracePeriodSeconds: &timeOut,
+				},
+			},
+			ServiceName: serviceName,
+		},
+	}
+
+	return ss
+}
+
+func NewServiceForDomain(domain *types.WeblogicDomain, serviceName string) *v1beta1.StatefulSet {
+	var timeOut int64 = 120
+	containers := []v1.Container{buildWeblogicOperatorContainer(domain)}
+
+	ss := &v1beta1.StatefulSet{
+		ObjectMeta: metav1.ObjectMeta{
+			Namespace: domain.Namespace,
+			Name:      domain.Name,
+			Labels: map[string]string{
+				constants.WeblogicDomainLabel: domain.Name,
+			},
+		},
+		Spec: v1beta1.StatefulSetSpec{
+			Replicas: &domain.Spec.Replicas,
+			Template: v1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{
+						constants.WeblogicDomainLabel: domain.Name,
+					},
+				},
+				Spec: v1.PodSpec{
+					NodeSelector: domain.Spec.NodeSelector,
 					ImagePullSecrets: []v1.LocalObjectReference{
 						{
 							Name: "weblogic-docker-store",

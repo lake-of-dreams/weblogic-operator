@@ -26,3 +26,19 @@ func NewForServer(server *types.WeblogicServer) *v1.Service {
 	}
 	return svc
 }
+
+func NewServiceForDomain(domain *types.WeblogicDomain) *v1.Service {
+	svc := &v1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Labels:    map[string]string{constants.WeblogicDomainLabel: domain.Name},
+			Name:      domain.Name,
+			Namespace: domain.Namespace,
+		},
+		Spec: v1.ServiceSpec{
+			Selector: map[string]string{
+				constants.WeblogicDomainLabel: domain.Name,
+			},
+		},
+	}
+	return svc
+}
