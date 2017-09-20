@@ -1,20 +1,20 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: weblogic-operator
+#apiVersion: v1
+#kind: Namespace
+#metadata:
+#  name: weblogic-operator
 ---
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: weblogic-operator
-  namespace: weblogic-operator
+#apiVersion: v1
+#kind: ServiceAccount
+#metadata:
+#  name: weblogic-operator
+#  namespace: weblogic-operator
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: weblogic-operator
-  namespace: weblogic-operator
+#  namespace: weblogic-operator
   labels:
     app: weblogic-operator
 spec:
@@ -27,7 +27,7 @@ spec:
       labels:
         app: weblogic-operator
     spec:
-      serviceAccountName: weblogic-operator
+#      serviceAccountName: weblogic-operator
       containers:
       - name: weblogic-operator-controller
         imagePullPolicy: Always
