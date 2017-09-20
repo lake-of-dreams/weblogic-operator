@@ -122,7 +122,7 @@ func createWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.In
 
 func updateWeblogicServer(server *types.WeblogicServer, restClient *rest.RESTClient) error {
 	result := restClient.Put().
-		Resource(types.ServerCRDResourcePlural).
+		Resource(constants.WeblogicServerResourceKindPlural).
 		Namespace(server.Namespace).
 		Name(server.Name).
 		Body(server).
@@ -208,7 +208,7 @@ func GetServerForStatefulSet(statefulSet *v1beta1.StatefulSet, restClient *rest.
 	if weblogicServerName, ok := statefulSet.Labels[constants.WeblogicServerLabel]; ok {
 		server = &types.WeblogicServer{}
 		result := restClient.Get().
-			Resource(types.ServerCRDResourcePlural).
+			Resource(constants.WeblogicServerResourceKindPlural).
 			Namespace(statefulSet.Namespace).
 			Name(weblogicServerName).
 			Do().
@@ -236,7 +236,7 @@ func setWeblogicServerState(server *types.WeblogicServer, restClient *rest.RESTC
 
 	if modified {
 		result := restClient.Put().
-			Resource(types.ServerCRDResourcePlural).
+			Resource(constants.WeblogicServerResourceKindPlural).
 			Namespace(server.Namespace).
 			Name(server.Name).
 			Body(server).
@@ -323,9 +323,8 @@ func RunStopForWeblogicServer(clientset kubernetes.Interface, restClient *rest.R
 func ExecuteCommandInContainer(restClient *rest.RESTClient, pod *v1.Pod, container *v1.Container, command []string) error {
 	result :=
 		restClient.Post().
-			Resource("pods").
-			Resource(types.ServerCRDResourcePlural).
 			Namespace(pod.Namespace).
+			Resource("pods").
 			Name(pod.Name).
 			SubResource("exec").
 			Param("container", container.Name).

@@ -8,18 +8,13 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/kubernetes/scheme"
-)
-
-const (
-	groupName                     = "weblogic.oracle.com"
-	schemeVersion                 = "v1"
-	WeblogicServerCRDResourceKind = "WeblogicServer"
+	"weblogic-operator/pkg/constants"
 )
 
 var (
 	schemeBuilder      = runtime.NewSchemeBuilder(addKnownTypes)
 	AddToScheme        = schemeBuilder.AddToScheme
-	SchemeGroupVersion = schema.GroupVersion{Group: groupName, Version: schemeVersion}
+	SchemeGroupVersion = schema.GroupVersion{Group: constants.WeblogicServerGroupName, Version: constants.WeblogicServerSchemeVersion}
 )
 
 // addKnownTypes adds the set of types defined in this package to the supplied
