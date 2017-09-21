@@ -15,6 +15,7 @@ var (
 	schemeBuilder      = runtime.NewSchemeBuilder(addKnownTypes)
 	AddToScheme        = schemeBuilder.AddToScheme
 	SchemeGroupVersion = schema.GroupVersion{Group: constants.WeblogicServerGroupName, Version: constants.WeblogicServerSchemeVersion}
+	WebLogicDomainSchemeGroupVersion = schema.GroupVersion{Group: constants.WeblogicServerGroupName, Version: constants.WeblogicServerSchemeVersion}
 )
 
 // addKnownTypes adds the set of types defined in this package to the supplied
@@ -25,16 +26,18 @@ func addKnownTypes(s *runtime.Scheme) error {
 		&WeblogicServerList{})
 	metav1.AddToGroupVersion(s, SchemeGroupVersion)
 
-	s.AddKnownTypes(SchemeGroupVersion,
+	s.AddKnownTypes(WebLogicDomainSchemeGroupVersion,
 		&WeblogicDomain{},
 		&WeblogicDomainList{})
-	metav1.AddToGroupVersion(s, SchemeGroupVersion)
+	metav1.AddToGroupVersion(s, WebLogicDomainSchemeGroupVersion)
 	return nil
 }
 
 func registerDefaults(scheme *runtime.Scheme) error {
 	scheme.AddTypeDefaultingFunc(&WeblogicServer{}, defaultWeblogicServer)
 	scheme.AddTypeDefaultingFunc(&WeblogicServerList{}, defaultWeblogicServerList)
+	scheme.AddTypeDefaultingFunc(&WeblogicDomain{}, defaultWeblogicDomain)
+	scheme.AddTypeDefaultingFunc(&WeblogicServerList{}, defaultWeblogicDomainList)
 	return nil
 }
 
@@ -57,6 +60,26 @@ func defaultWeblogicServer(obj interface{}) {
 func defaultWeblogicServerStatus(obj interface{}) {
 	serverStatus := obj.(*WeblogicServerStatus)
 	serverStatus.Phase = WeblogicServerUnknown
+	serverStatus.Errors = []string{}
+}
+
+func defaultWeblogicDomainList(obj interface{}) {
+	domainList := obj.(*WeblogicDomainList)
+	for _, domain := range domainList.Items {
+		defaultWeblogicDomain(domain)
+	}
+}
+
+func defaultWeblogicDomain(obj interface{}) {
+	domain := obj.(*WeblogicDomain)
+	domain.Spec.Replicas = defaultDomainReplicas
+	domain.Spec.Version = defaultDomainVersion
+	defaultWeblogicDomainStatus(domain.Status)
+}
+
+func defaultWeblogicDomainStatus(obj interface{}) {
+	serverStatus := obj.(*WeblogicDomainStatus)
+	serverStatus.Phase = WeblogicDomainUnknown
 	serverStatus.Errors = []string{}
 }
 
