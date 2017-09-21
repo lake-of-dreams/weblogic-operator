@@ -7,3 +7,49 @@ metadata:
     version: 12.2.1.2
     replicas: 1
 ---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: weblogic-domain
+spec:
+  volumes:
+    - name: task-pv-storage
+      persistentVolumeClaim:
+       claimName: task-pv-claim
+
+  containers:
+    - name: weblogic
+      image: store/oracle/weblogic:12.2.1.2
+      ports:
+        - containerPort: 80
+          name: "http-server"
+      volumeMounts:
+      - mountPath: "/u01/oracle/user_projects"
+        name: task-pv-storage
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: task-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 4Gi
+
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: task-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/tmp/data"

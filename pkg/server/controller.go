@@ -50,7 +50,7 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 		UpdateFunc: m.onUpdate,
 	}
 
-	watcher := cache.NewListWatchFromClient(restClient, types.ServerCRDResourcePlural, namespace, fields.Everything())
+	watcher := cache.NewListWatchFromClient(restClient, constants.WeblogicServerResourceKindPlural, namespace, fields.Everything())
 	m.weblogicServerStore.Store, m.weblogicServerController = cache.NewInformer(
 		watcher,
 		&types.WeblogicServer{},

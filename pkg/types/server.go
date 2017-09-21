@@ -13,9 +13,6 @@ const (
 	defaultReplicas = 1
 )
 
-// ServerCRDResourcePlural defines the custom resource name for weblogicservers
-const ServerCRDResourcePlural = "weblogicservers"
-
 var validVersions = []string{
 	defaultVersion,
 }

@@ -9,9 +9,6 @@ import (
 	"weblogic-operator/pkg/types"
 )
 
-// WeblogicImageName is the base Docker image used by the operator.
-const WeblogicImageName = "docker.io/store/oracle/weblogic"
-
 func serverNameEnvVar(server *types.WeblogicServer) v1.EnvVar {
 	return v1.EnvVar{Name: "WEBLOGIC_SERVER_NAME", Value: server.Name}
 }
@@ -36,7 +33,7 @@ func weblogicOperatorContainer(server *types.WeblogicServer) v1.Container {
 	return v1.Container{
 		//TODO : Use different container names ???
 		Name:            server.Name,
-		Image:           fmt.Sprintf("%s:%s", WeblogicImageName, server.Spec.Version),
+		Image:           fmt.Sprintf("%s:%s", constants.WeblogicImageName, server.Spec.Version),
 		ImagePullPolicy: v1.PullAlways,
 		Ports:           []v1.ContainerPort{{ContainerPort: 7001}},
 		Env: []v1.EnvVar{

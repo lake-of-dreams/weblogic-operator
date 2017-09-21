@@ -69,9 +69,9 @@ func (o *Operator) Run() {
 }
 
 func newRESTClient(config *rest.Config) (*rest.RESTClient, error) {
-	if err := types.AddToScheme(scheme.Scheme); err != nil {
-		return nil, err
-	}
+	//if err := types.AddToScheme(scheme.Scheme); err != nil {
+	//	return nil, err
+	//}
 	config.GroupVersion = &types.SchemeGroupVersion
 	config.APIPath = "/apis"
 	config.ContentType = runtime.ContentTypeJSON

@@ -11,11 +11,11 @@ import (
 
 	"github.com/golang/glog"
 
-	"k8s.io/client-go/kubernetes/scheme"
 	"weblogic-operator/pkg/constants"
 	"weblogic-operator/pkg/resources/services"
 	"weblogic-operator/pkg/resources/statefulsets"
 	"weblogic-operator/pkg/types"
+	"strings"
 )
 
 // HasServerNameLabel returns true if the given labels map matches the given
@@ -122,7 +122,7 @@ func createWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.In
 
 func updateWeblogicServer(server *types.WeblogicServer, restClient *rest.RESTClient) error {
 	result := restClient.Put().
-		Resource(types.ServerCRDResourcePlural).
+		Resource(constants.WeblogicServerResourceKindPlural).
 		Namespace(server.Namespace).
 		Name(server.Name).
 		Body(server).
@@ -138,20 +138,20 @@ func deleteWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.In
 		return err
 	}
 
-	//err = RunStopForWeblogicServer(kubeClient, restClient, server)
+	err = RunStopForWeblogicServer(kubeClient, restClient, server)
+	if err != nil {
+		return err
+	}
+
+	//err = DeleteStatefulSetForWeblogicServer(kubeClient, server)
 	//if err != nil {
 	//	return err
 	//}
-
-	err = DeleteStatefulSetForWeblogicServer(kubeClient, server)
-	if err != nil {
-		return err
-	}
-
-	err = DeleteServiceForWeblogicServer(kubeClient, server)
-	if err != nil {
-		return err
-	}
+	//
+	//err = DeleteServiceForWeblogicServer(kubeClient, server)
+	//if err != nil {
+	//	return err
+	//}
 
 	return nil
 }
@@ -208,7 +208,7 @@ func GetServerForStatefulSet(statefulSet *v1beta1.StatefulSet, restClient *rest.
 	if weblogicServerName, ok := statefulSet.Labels[constants.WeblogicServerLabel]; ok {
 		server = &types.WeblogicServer{}
 		result := restClient.Get().
-			Resource(types.ServerCRDResourcePlural).
+			Resource(constants.WeblogicServerResourceKindPlural).
 			Namespace(statefulSet.Namespace).
 			Name(weblogicServerName).
 			Do().
@@ -236,7 +236,7 @@ func setWeblogicServerState(server *types.WeblogicServer, restClient *rest.RESTC
 
 	if modified {
 		result := restClient.Put().
-			Resource(types.ServerCRDResourcePlural).
+			Resource(constants.WeblogicServerResourceKindPlural).
 			Namespace(server.Namespace).
 			Name(server.Name).
 			Body(server).
@@ -321,17 +321,16 @@ func RunStopForWeblogicServer(clientset kubernetes.Interface, restClient *rest.R
 
 // ExecuteCommandInContainer will run a command in a container in a pod
 func ExecuteCommandInContainer(restClient *rest.RESTClient, pod *v1.Pod, container *v1.Container, command []string) error {
-	result := restClient.Post().
-		Resource("pods").
-		Name(pod.Name).
-		Namespace(pod.Namespace).
-		SubResource("exec").
-		Param("container", container.Name).
-		VersionedParams(&v1.PodExecOptions{
-			Container: container.Name,
-			Command:   command,
-		}, scheme.ParameterCodec).
-		Do()
+	//TODO the restClient to be used should be the k8s one and not weblogic one-------------------
+	result :=
+		restClient.Post().
+			Namespace(pod.Namespace).
+			Resource("pods").
+			Name(pod.Name).
+			SubResource("exec").
+			Param("container", container.Name).
+			Param("command", strings.Join(command, " ")).
+			Do()
 
 	if result.Error() != nil {
 		glog.Infof("Result of executing command is not nil")
