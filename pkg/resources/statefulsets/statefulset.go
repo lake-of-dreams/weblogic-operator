@@ -54,7 +54,7 @@ func weblogicOperatorContainer(server *types.WeblogicServer) v1.Container {
 func buildWeblogicOperatorContainer(domain *types.WeblogicDomain) v1.Container {
 	return v1.Container{
 		Name:            "weblogic",
-		Image:           fmt.Sprintf("%s:%s", WeblogicImageName, domain.Spec.Version),
+		Image:           fmt.Sprintf("%s:%s", constants.WeblogicImageName, domain.Spec.Version),
 		ImagePullPolicy: v1.PullAlways,
 		Ports:           []v1.ContainerPort{{ContainerPort: 7001}},
 		Env: []v1.EnvVar{
@@ -64,7 +64,7 @@ func buildWeblogicOperatorContainer(domain *types.WeblogicDomain) v1.Container {
 		Lifecycle: &v1.Lifecycle{
 			PostStart: &v1.Handler{
 				Exec: &v1.ExecAction{
-					Command: []string{"domainSetup.sh /u01/oracle/user_projects/domains/base_domain weblogic welcome1 localhost 7001 2 5556"},
+					Command: []string{"echo Hello Prashant!!"},
 				},
 			},
 		},
@@ -119,7 +119,7 @@ func NewServiceForDomain(domain *types.WeblogicDomain, serviceName string) *v1be
 			Namespace: domain.Namespace,
 			Name:      domain.Name,
 			Labels: map[string]string{
-				constants.WeblogicDomainLabel: domain.Name,
+				constants.WebLogicDomainLabel: domain.Name,
 			},
 		},
 		Spec: v1beta1.StatefulSetSpec{
@@ -127,7 +127,7 @@ func NewServiceForDomain(domain *types.WeblogicDomain, serviceName string) *v1be
 			Template: v1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: map[string]string{
-						constants.WeblogicDomainLabel: domain.Name,
+						constants.WebLogicDomainLabel: domain.Name,
 					},
 				},
 				Spec: v1.PodSpec{
