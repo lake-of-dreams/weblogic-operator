@@ -18,6 +18,9 @@ import (
 	"weblogic-operator/pkg/controllers"
 	"weblogic-operator/pkg/server"
 	"weblogic-operator/pkg/types"
+	"weblogic-operator/pkg/domain"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 // Operator operates things!
@@ -28,6 +31,7 @@ type Operator struct {
 // NewWeblogicOperator instantiates a Weblogic Operator.
 func NewWeblogicOperator(restConfig *rest.Config) (*Operator, error) {
 	restClient, err := newRESTClient(restConfig)
+	domainRESTClient, err := newDomainRESTClient(restConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -39,11 +43,59 @@ func NewWeblogicOperator(restConfig *rest.Config) (*Operator, error) {
 	}
 
 	serverController, err := server.NewController(clientSet, restClient, 30*time.Second, v1.NamespaceAll)
+	domainController, err := domain.NewController(clientSet, domainRESTClient, 30*time.Second, v1.NamespaceAll)
 	if err != nil {
 		return nil, err
 	}
 
-	return NewWithControllers([]controllers.Controller{serverController}), nil
+	return NewWithControllers([]controllers.Controller{serverController, domainController}), nil
+}
+
+func NewPersistentVolume() v1.PersistentVolume {
+	storageSize, err := resource.ParseQuantity("12Gi")
+
+	persistentVolume := v1.PersistentVolume{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "k8s-weblogic-volume",
+		},
+		Spec: v1.PersistentVolumeSpec{
+			AccessModes: []v1.PersistentVolumeAccessMode{
+				v1.PersistentVolumeAccessMode("ReadWriteMany"),
+			},
+			Capacity: v1.ResourceList{
+				v1.ResourceStorage: storageSize,
+			},
+			PersistentVolumeReclaimPolicy: v1.PersistentVolumeReclaimRetain,
+		},
+	}
+	if err != nil {
+		panic(err)
+	}
+	return persistentVolume
+}
+
+func NewPersistentVolumeClaim() v1.PersistentVolumeClaim {
+	requestedStorageSize, err := resource.ParseQuantity("10Gi")
+	if err != nil {
+		panic(err)
+	}
+	persistenetVolumeClaim := v1.PersistentVolumeClaim{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "weblogic-claim",
+		},
+		Spec: v1.PersistentVolumeClaimSpec{
+			AccessModes: []v1.PersistentVolumeAccessMode{
+				v1.PersistentVolumeAccessMode("ReadWriteMany"),
+			},
+			Resources: v1.ResourceRequirements{
+				Requests: v1.ResourceList{
+					v1.ResourceStorage: requestedStorageSize,
+				},
+			},
+		},
+	}
+
+	return persistenetVolumeClaim
 }
 
 // NewWithControllers creates an new operator for the given controllers.
@@ -73,6 +125,18 @@ func newRESTClient(config *rest.Config) (*rest.RESTClient, error) {
 	//	return nil, err
 	//}
 	config.GroupVersion = &types.SchemeGroupVersion
+	config.APIPath = "/apis"
+	config.ContentType = runtime.ContentTypeJSON
+	config.NegotiatedSerializer = serializer.DirectCodecFactory{CodecFactory: serializer.NewCodecFactory(scheme.Scheme)}
+
+	return rest.RESTClientFor(config)
+}
+
+func newDomainRESTClient(config *rest.Config) (*rest.RESTClient, error) {
+	//if err := types.AddToScheme(scheme.Scheme); err != nil {
+	//	return nil, err
+	//}
+	config.GroupVersion = &types.WebLogicDomainSchemeGroupVersion
 	config.APIPath = "/apis"
 	config.ContentType = runtime.ContentTypeJSON
 	config.NegotiatedSerializer = serializer.DirectCodecFactory{CodecFactory: serializer.NewCodecFactory(scheme.Scheme)}
