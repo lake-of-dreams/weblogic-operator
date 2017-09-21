@@ -20,25 +20,25 @@ type StoreToWeblogicDomainLister struct {
 	cache.Store
 }
 
-type StoreToWeblogicStatefulSetLister struct {
+type StoreToWeblogicDomainStatefulSetLister struct {
 	cache.Store
 }
 
 // The WeblogicController watches the Kubernetes API for changes to Weblogic resources
-type WeblogicController struct {
-	client                        kubernetes.Interface
-	restClient                    *rest.RESTClient
-	startTime                     time.Time
-	shutdown                      bool
-	weblogicDomainController      cache.Controller
-	weblogicDomainStore           StoreToWeblogicDomainLister
-	weblogicStatefulSetController cache.Controller
-	weblogicStatefulSetStore      StoreToWeblogicStatefulSetLister
+type WeblogicDomainController struct {
+	client                              kubernetes.Interface
+	restClient                          *rest.RESTClient
+	startTime                           time.Time
+	shutdown                            bool
+	weblogicDomainController            cache.Controller
+	weblogicDomainStore                 StoreToWeblogicDomainLister
+	weblogicDomainStatefulSetController cache.Controller
+	weblogicDomainStatefulSetStore      StoreToWeblogicDomainStatefulSetLister
 }
 
 // NewController creates a new WeblogicController.
-func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient, resyncPeriod time.Duration, namespace string) (*WeblogicController, error) {
-	m := WeblogicController{
+func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient, resyncPeriod time.Duration, namespace string) (*WeblogicDomainController, error) {
+	m := WeblogicDomainController{
 		client:     kubeClient,
 		restClient: restClient,
 		startTime:  time.Now(),
@@ -63,14 +63,14 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 		UpdateFunc: m.onStatefulSetUpdate,
 	}
 
-	m.weblogicStatefulSetStore.Store, m.weblogicStatefulSetController = cache.NewInformer(
+	m.weblogicDomainStatefulSetStore.Store, m.weblogicDomainStatefulSetController = cache.NewInformer(
 		&cache.ListWatch{
 			ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
-				options.LabelSelector = constants.WeblogicDomainLabel
+				options.LabelSelector = constants.WebLogicDomainLabel
 				return kubeClient.AppsV1beta1().StatefulSets(namespace).List(options)
 			},
 			WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-				options.LabelSelector = constants.WeblogicDomainLabel
+				options.LabelSelector = constants.WebLogicDomainLabel
 				return kubeClient.AppsV1beta1().StatefulSets(namespace).Watch(options)
 			},
 		},
@@ -81,7 +81,7 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 	return &m, nil
 }
 
-func (m *WeblogicController) onAdd(obj interface{}) {
+func (m *WeblogicDomainController) onAdd(obj interface{}) {
 	glog.V(4).Info("WeblogicController.onAdd() called")
 
 	weblogicDomain := obj.(*types.WeblogicDomain)
@@ -92,7 +92,7 @@ func (m *WeblogicController) onAdd(obj interface{}) {
 	}
 }
 
-func (m *WeblogicController) onDelete(obj interface{}) {
+func (m *WeblogicDomainController) onDelete(obj interface{}) {
 	glog.V(4).Info("WeblogicController.onDelete() called")
 
 	weblogicDomain := obj.(*types.WeblogicDomain)
@@ -103,7 +103,7 @@ func (m *WeblogicController) onDelete(obj interface{}) {
 	}
 }
 
-func (m *WeblogicController) onUpdate(old, cur interface{}) {
+func (m *WeblogicDomainController) onUpdate(old, cur interface{}) {
 	glog.V(4).Info("WeblogicController.onUpdate() called")
 	curDomain := cur.(*types.WeblogicDomain)
 	oldDomain := old.(*types.WeblogicDomain)
@@ -121,7 +121,7 @@ func (m *WeblogicController) onUpdate(old, cur interface{}) {
 	}
 }
 
-func (m *WeblogicController) onStatefulSetAdd(obj interface{}) {
+func (m *WeblogicDomainController) onStatefulSetAdd(obj interface{}) {
 	glog.V(4).Info("WeblogicController.onStatefulSetAdd() called")
 
 	statefulSet := obj.(*v1beta1.StatefulSet)
@@ -140,21 +140,21 @@ func (m *WeblogicController) onStatefulSetAdd(obj interface{}) {
 }
 
 //TODO Fix hanldings here. Need to call onStatefulSetAdd ???
-func (m *WeblogicController) onStatefulSetDelete(obj interface{}) {
+func (m *WeblogicDomainController) onStatefulSetDelete(obj interface{}) {
 	glog.V(4).Info("WeblogicController.onStatefulSetDelete() called")
 	m.onStatefulSetAdd(obj)
 }
 
-func (m *WeblogicController) onStatefulSetUpdate(old, new interface{}) {
+func (m *WeblogicDomainController) onStatefulSetUpdate(old, new interface{}) {
 	glog.V(4).Info("WeblogicController.onStatefulSetUpdate() called")
 	m.onStatefulSetAdd(new)
 }
 
 // Run the Weblogic controller
-func (m *WeblogicController) Run(stopChan <-chan struct{}) {
+func (m *WeblogicDomainController) Run(stopChan <-chan struct{}) {
 	glog.Infof("Starting Weblogic controller")
 	go m.weblogicDomainController.Run(stopChan)
-	go m.weblogicStatefulSetController.Run(stopChan)
+	go m.weblogicDomainStatefulSetController.Run(stopChan)
 	<-stopChan
 	glog.Infof("Shutting down Weblogic controller")
 }
