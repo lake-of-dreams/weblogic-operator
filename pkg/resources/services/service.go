@@ -30,13 +30,13 @@ func NewForServer(server *types.WeblogicServer) *v1.Service {
 func NewServiceForDomain(domain *types.WeblogicDomain) *v1.Service {
 	svc := &v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Labels:    map[string]string{constants.WeblogicDomainLabel: domain.Name},
+			Labels:    map[string]string{constants.WebLogicDomainLabel: domain.Name},
 			Name:      domain.Name,
 			Namespace: domain.Namespace,
 		},
 		Spec: v1.ServiceSpec{
 			Selector: map[string]string{
-				constants.WeblogicDomainLabel: domain.Name,
+				constants.WebLogicDomainLabel: domain.Name,
 			},
 		},
 	}
