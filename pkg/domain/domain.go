@@ -22,7 +22,7 @@ import (
 // server name.
 func HasDomainNameLabel(labels map[string]string, domainname string) bool {
 	for label, value := range labels {
-		if label == constants.WeblogicDomainLabel {
+		if label == constants.WebLogicDomainLabel {
 			if value == domainname {
 				return true
 			}
@@ -33,7 +33,7 @@ func HasDomainNameLabel(labels map[string]string, domainname string) bool {
 
 // Return a label that uniquely identifies a Weblogic server
 func getLabelSelectorForDomain(domain *types.WeblogicDomain) string {
-	return fmt.Sprintf("%s=%s", constants.WeblogicDomainLabel, domain.Name)
+	return fmt.Sprintf("%s=%s", constants.WebLogicDomainLabel, domain.Name)
 }
 
 // GetStatefulSetForWeblogicServer finds the associated StatefulSet for a Weblogic server
@@ -103,7 +103,7 @@ func createWeblogicDomain(domain *types.WeblogicDomain, kubeClient kubernetes.In
 		if domain.Labels == nil {
 			domain.Labels = make(map[string]string)
 		}
-		domain.Labels[constants.WeblogicDomainLabel] = domain.Name
+		domain.Labels[constants.WebLogicDomainLabel] = domain.Name
 		return updateWeblogicDomain(domain, restClient)
 	}
 
@@ -205,7 +205,7 @@ func DeleteServiceForWeblogicDomain(clientset kubernetes.Interface, domain *type
 }
 
 func GetDomainForStatefulSet(statefulSet *v1beta1.StatefulSet, restClient *rest.RESTClient) (domain *types.WeblogicDomain, err error) {
-	if weblogicDomainName, ok := statefulSet.Labels[constants.WeblogicDomainLabel]; ok {
+	if weblogicDomainName, ok := statefulSet.Labels[constants.WebLogicDomainLabel]; ok {
 		domain = &types.WeblogicDomain{}
 		result := restClient.Get().
 			Resource(types.DomainCRDResourcePlural).
@@ -215,7 +215,7 @@ func GetDomainForStatefulSet(statefulSet *v1beta1.StatefulSet, restClient *rest.
 			Into(domain)
 		return domain, result
 	}
-	return nil, fmt.Errorf("unable to get Label %s from statefulset. Not part of domain", constants.WeblogicDomainLabel)
+	return nil, fmt.Errorf("unable to get Label %s from statefulset. Not part of domain", constants.WebLogicDomainLabel)
 }
 
 func setWeblogicDomainState(domain *types.WeblogicDomain, restClient *rest.RESTClient, phase types.WeblogicDomainPhase, err error) error {
