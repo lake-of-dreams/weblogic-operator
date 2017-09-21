@@ -6,7 +6,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-var _ = runtime.Object(&WeblogicServer{})
+var _ = runtime.Object(&WeblogicDomain{})
 
 const (
 	defaultDomainVersion  = "12.2.1.2"
