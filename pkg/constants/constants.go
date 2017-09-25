@@ -14,4 +14,10 @@ const (
 	WebLogicDomainResourceKindPlural = "weblogicdomains"
 	WebLogicGroupName		         = "weblogic.oracle.com"
 	WeblogicDomainSchemeVersion      = "v1"
+
+	//Constants for Horizontal Pod Autoscaling
+	HorizontalPodAutoscalerKind 		= "ReplicaSet"
+	HorizontalPodAutoscalerKindPlural 	= "replicasets"
+	HorizontalPodAutoscalerName 		= "managedserver-scaler"
+	HorizontalPodAutoscalerTargetLabel 	= "managedserver"
 )
