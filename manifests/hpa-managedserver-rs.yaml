@@ -1,0 +1,17 @@
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: managedserver-scaler
+spec:
+  scaleTargetRef:
+    kind: ReplicaSet
+    name: managedserver
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: 50
+---
