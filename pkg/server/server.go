@@ -3,8 +3,9 @@ package server
 import (
 	"fmt"
 
-	"k8s.io/api/apps/v1beta1"
+	"k8s.io/api/extensions/v1beta1"
 	"k8s.io/api/core/v1"
+	autoscalingv1 "k8s.io/api/autoscaling/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -13,8 +14,9 @@ import (
 
 	"weblogic-operator/pkg/constants"
 	"weblogic-operator/pkg/resources/services"
-	"weblogic-operator/pkg/resources/statefulsets"
 	"weblogic-operator/pkg/types"
+	"weblogic-operator/pkg/resources/replicasets"
+	"weblogic-operator/pkg/resources/horizontalpodautoscalers"
 	"strings"
 )
 
@@ -36,57 +38,176 @@ func getLabelSelectorForServer(server *types.WeblogicServer) string {
 	return fmt.Sprintf("%s=%s", constants.WeblogicServerLabel, server.Name)
 }
 
-// GetStatefulSetForWeblogicServer finds the associated StatefulSet for a Weblogic server
-func GetStatefulSetForWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.Interface) (*v1beta1.StatefulSet, error) {
+//// GetStatefulSetForWeblogicServer finds the associated StatefulSet for a Weblogic server
+//func GetStatefulSetForWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.Interface) (*v1beta1.StatefulSet, error) {
+//	opts := metav1.ListOptions{LabelSelector: getLabelSelectorForServer(server)}
+//	statefulsets, err := kubeClient.AppsV1beta1().StatefulSets(server.Namespace).List(opts)
+//	if err != nil {
+//		glog.Errorf("Unable to list stateful sets for %s: %s", server.Name, err)
+//		return nil, err
+//	}
+//
+//	for _, ss := range statefulsets.Items {
+//		if HasServerNameLabel(ss.Labels, server.Name) {
+//			return &ss, nil
+//		}
+//	}
+//	return nil, nil
+//}
+//
+//// CreateStatefulSetForWeblogicServer will create a new Kubernetes StatefulSet based on a predefined template
+//func CreateStatefulSetForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer, service *v1.Service) (*v1beta1.StatefulSet, error) {
+//	// Find StatefulSet and if it does not exist create it
+//	existingStatefulSet, err := GetStatefulSetForWeblogicServer(server, clientset)
+//	if err != nil {
+//		glog.Errorf("Error finding stateful set for server: %v", err)
+//		return nil, err
+//	}
+//
+//	if existingStatefulSet != nil {
+//		glog.V(2).Infof("Stateful set with label %s already exists", getLabelSelectorForServer(server))
+//		return existingStatefulSet, nil
+//	}
+//
+//	glog.V(4).Infof("Creating a new stateful set for server %s", server.Name)
+//	ss := statefulsets.NewForServer(server, service.Name)
+//
+//	glog.V(4).Infof("Creating server %+v", ss)
+//	return clientset.AppsV1beta1().StatefulSets(server.Namespace).Create(ss)
+//}
+//
+//// DeleteStatefulSetForWeblogicServer will delete a stateful set by name
+//func DeleteStatefulSetForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer) error {
+//	statefulSet, err := GetStatefulSetForWeblogicServer(server, clientset)
+//	if err != nil || statefulSet == nil {
+//		glog.Errorf("Could not delete stateful set: %s", err)
+//		return err
+//	}
+//
+//	glog.V(4).Infof("Deleting stateful set %s", statefulSet.Name)
+//	var policy = metav1.DeletePropagationBackground
+//	return clientset.AppsV1beta1().
+//		StatefulSets(server.Namespace).
+//		Delete(statefulSet.Name, &metav1.DeleteOptions{PropagationPolicy: &policy})
+//}
+
+// GetReplicaSetForWeblogicServer finds the associated ReplicaSet for a Weblogic server
+func GetReplicaSetForWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.Interface) (*v1beta1.ReplicaSet, error) {
 	opts := metav1.ListOptions{LabelSelector: getLabelSelectorForServer(server)}
-	statefulsets, err := kubeClient.AppsV1beta1().StatefulSets(server.Namespace).List(opts)
+	replicasets, err := kubeClient.ExtensionsV1beta1().ReplicaSets(server.Namespace).List(opts)
 	if err != nil {
-		glog.Errorf("Unable to list stateful sets for %s: %s", server.Name, err)
+		glog.Errorf("Unable to list replica sets for %s: %s", server.Name, err)
 		return nil, err
 	}
 
-	for _, ss := range statefulsets.Items {
-		if HasServerNameLabel(ss.Labels, server.Name) {
-			return &ss, nil
+	for _, rc := range replicasets.Items {
+		if HasServerNameLabel(rc.Labels, server.Name) {
+			return &rc, nil
 		}
 	}
 	return nil, nil
 }
 
-// CreateStatefulSetForWeblogicServer will create a new Kubernetes StatefulSet based on a predefined template
-func CreateStatefulSetForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer, service *v1.Service) (*v1beta1.StatefulSet, error) {
-	// Find StatefulSet and if it does not exist create it
-	existingStatefulSet, err := GetStatefulSetForWeblogicServer(server, clientset)
+// CreateReplicaSetForWeblogicServer will create a new Kubernetes ReplicaSet based on a predefined template
+func CreateReplicaSetForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer, service *v1.Service) (controller *v1beta1.ReplicaSet, err error) {
+	// Find ReplicaSet and if it does not exist create it
+	existingReplicaSet, err := GetReplicaSetForWeblogicServer(server, clientset)
 	if err != nil {
-		glog.Errorf("Error finding stateful set for server: %v", err)
+		glog.Errorf("Error finding replica set for server: %v", err)
 		return nil, err
 	}
 
-	if existingStatefulSet != nil {
-		glog.V(2).Infof("Stateful set with label %s already exists", getLabelSelectorForServer(server))
-		return existingStatefulSet, nil
+	if existingReplicaSet != nil {
+		glog.V(2).Infof("Replica set with label %s already exists", getLabelSelectorForServer(server))
+		return existingReplicaSet, nil
 	}
 
-	glog.V(4).Infof("Creating a new stateful set for server %s", server.Name)
-	ss := statefulsets.NewForServer(server, service.Name)
+	glog.V(4).Infof("Creating a new replica set for server %s", server.Name)
+	rs := replicasets.NewForServer(server, service.Name)
 
-	glog.V(4).Infof("Creating server %+v", ss)
-	return clientset.AppsV1beta1().StatefulSets(server.Namespace).Create(ss)
+	glog.V(4).Infof("Creating server %+v", rs)
+	return clientset.ExtensionsV1beta1().ReplicaSets(server.Namespace).Create(rs)
 }
 
-// DeleteStatefulSetForWeblogicServer will delete a stateful set by name
-func DeleteStatefulSetForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer) error {
-	statefulSet, err := GetStatefulSetForWeblogicServer(server, clientset)
-	if err != nil || statefulSet == nil {
-		glog.Errorf("Could not delete stateful set: %s", err)
+// DeleteReplicaSetForWeblogicServer will delete a replica set by name
+func DeleteReplicaSetForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer) error {
+
+	if strings.EqualFold(server.Name, constants.HorizontalPodAutoscalerTargetLabel) {
+		glog.V(4).Infof("Deleting HPA for managed server!!!!!!!!!!!!!")
+		err := DeleteHorizontalPodAutoscalerForWeblogicServer(clientset, server)
+		if err != nil {
+			return err
+		}
+	}
+
+	replicaSet, err := GetReplicaSetForWeblogicServer(server, clientset)
+	if err != nil || replicaSet == nil {
+		glog.Errorf("Could not delete replica set: %s", err)
 		return err
 	}
 
-	glog.V(4).Infof("Deleting stateful set %s", statefulSet.Name)
+	glog.V(4).Infof("Deleting replica set %s", replicaSet.Name)
 	var policy = metav1.DeletePropagationBackground
-	return clientset.AppsV1beta1().
-		StatefulSets(server.Namespace).
-		Delete(statefulSet.Name, &metav1.DeleteOptions{PropagationPolicy: &policy})
+	return clientset.ExtensionsV1beta1().
+		ReplicaSets(server.Namespace).
+		Delete(replicaSet.Name, &metav1.DeleteOptions{PropagationPolicy: &policy})
+}
+
+// GetHorizontalPodAutoscalerForWeblogicServer finds the associated ReplicaSet for a Weblogic server
+func GetHorizontalPodAutoscalerForWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.Interface) (*autoscalingv1.HorizontalPodAutoscaler, error) {
+	opts := metav1.ListOptions{LabelSelector: getLabelSelectorForServer(server)}
+	horizontalpodautoscalers, err := kubeClient.AutoscalingV1().HorizontalPodAutoscalers(server.Namespace).List(opts)
+	glog.V(4).Infof("5555555555555555555")
+	if err != nil {
+		glog.V(4).Infof("22222222222222222222")
+		glog.Errorf("Unable to list horizontal pod autoscalers for %s: %s", server.Name, err)
+		return nil, err
+	}
+
+	for _, rc := range horizontalpodautoscalers.Items {
+		glog.V(4).Infof("1111111111111111111111111111111111111")
+		if HasServerNameLabel(rc.Labels, server.Name) {
+			glog.V(4).Infof("Value of RC!!!")
+			return &rc, nil
+		}
+	}
+	return nil, nil
+}
+
+// CreateHorizontalPodAutoscalerForWeblogicServer will create a new Kubernetes HorizontalPodAutoscaler based on a predefined template
+func CreateHorizontalPodAutoscalerForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer, service *v1.Service) (controller *autoscalingv1.HorizontalPodAutoscaler, err error) {
+	// Find ReplicaSet and if it does not exist create it
+	existingHorizontalPodAutoscaler, err := GetHorizontalPodAutoscalerForWeblogicServer(server, clientset)
+	if err != nil {
+		glog.Errorf("Error finding Horizontal Pod Autoscaler for server: %v", err)
+		return nil, err
+	}
+
+	if existingHorizontalPodAutoscaler != nil {
+		glog.V(2).Infof("Replica set with label %s already exists", getLabelSelectorForServer(server))
+		return existingHorizontalPodAutoscaler, nil
+	}
+
+	glog.V(4).Infof("Creating a new Horizontal Pod Autoscalers for server %s", server.Name)
+	rs := horizontalpodautoscalers.NewForHorizontalPodAutoscaling(server, service.Name)
+
+	glog.V(4).Infof("Creating server %+v", rs)
+	return clientset.AutoscalingV1().HorizontalPodAutoscalers(server.Namespace).Create(rs)
+}
+
+// DeleteHorizontalPodAutoscalerForWeblogicServer will delete a replica set by name
+func DeleteHorizontalPodAutoscalerForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer) error {
+	horizontalPodAutoscaler, err := GetHorizontalPodAutoscalerForWeblogicServer(server, clientset)
+	glog.V(4).Infof("value of horizontalPodAutoscaler")
+	if err != nil && horizontalPodAutoscaler == nil {
+		glog.Errorf("Could not delete Horizontal Pod Autoscaler: %s", err)
+		return err
+	}
+
+	glog.V(4).Infof("Deleting Horizontal Pod Autoscaler %s", horizontalPodAutoscaler.Name)
+	var policy = metav1.DeletePropagationBackground
+	return clientset.AutoscalingV1().HorizontalPodAutoscalers(server.Namespace).
+		Delete(horizontalPodAutoscaler.Name, &metav1.DeleteOptions{PropagationPolicy: &policy})
 }
 
 func createWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.Interface, restClient *rest.RESTClient) error {
@@ -112,7 +233,17 @@ func createWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.In
 		return err
 	}
 
-	_, err = CreateStatefulSetForWeblogicServer(kubeClient, server, serverService)
+	//_, err = CreateStatefulSetForWeblogicServer(kubeClient, server, serverService)
+	//if err != nil {
+	//	return err
+	//}
+
+	_, err = CreateReplicaSetForWeblogicServer(kubeClient, server, serverService)
+	if err != nil {
+		return err
+	}
+
+	_, err = CreateHorizontalPodAutoscalerForWeblogicServer(kubeClient, server, serverService)
 	if err != nil {
 		return err
 	}
@@ -134,6 +265,11 @@ func updateWeblogicServer(server *types.WeblogicServer, restClient *rest.RESTCli
 //TODO handling to call stopWeblogic.sh needs to be done here
 func deleteWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.Interface, restClient *rest.RESTClient) error {
 	err := server.Validate()
+	if err != nil {
+		return err
+	}
+
+	err = DeleteReplicaSetForWeblogicServer(kubeClient, server)
 	if err != nil {
 		return err
 	}
@@ -204,19 +340,19 @@ func DeleteServiceForWeblogicServer(clientset kubernetes.Interface, server *type
 	return clientset.CoreV1().Services(server.Namespace).Delete(service.Name, nil)
 }
 
-func GetServerForStatefulSet(statefulSet *v1beta1.StatefulSet, restClient *rest.RESTClient) (server *types.WeblogicServer, err error) {
-	if weblogicServerName, ok := statefulSet.Labels[constants.WeblogicServerLabel]; ok {
-		server = &types.WeblogicServer{}
-		result := restClient.Get().
-			Resource(constants.WeblogicServerResourceKindPlural).
-			Namespace(statefulSet.Namespace).
-			Name(weblogicServerName).
-			Do().
-			Into(server)
-		return server, result
-	}
-	return nil, fmt.Errorf("unable to get Label %s from statefulset. Not part of server", constants.WeblogicServerLabel)
-}
+//func GetServerForStatefulSet(statefulSet *v1beta1.StatefulSet, restClient *rest.RESTClient) (server *types.WeblogicServer, err error) {
+//	if weblogicServerName, ok := statefulSet.Labels[constants.WeblogicServerLabel]; ok {
+//		server = &types.WeblogicServer{}
+//		result := restClient.Get().
+//			Resource(constants.WeblogicServerResourceKindPlural).
+//			Namespace(statefulSet.Namespace).
+//			Name(weblogicServerName).
+//			Do().
+//			Into(server)
+//		return server, result
+//	}
+//	return nil, fmt.Errorf("unable to get Label %s from statefulset. Not part of server", constants.WeblogicServerLabel)
+//}
 
 func setWeblogicServerState(server *types.WeblogicServer, restClient *rest.RESTClient, phase types.WeblogicServerPhase, err error) error {
 	modified := false
@@ -248,7 +384,37 @@ func setWeblogicServerState(server *types.WeblogicServer, restClient *rest.RESTC
 	return nil
 }
 
-func updateServerWithStatefulSet(server *types.WeblogicServer, statefulSet *v1beta1.StatefulSet, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
+//func updateServerWithStatefulSet(server *types.WeblogicServer, statefulSet *v1beta1.StatefulSet, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
+//	// Some simple logic for the time being.
+//	// To add
+//	// connection to the server
+//	// validate each pod?
+//	// Check how a rolling upgrade effects this
+//	// check version of each pod
+//
+//	if statefulSet.Status.ReadyReplicas < statefulSet.Status.Replicas {
+//		setWeblogicServerState(server, restClient, types.WeblogicServerPending, nil)
+//	} else if statefulSet.Status.ReadyReplicas == statefulSet.Status.Replicas {
+//		setWeblogicServerState(server, restClient, types.WeblogicServerRunning, nil)
+//	}
+//	return err
+//}
+
+func GetServerForReplicaSet(replicaset *v1beta1.ReplicaSet, restClient *rest.RESTClient) (server *types.WeblogicServer, err error) {
+	if weblogicServerName, ok := replicaset.Labels[constants.WeblogicServerLabel]; ok {
+		server = &types.WeblogicServer{}
+		result := restClient.Get().
+			Resource(constants.WeblogicServerResourceKindPlural).
+			Namespace(replicaset.Namespace).
+			Name(weblogicServerName).
+			Do().
+			Into(server)
+		return server, result
+	}
+	return nil, fmt.Errorf("unable to get Label %s from replicaset. Not part of server", constants.WeblogicServerLabel)
+}
+
+func updateServerWithReplicaSet(server *types.WeblogicServer, replicaSet *v1beta1.ReplicaSet, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
 	// Some simple logic for the time being.
 	// To add
 	// connection to the server
@@ -256,9 +422,39 @@ func updateServerWithStatefulSet(server *types.WeblogicServer, statefulSet *v1be
 	// Check how a rolling upgrade effects this
 	// check version of each pod
 
-	if statefulSet.Status.ReadyReplicas < statefulSet.Status.Replicas {
+	if replicaSet.Status.ReadyReplicas < replicaSet.Status.Replicas {
 		setWeblogicServerState(server, restClient, types.WeblogicServerPending, nil)
-	} else if statefulSet.Status.ReadyReplicas == statefulSet.Status.Replicas {
+	} else if replicaSet.Status.ReadyReplicas == replicaSet.Status.Replicas {
+		setWeblogicServerState(server, restClient, types.WeblogicServerRunning, nil)
+	}
+	return err
+}
+
+func GetServerForHorizontalPodAutoscaler(horizontalPodAutoscaler *autoscalingv1.HorizontalPodAutoscaler, restClient *rest.RESTClient) (server *types.WeblogicServer, err error) {
+	if weblogicServerName, ok := horizontalPodAutoscaler.Labels[constants.HorizontalPodAutoscalerTargetLabel]; ok {
+		server = &types.WeblogicServer{}
+		result := restClient.Get().
+			Resource(constants.WeblogicServerResourceKindPlural).
+			Namespace(horizontalPodAutoscaler.Namespace).
+			Name(weblogicServerName).
+			Do().
+			Into(server)
+		return server, result
+	}
+	return nil, fmt.Errorf("unable to get Label %s from horizontalPodAutoscaler. Not part of server", constants.HorizontalPodAutoscalerTargetLabel)
+}
+
+func updateServerWithHorizontalPodAutoscaler(server *types.WeblogicServer, horizontalPodAutoscaler *autoscalingv1.HorizontalPodAutoscaler, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
+	// Some simple logic for the time being.
+	// To add
+	// connection to the server
+	// validate each pod?
+	// Check how a rolling upgrade effects this
+	// check version of each pod
+
+	if horizontalPodAutoscaler.Status.CurrentReplicas < horizontalPodAutoscaler.Status.DesiredReplicas {
+		setWeblogicServerState(server, restClient, types.WeblogicServerPending, nil)
+	} else if horizontalPodAutoscaler.Status.CurrentReplicas == horizontalPodAutoscaler.Status.DesiredReplicas {
 		setWeblogicServerState(server, restClient, types.WeblogicServerRunning, nil)
 	}
 	return err
