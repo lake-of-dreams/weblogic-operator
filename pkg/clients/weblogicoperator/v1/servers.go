@@ -6,6 +6,7 @@ import (
 	"k8s.io/client-go/rest"
 
 	"weblogic-operator/pkg/types"
+	"weblogic-operator/pkg/constants"
 )
 
 // WeblogicServersGetter has a method to return a WeblogicServerInterface.
@@ -41,7 +42,7 @@ func (c *weblogicServers) Create(server *types.WeblogicServer) (result *types.We
 	result = &types.WeblogicServer{}
 	err = c.client.Post().
 		Namespace(c.ns).
-		Resource(types.ServerCRDResourcePlural).
+		Resource(constants.WeblogicServerResourceKindPlural).
 		Body(server).
 		Do().
 		Into(result)
@@ -55,7 +56,7 @@ func (c *weblogicServers) Update(server *types.WeblogicServer) (result *types.We
 	result = &types.WeblogicServer{}
 	err = c.client.Put().
 		Namespace(c.ns).
-		Resource(types.ServerCRDResourcePlural).
+		Resource(constants.WeblogicServerResourceKindPlural).
 		Name(server.Name).
 		Body(server).
 		Do().
@@ -68,7 +69,7 @@ func (c *weblogicServers) Update(server *types.WeblogicServer) (result *types.We
 func (c *weblogicServers) Delete(name string, options *metav1.DeleteOptions) error {
 	return c.client.Delete().
 		Namespace(c.ns).
-		Resource(types.ServerCRDResourcePlural).
+		Resource(constants.WeblogicServerResourceKindPlural).
 		Name(name).
 		Body(options).
 		Do().
@@ -81,7 +82,7 @@ func (c *weblogicServers) Get(name string, options metav1.GetOptions) (result *t
 	result = &types.WeblogicServer{}
 	err = c.client.Get().
 		Namespace(c.ns).
-		Resource(types.ServerCRDResourcePlural).
+		Resource(constants.WeblogicServerResourceKindPlural).
 		Name(name).
 		VersionedParams(&options, scheme.ParameterCodec).
 		Do().
@@ -95,7 +96,7 @@ func (c *weblogicServers) List(opts metav1.ListOptions) (result *types.WeblogicS
 	result = &types.WeblogicServerList{}
 	err = c.client.Get().
 		Namespace(c.ns).
-		Resource(types.ServerCRDResourcePlural).
+		Resource(constants.WeblogicServerResourceKindPlural).
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Do().
 		Into(result)
