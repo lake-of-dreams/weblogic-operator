@@ -65,7 +65,7 @@ func defaultWebLogicDomainList(obj interface{}) {
 
 func defaultWebLogicDomain(obj interface{}) {
 	domain := obj.(*WebLogicDomain)
-	domain.Spec.Replicas = defaultDomainReplicas
+	domain.Spec.ManagedServerCount = defaultDomainManagedServerCount
 	domain.Spec.Version = defaultDomainVersion
 }
 
