@@ -20,16 +20,12 @@ type StoreToWebLogicDomainLister struct {
 	cache.Store
 }
 
-type StoreToWeblogicReplicaSetLister struct {
+type StoreToWebLogicDomainReplicaSetLister struct {
 	cache.Store
 }
 
-type StoreToWeblogicHorizontalPodAutoscalingLister struct {
-	cache.Store
-}
-
-// The WeblogicDomainController watches the Kubernetes API for changes to WeblogicDomain resources
-type WeblogicDomainController struct {
+// The WebLogicDomainController watches the Kubernetes API for changes to WebLogicDomain resources
+type WebLogicDomainController struct {
 	client                        kubernetes.Interface
 	restClient                    *rest.RESTClient
 	startTime                     time.Time
@@ -37,12 +33,12 @@ type WeblogicDomainController struct {
 	weblogicDomainController      cache.Controller
 	weblogicDomainStore           StoreToWebLogicDomainLister
 	weblogicDomainReplicaSet      cache.Controller
-	weblogicDomainReplicaSetStore StoreToWeblogicReplicaSetLister
+	weblogicDomainReplicaSetStore StoreToWebLogicDomainReplicaSetLister
 }
 
-// NewController creates a new WeblogicDomainController.
-func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient, resyncPeriod time.Duration, namespace string) (*WeblogicDomainController, error) {
-	m := WeblogicDomainController{
+// NewController creates a new WebLogicDomainController.
+func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient, resyncPeriod time.Duration, namespace string) (*WebLogicDomainController, error) {
+	m := WebLogicDomainController{
 		client:     kubeClient,
 		restClient: restClient,
 		startTime:  time.Now(),
@@ -87,8 +83,8 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 	return &m, nil
 }
 
-func (m *WeblogicDomainController) onAdd(obj interface{}) {
-	glog.V(4).Info("WeblogicDomainController.onAdd() called")
+func (m *WebLogicDomainController) onAdd(obj interface{}) {
+	glog.V(4).Info("WebLogicDomainController.onAdd() called")
 
 	weblogicDomain := obj.(*types.WebLogicDomain)
 	err := createWebLogicDomain(weblogicDomain, m.client, m.restClient)
@@ -97,8 +93,8 @@ func (m *WeblogicDomainController) onAdd(obj interface{}) {
 	}
 }
 
-func (m *WeblogicDomainController) onDelete(obj interface{}) {
-	glog.V(4).Info("WeblogicDomainController.onDelete() called")
+func (m *WebLogicDomainController) onDelete(obj interface{}) {
+	glog.V(4).Info("WebLogicDomainController.onDelete() called")
 
 	weblogicDomain := obj.(*types.WebLogicDomain)
 	err := deleteWebLogicDomain(weblogicDomain, m.client, m.restClient)
@@ -107,8 +103,8 @@ func (m *WeblogicDomainController) onDelete(obj interface{}) {
 	}
 }
 
-func (m *WeblogicDomainController) onUpdate(old, cur interface{}) {
-	glog.V(4).Info("WeblogicDomainController.onUpdate() called")
+func (m *WebLogicDomainController) onUpdate(old, cur interface{}) {
+	glog.V(4).Info("WebLogicDomainController.onUpdate() called")
 	curDomain := cur.(*types.WebLogicDomain)
 	oldDomain := old.(*types.WebLogicDomain)
 	if curDomain.ResourceVersion == oldDomain.ResourceVersion {
@@ -121,8 +117,8 @@ func (m *WeblogicDomainController) onUpdate(old, cur interface{}) {
 	}
 }
 
-func (m *WeblogicDomainController) onReplicaSetAdd(obj interface{}) {
-	glog.V(4).Info("WeblogicDomainController.onReplicaSetAdd() called")
+func (m *WebLogicDomainController) onReplicaSetAdd(obj interface{}) {
+	glog.V(4).Info("WebLogicDomainController.onReplicaSetAdd() called")
 
 	replicaSet := obj.(*v1beta1.ReplicaSet)
 
@@ -140,22 +136,22 @@ func (m *WeblogicDomainController) onReplicaSetAdd(obj interface{}) {
 }
 
 //TODO Fix hanldings here. Need to call onStatefulSetAdd ???
-func (m *WeblogicDomainController) onReplicaSetDelete(obj interface{}) {
-	glog.V(4).Info("WeblogicDomainController.onReplicaSetDelete() called")
+func (m *WebLogicDomainController) onReplicaSetDelete(obj interface{}) {
+	glog.V(4).Info("WebLogicDomainController.onReplicaSetDelete() called")
 	m.onReplicaSetAdd(obj)
 }
 
-func (m *WeblogicDomainController) onReplicaSetUpdate(old, new interface{}) {
-	glog.V(4).Info("WeblogicDomainController.onReplicaSetUpdate() called")
+func (m *WebLogicDomainController) onReplicaSetUpdate(old, new interface{}) {
+	glog.V(4).Info("WebLogicDomainController.onReplicaSetUpdate() called")
 	m.onReplicaSetAdd(new)
 }
 
-// Run the Weblogic controller
-func (m *WeblogicDomainController) Run(stopChan <-chan struct{}) {
-	glog.Infof("Starting Weblogic Domain controller")
+// Run the WebLogic controller
+func (m *WebLogicDomainController) Run(stopChan <-chan struct{}) {
+	glog.Infof("Starting WebLogic Domain controller")
 	go m.weblogicDomainController.Run(stopChan)
 	//go m.weblogicStatefulSetController.Run(stopChan)
 	go m.weblogicDomainReplicaSet.Run(stopChan)
 	<-stopChan
-	glog.Infof("Shutting down Weblogic Domain controller")
+	glog.Infof("Shutting down WebLogic Domain controller")
 }
