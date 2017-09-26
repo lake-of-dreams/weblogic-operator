@@ -1,3 +1,5 @@
+import os, sys
+
 def addCluster(clusterName):
     cd('/')
     clusterId = create(clusterName, 'Cluster')
@@ -41,7 +43,7 @@ try:
 
     # Open default domain template
     # ======================
-    readTemplate('%s/wlserver/common/templates/wls/wls.jar' % oracleHome)
+    readTemplate("/u01/oracle/wlserver/common/templates/wls/wls_jrf.jar")
 
     set('Name', domainName)
     setOption('DomainName', domainName)
@@ -72,9 +74,9 @@ try:
         servername = 'managedserver-' + (x - 1)
         host = 'localhost'
         dictServer = {'ServerName': servername, 'Port': port, 'Host': host}
-        serverlist.append(dict)
+        serverlist.append(dictServer)
 
-        addManagedServer(servername, initport)
+        addManagedServer(servername, port)
 
     serverListFile = '%s/serverList.txt' % domainHome
     file = open(serverListFile, 'w')

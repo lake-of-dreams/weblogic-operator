@@ -3,7 +3,7 @@ echo ---------------------------------------------------------------------------
 echo Kubernetes Domain Setup
 echo ------------------------------------------------------------------------------------------
 echo Start - Domain Setup
-$ORACLE_HOME/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/user_projects/kubeCreateDomain.py
+$ORACLE_HOME/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/user_projects/kubeCreateDomain.py >> /u01/oracle/user_projects/domainSetup.log 2>&1
 echo End - Domain Setup
 echo ------------------------------------------------------------------------------------------
 echo 
