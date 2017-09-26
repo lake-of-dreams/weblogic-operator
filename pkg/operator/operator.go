@@ -21,6 +21,7 @@ import (
 	"weblogic-operator/pkg/domain"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"io"
 )
 
 // Operator operates things!
@@ -30,7 +31,7 @@ type Operator struct {
 
 // NewWeblogicOperator instantiates a Weblogic Operator.
 func NewWeblogicOperator(restConfig *rest.Config) (*Operator, error) {
-	restClient, err := newRESTClient(restConfig)
+	managedServerRESTClient, err := newManagedServerRESTClient(restConfig)
 	domainRESTClient, err := newDomainRESTClient(restConfig)
 	if err != nil {
 		return nil, err
@@ -42,8 +43,13 @@ func NewWeblogicOperator(restConfig *rest.Config) (*Operator, error) {
 		return nil, err
 	}
 
-	serverController, err := server.NewController(clientSet, restClient, 30*time.Second, v1.NamespaceAll)
+	serverController, err := server.NewController(clientSet, managedServerRESTClient, 30*time.Second, v1.NamespaceAll)
 	domainController, err := domain.NewController(clientSet, domainRESTClient, 30*time.Second, v1.NamespaceAll)
+	if err != nil {
+		return nil, err
+	}
+
+	err = copyScripts()
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +126,7 @@ func (o *Operator) Run() {
 	}
 }
 
-func newRESTClient(config *rest.Config) (*rest.RESTClient, error) {
+func newManagedServerRESTClient(config *rest.Config) (*rest.RESTClient, error) {
 	//if err := types.AddToScheme(scheme.Scheme); err != nil {
 	//	return nil, err
 	//}
@@ -142,4 +148,43 @@ func newDomainRESTClient(config *rest.Config) (*rest.RESTClient, error) {
 	config.NegotiatedSerializer = serializer.DirectCodecFactory{CodecFactory: serializer.NewCodecFactory(scheme.Scheme)}
 
 	return rest.RESTClientFor(config)
+}
+
+func copyScripts() error {
+	glog.Infof("Copying scripts to %s...", "/u01/oracle/user_projects")
+
+	source := "/scripts"
+	dest := "/u01/oracle/user_projects"
+
+	directory, _ := os.Open(source)
+	objects, _ := directory.Readdir(-1)
+
+	for _, obj := range objects {
+		sourcefilepointer := source + "/" + obj.Name()
+		destinationfilepointer := dest + "/" + obj.Name()
+
+		sourcefile, err := os.Open(sourcefilepointer)
+		if err != nil {
+			return err
+		}
+
+		defer sourcefile.Close()
+
+		destfile, err := os.Create(destinationfilepointer)
+		if err != nil {
+			return err
+		}
+
+		defer destfile.Close()
+
+		_, err = io.Copy(destfile, sourcefile)
+		if err == nil {
+			_, err := os.Stat(source)
+			if err != nil {
+				err = os.Chmod(dest, os.FileMode(777))
+			}
+
+		}
+	}
+	return nil
 }
