@@ -23,8 +23,8 @@ type WebLogicDomainSpec struct {
 	// Selector which must match a node's labels for the pod to be scheduled on that node.
 	// More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 	// +optional
-	NodeSelector map[string]string     `json:"nodeSelector,omitempty"`
-	Server       WebLogicManagedServer `json:"server,omitempty"`
+	NodeSelector       map[string]string `json:"nodeSelector,omitempty"`
+	ManagedServerCount string             `json:"managedServerCount,omitempty"`
 }
 
 // WebLogicDomain represents a doamin spec and associated metadata
