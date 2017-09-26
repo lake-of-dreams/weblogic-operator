@@ -27,14 +27,14 @@ func serverNamespaceEnvVar() v1.EnvVar {
 // Builds the WebLogicManagedServer container
 func WebLogicManagedServerContainer(server *types.WebLogicManagedServer) v1.Container {
 	return v1.Container{
-		Name:            server.Spec.Domain.Name + "-managedserver",
+		Name:            server.Spec.DomainName + "-managedserver",
 		Image:           fmt.Sprintf("%s:%s", constants.WeblogicImageName, server.Spec.Version),
 		ImagePullPolicy: v1.PullAlways,
 		Ports: []v1.ContainerPort{{
 			ContainerPort: 7001},
 		},
 		VolumeMounts: []v1.VolumeMount{{
-			Name:      server.Spec.Domain.Name + "_storage",
+			Name:      server.Spec.DomainName + "_storage",
 			MountPath: "/u01/oracle/user_projects"},
 		},
 		Env: []v1.EnvVar{
@@ -43,7 +43,7 @@ func WebLogicManagedServerContainer(server *types.WebLogicManagedServer) v1.Cont
 			serverNamespaceEnvVar(),
 		},
 		Command: []string{"/u01/oracle/weblogic-operator/startServer.sh",
-			"/u01/oracle/user_projects/domains/" + server.Spec.Domain.Name,
+			"/u01/oracle/user_projects/domains/" + server.Spec.DomainName,
 			server.Name,
 			"weblogic",
 			"welcome1",
@@ -56,7 +56,7 @@ func WebLogicManagedServerContainer(server *types.WebLogicManagedServer) v1.Cont
 			},
 			PreStop: &v1.Handler{
 				Exec: &v1.ExecAction{
-					Command: []string{"/u01/oracle/user_projects/domains/" + server.Spec.Domain.Name + "/bin/stopManagedWebLogic.sh",
+					Command: []string{"/u01/oracle/user_projects/domains/" + server.Spec.DomainName + "/bin/stopManagedWebLogic.sh",
 						server.Name,
 					},
 				},
@@ -75,8 +75,8 @@ func NewForServer(server *types.WebLogicManagedServer, serviceName string) *v1be
 			Name:      server.Name,
 			Labels: map[string]string{
 				constants.WebLogicManagedServerLabel: server.Name,
-				constants.WebLogicDomainLabel:        server.Spec.Domain.Name,
-				server.Spec.Domain.Name:              "managedserver",
+				constants.WebLogicDomainLabel:        server.Spec.DomainName,
+				server.Spec.DomainName:              "managedserver",
 			},
 		},
 		Spec: v1beta1.ReplicaSetSpec{
@@ -85,21 +85,21 @@ func NewForServer(server *types.WebLogicManagedServer, serviceName string) *v1be
 			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{
 					constants.WebLogicManagedServerLabel: server.Name,
-					constants.WebLogicDomainLabel:        server.Spec.Domain.Name,
-					server.Spec.Domain.Name:              "managedserver",
+					constants.WebLogicDomainLabel:        server.Spec.DomainName,
+					server.Spec.DomainName:              "managedserver",
 				},
 			},
 			Template: v1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: map[string]string{
 						constants.WebLogicManagedServerLabel: server.Name,
-						constants.WebLogicDomainLabel:        server.Spec.Domain.Name,
-						server.Spec.Domain.Name:              "managedserver",
+						constants.WebLogicDomainLabel:        server.Spec.DomainName,
+						server.Spec.DomainName:              "managedserver",
 					},
 				},
 				Spec: v1.PodSpec{
 					Volumes: []v1.Volume{{
-						Name: server.Spec.Domain.Name + "_storage",
+						Name: server.Spec.DomainName + "_storage",
 						VolumeSource: v1.VolumeSource{
 							PersistentVolumeClaim: &v1.PersistentVolumeClaimVolumeSource{
 								ClaimName: "weblogic-operator-claim",

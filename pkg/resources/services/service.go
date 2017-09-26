@@ -13,7 +13,7 @@ func NewServiceForServer(server *types.WebLogicManagedServer) *v1.Service {
 	svc := &v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels: map[string]string{constants.WebLogicManagedServerLabel: server.Name,
-				constants.WebLogicDomainLabel: server.Spec.Domain.Name},
+				constants.WebLogicDomainLabel: server.Spec.DomainName},
 			Name:      server.Name,
 			Namespace: server.Namespace,
 		},
@@ -22,7 +22,7 @@ func NewServiceForServer(server *types.WebLogicManagedServer) *v1.Service {
 			Ports: []v1.ServicePort{weblogicPort},
 			Selector: map[string]string{
 				constants.WebLogicManagedServerLabel: server.Name,
-				constants.WebLogicDomainLabel:        server.Spec.Domain.Name,
+				constants.WebLogicDomainLabel:        server.Spec.DomainName,
 			},
 		},
 	}

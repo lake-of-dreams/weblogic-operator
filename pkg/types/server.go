@@ -30,7 +30,7 @@ type WebLogicManagedServerSpec struct {
 	// More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 	// +optional
 	Resources v1.ResourceRequirements `json:"resources,omitempty" protobuf:"bytes,8,opt,name=resources"`
-	Domain WebLogicDomain `json:"domain,omitempty"`
+	DomainName string `json:"domainName"`
 }
 
 // WebLogicManagedServer represents a server spec and associated metadata
