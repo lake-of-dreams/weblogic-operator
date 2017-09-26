@@ -42,7 +42,7 @@ func WebLogicManagedServerContainer(server *types.WebLogicManagedServer) v1.Cont
 			serverNameEnvVar(server),
 			serverNamespaceEnvVar(),
 		},
-		Command: []string{"/u01/oracle/weblogic-operator/startServer.sh",
+		Command: []string{"/u01/oracle/user_projects/startServer.sh",
 			"/u01/oracle/user_projects/domains/" + server.Spec.DomainName,
 			server.Name,
 			"weblogic",

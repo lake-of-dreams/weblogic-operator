@@ -46,7 +46,7 @@ func weblogicDomainContainer(domain *types.WebLogicDomain) v1.Container {
 			domainNameEnvVar(domain),
 			domainNamespaceEnvVar(),
 		},
-		Command: []string{"/u01/oracle/weblogic-operator/domainSetup.sh",
+		Command: []string{"/u01/oracle/user_projects/domainSetup.sh",
 			"/u01/oracle/user_projects/domains/" + domain.Name,
 			"weblogic",
 			"welcome1",
