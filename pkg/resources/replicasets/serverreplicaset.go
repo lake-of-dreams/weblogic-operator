@@ -6,7 +6,6 @@ import (
 	"k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"weblogic-operator/pkg/constants"
-	"weblogic-operator/pkg/domain"
 	"weblogic-operator/pkg/types"
 )
 
