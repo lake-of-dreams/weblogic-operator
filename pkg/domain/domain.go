@@ -32,12 +32,12 @@ func HasDomainNameLabel(labels map[string]string, domainname string) bool {
 }
 
 // Return a label that uniquely identifies a Weblogic server
-func getLabelSelectorForDomain(domain *types.WeblogicDomain) string {
+func getLabelSelectorForDomain(domain *types.WebLogicDomain) string {
 	return fmt.Sprintf("%s=%s", constants.WebLogicDomainLabel, domain.Name)
 }
 
-// GetStatefulSetForWeblogicServer finds the associated StatefulSet for a Weblogic server
-func GetStatefulSetForWeblogicDomain(domain *types.WeblogicDomain, kubeClient kubernetes.Interface) (*v1beta1.StatefulSet, error) {
+// GetStatefulSetForWebLogicManagedServer finds the associated StatefulSet for a Weblogic server
+func GetStatefulSetForWebLogicDomain(domain *types.WebLogicDomain, kubeClient kubernetes.Interface) (*v1beta1.StatefulSet, error) {
 	opts := metav1.ListOptions{LabelSelector: getLabelSelectorForDomain(domain)}
 	statefulsets, err := kubeClient.AppsV1beta1().StatefulSets(domain.Namespace).List(opts)
 	if err != nil {
@@ -53,10 +53,10 @@ func GetStatefulSetForWeblogicDomain(domain *types.WeblogicDomain, kubeClient ku
 	return nil, nil
 }
 
-// CreateStatefulSetForWeblogicServer will create a new Kubernetes StatefulSet based on a predefined template
-func CreateStatefulSetForWeblogicDomain(clientset kubernetes.Interface, domain *types.WeblogicDomain, service *v1.Service) (*v1beta1.StatefulSet, error) {
+// CreateStatefulSetForWebLogicManagedServer will create a new Kubernetes StatefulSet based on a predefined template
+func CreateStatefulSetForWebLogicDomain(clientset kubernetes.Interface, domain *types.WebLogicDomain, service *v1.Service) (*v1beta1.StatefulSet, error) {
 	// Find StatefulSet and if it does not exist create it
-	existingStatefulSet, err := GetStatefulSetForWeblogicDomain(domain, clientset)
+	existingStatefulSet, err := GetStatefulSetForWebLogicDomain(domain, clientset)
 	if err != nil {
 		glog.Errorf("Error finding stateful set for domain: %v", err)
 		return nil, err
@@ -74,9 +74,9 @@ func CreateStatefulSetForWeblogicDomain(clientset kubernetes.Interface, domain *
 	return clientset.AppsV1beta1().StatefulSets(domain.Namespace).Create(ss)
 }
 
-// DeleteStatefulSetForWeblogicServer will delete a stateful set by name
-func DeleteStatefulSetForWeblogicDomain(clientset kubernetes.Interface, domain *types.WeblogicDomain) error {
-	statefulSet, err := GetStatefulSetForWeblogicDomain(domain, clientset)
+// DeleteStatefulSetForWebLogicManagedServer will delete a stateful set by name
+func DeleteStatefulSetForWebLogicDomain(clientset kubernetes.Interface, domain *types.WebLogicDomain) error {
+	statefulSet, err := GetStatefulSetForWebLogicDomain(domain, clientset)
 	if err != nil || statefulSet == nil {
 		glog.Errorf("Could not delete stateful set: %s", err)
 		return err
@@ -89,7 +89,7 @@ func DeleteStatefulSetForWeblogicDomain(clientset kubernetes.Interface, domain *
 		Delete(statefulSet.Name, &metav1.DeleteOptions{PropagationPolicy: &policy})
 }
 
-func createWeblogicDomain(domain *types.WeblogicDomain, kubeClient kubernetes.Interface, restClient *rest.RESTClient) error {
+func createWebLogicDomain(domain *types.WebLogicDomain, kubeClient kubernetes.Interface, restClient *rest.RESTClient) error {
 	domain.EnsureDefaults()
 
 	//err := domain.Validate()
@@ -104,15 +104,15 @@ func createWeblogicDomain(domain *types.WeblogicDomain, kubeClient kubernetes.In
 			domain.Labels = make(map[string]string)
 		}
 		domain.Labels[constants.WebLogicDomainLabel] = domain.Name
-		return updateWeblogicDomain(domain, restClient)
+		return updateWebLogicDomain(domain, restClient)
 	}
 
-	domainService, err := CreateServiceForWeblogicDomain(kubeClient, domain)
+	domainService, err := CreateServiceForWebLogicDomain(kubeClient, domain)
 	if err != nil {
 		return err
 	}
 
-	_, err = CreateStatefulSetForWeblogicDomain(kubeClient, domain, domainService)
+	_, err = CreateStatefulSetForWebLogicDomain(kubeClient, domain, domainService)
 	if err != nil {
 		return err
 	}
@@ -120,7 +120,7 @@ func createWeblogicDomain(domain *types.WeblogicDomain, kubeClient kubernetes.In
 	return nil
 }
 
-func updateWeblogicDomain(domain *types.WeblogicDomain, restClient *rest.RESTClient) error {
+func updateWebLogicDomain(domain *types.WebLogicDomain, restClient *rest.RESTClient) error {
 	result := restClient.Put().
 		Resource(types.DomainCRDResourcePlural).
 		Namespace(domain.Namespace).
@@ -132,23 +132,23 @@ func updateWeblogicDomain(domain *types.WeblogicDomain, restClient *rest.RESTCli
 
 // When delete server is called we will delete the stateful set (which also deletes the associated service)
 //TODO handling to call stopWeblogic.sh needs to be done here
-func deleteWeblogicDomain(domain *types.WeblogicDomain, kubeClient kubernetes.Interface, restClient *rest.RESTClient) error {
+func deleteWebLogicDomain(domain *types.WebLogicDomain, kubeClient kubernetes.Interface, restClient *rest.RESTClient) error {
 	//err := domain.Validate()
 	//if err != nil {
 	//	return err
 	//}
 
-	//err = RunStopForWeblogicServer(kubeClient, restClient, server)
+	//err = RunStopForWebLogicManagedServer(kubeClient, restClient, server)
 	//if err != nil {
 	//	return err
 	//}
 
-	//err = DeleteStatefulSetForWeblogicDomain(kubeClient, domain)
+	//err = DeleteStatefulSetForWebLogicDomain(kubeClient, domain)
 	//if err != nil {
 	//	return err
 	//}
 	//
-	//err = DeleteServiceForWeblogicDomain(kubeClient, domain)
+	//err = DeleteServiceForWebLogicDomain(kubeClient, domain)
 	//if err != nil {
 	//	return err
 	//}
@@ -156,8 +156,8 @@ func deleteWeblogicDomain(domain *types.WeblogicDomain, kubeClient kubernetes.In
 	return nil
 }
 
-// GetServiceForWeblogicServer returns the associated service for a given server
-func GetServiceForWeblogicDomain(domain *types.WeblogicDomain, clientset kubernetes.Interface) (*v1.Service, error) {
+// GetServiceForWebLogicManagedServer returns the associated service for a given server
+func GetServiceForWebLogicDomain(domain *types.WebLogicDomain, clientset kubernetes.Interface) (*v1.Service, error) {
 	opts := metav1.ListOptions{LabelSelector: getLabelSelectorForDomain(domain)}
 	services, err := clientset.CoreV1().Services(domain.Namespace).List(opts)
 	if err != nil {
@@ -173,10 +173,10 @@ func GetServiceForWeblogicDomain(domain *types.WeblogicDomain, clientset kuberne
 	return nil, nil
 }
 
-// CreateServiceForWeblogicServer will create a new Kubernetes Service based on a predefined template
-func CreateServiceForWeblogicDomain(clientset kubernetes.Interface, domain *types.WeblogicDomain) (*v1.Service, error) {
+// CreateServiceForWebLogicManagedServer will create a new Kubernetes Service based on a predefined template
+func CreateServiceForWebLogicDomain(clientset kubernetes.Interface, domain *types.WebLogicDomain) (*v1.Service, error) {
 	// Find Service and if it does not exist create it
-	existingService, err := GetServiceForWeblogicDomain(domain, clientset)
+	existingService, err := GetServiceForWebLogicDomain(domain, clientset)
 	if err != nil {
 		glog.Errorf("Error finding service for domain: %s", err)
 		return nil, err
@@ -193,9 +193,9 @@ func CreateServiceForWeblogicDomain(clientset kubernetes.Interface, domain *type
 	return clientset.CoreV1().Services(domain.Namespace).Create(svc)
 }
 
-// DeleteServiceForWeblogicServer deletes the Service associated with a Weblogic server.
-func DeleteServiceForWeblogicDomain(clientset kubernetes.Interface, domain *types.WeblogicDomain) error {
-	service, err := GetServiceForWeblogicDomain(domain, clientset)
+// DeleteServiceForWebLogicManagedServer deletes the Service associated with a Weblogic server.
+func DeleteServiceForWebLogicDomain(clientset kubernetes.Interface, domain *types.WebLogicDomain) error {
+	service, err := GetServiceForWebLogicDomain(domain, clientset)
 	if err != nil || service == nil {
 		glog.Errorf("Could not delete service: %s", err)
 		return err
@@ -204,9 +204,9 @@ func DeleteServiceForWeblogicDomain(clientset kubernetes.Interface, domain *type
 	return clientset.CoreV1().Services(domain.Namespace).Delete(service.Name, nil)
 }
 
-func GetDomainForStatefulSet(statefulSet *v1beta1.StatefulSet, restClient *rest.RESTClient) (domain *types.WeblogicDomain, err error) {
+func GetDomainForStatefulSet(statefulSet *v1beta1.StatefulSet, restClient *rest.RESTClient) (domain *types.WebLogicDomain, err error) {
 	if weblogicDomainName, ok := statefulSet.Labels[constants.WebLogicDomainLabel]; ok {
-		domain = &types.WeblogicDomain{}
+		domain = &types.WebLogicDomain{}
 		result := restClient.Get().
 			Resource(types.DomainCRDResourcePlural).
 			Namespace(statefulSet.Namespace).
@@ -218,7 +218,7 @@ func GetDomainForStatefulSet(statefulSet *v1beta1.StatefulSet, restClient *rest.
 	return nil, fmt.Errorf("unable to get Label %s from statefulset. Not part of domain", constants.WebLogicDomainLabel)
 }
 
-func setWeblogicDomainState(domain *types.WeblogicDomain, restClient *rest.RESTClient, phase types.WeblogicDomainPhase, err error) error {
+func setWebLogicDomainState(domain *types.WebLogicDomain, restClient *rest.RESTClient, phase types.WebLogicDomainPhase, err error) error {
 	modified := false
 	if domain.Status.Phase != phase {
 		domain.Status.Phase = phase
@@ -248,7 +248,7 @@ func setWeblogicDomainState(domain *types.WeblogicDomain, restClient *rest.RESTC
 	return nil
 }
 
-func updateDomainWithStatefulSet(domain *types.WeblogicDomain, statefulSet *v1beta1.StatefulSet, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
+func updateDomainWithStatefulSet(domain *types.WebLogicDomain, statefulSet *v1beta1.StatefulSet, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
 	// Some simple logic for the time being.
 	// To add
 	// connection to the server
@@ -257,15 +257,15 @@ func updateDomainWithStatefulSet(domain *types.WeblogicDomain, statefulSet *v1be
 	// check version of each pod
 
 	if statefulSet.Status.ReadyReplicas < statefulSet.Status.Replicas {
-		setWeblogicDomainState(domain, restClient, types.WeblogicDomainPending, nil)
+		setWebLogicDomainState(domain, restClient, types.WebLogicDomainPending, nil)
 	} else if statefulSet.Status.ReadyReplicas == statefulSet.Status.Replicas {
-		setWeblogicDomainState(domain, restClient, types.WeblogicDomainPending, nil)
+		setWebLogicDomainState(domain, restClient, types.WebLogicDomainPending, nil)
 	}
 	return err
 }
 
-// GetPodForWeblogicServer finds the associated pod for a Weblogic server
-func GetPodForWeblogicDomain(domain *types.WeblogicDomain, clientset kubernetes.Interface) (*v1.Pod, error) {
+// GetPodForWebLogicManagedServer finds the associated pod for a Weblogic server
+func GetPodForWebLogicDomain(domain *types.WebLogicDomain, clientset kubernetes.Interface) (*v1.Pod, error) {
 	opts := metav1.ListOptions{LabelSelector: getLabelSelectorForDomain(domain)}
 	pods, err := clientset.CoreV1().Pods(domain.Namespace).List(opts)
 	if err != nil {
@@ -281,8 +281,8 @@ func GetPodForWeblogicDomain(domain *types.WeblogicDomain, clientset kubernetes.
 	return nil, nil
 }
 
-// GetPodForWeblogicServer finds the associated pod for a Weblogic server
-func GetContainerForPod(domain *types.WeblogicDomain, pod *v1.Pod) (*v1.Container, error) {
+// GetPodForWebLogicManagedServer finds the associated pod for a Weblogic server
+func GetContainerForPod(domain *types.WebLogicDomain, pod *v1.Pod) (*v1.Container, error) {
 	containers := pod.Spec.Containers
 
 	for _, container := range containers {
@@ -294,9 +294,9 @@ func GetContainerForPod(domain *types.WeblogicDomain, pod *v1.Pod) (*v1.Containe
 	return nil, nil
 }
 
-// RunStopForWeblogicServer will run stopWebLogic to stop a Weblogic server container in a pod
-func CreateWeblogicDomain(clientset kubernetes.Interface, restClient *rest.RESTClient, domain *types.WeblogicDomain) error {
-	pod, err := GetPodForWeblogicDomain(domain, clientset)
+// RunStopForWebLogicManagedServer will run stopWebLogic to stop a Weblogic server container in a pod
+func CreateWebLogicDomain(clientset kubernetes.Interface, restClient *rest.RESTClient, domain *types.WebLogicDomain) error {
+	pod, err := GetPodForWebLogicDomain(domain, clientset)
 	if err != nil || pod == nil {
 		glog.Errorf("Could not find pod: %s", err)
 		return err

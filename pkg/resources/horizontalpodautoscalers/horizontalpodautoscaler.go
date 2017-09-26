@@ -7,10 +7,10 @@ import (
 	"k8s.io/api/autoscaling/v1"
 )
 
-// NewForHorizontalPodAutoscaling creates a new HPA for the given WeblogicServer - managedserver.
-func NewForHorizontalPodAutoscaling(server *types.WeblogicServer, serviceName string) *v1.HorizontalPodAutoscaler {
+// NewForHorizontalPodAutoscaling creates a new HPA for the given WebLogicManagedServer - managedserver.
+func NewForHorizontalPodAutoscaling(server *types.WebLogicManagedServer, serviceName string) *v1.HorizontalPodAutoscaler {
 	var minReplicas int32 = 1
-	var maxReplicas int32 = 5
+	var maxReplicas int32 = server.Spec.Replicas
 	var targetCPUUtilization int32 = 50
 	hpaMinReplicas := &minReplicas
 	hpaTargetCPUUtilization := &targetCPUUtilization

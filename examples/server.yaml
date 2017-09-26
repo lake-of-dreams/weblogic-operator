@@ -1,11 +1,11 @@
 ---
 apiVersion: "weblogic.oracle.com/v1"
-kind: WeblogicServer
+kind: WebLogicManagedServer
 metadata:
   name: adminserver
 ---
 apiVersion: "weblogic.oracle.com/v1"
-kind: WeblogicServer
+kind: WebLogicManagedServer
 metadata:
   name: managedserver
 spec:

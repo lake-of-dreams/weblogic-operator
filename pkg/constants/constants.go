@@ -1,23 +1,24 @@
 package constants
 
-// WeblogicServerLabel is applied to all components of a Weblogic Server
+// WebLogicManagedServerLabel is applied to all components of a Weblogic Server
 const (
-	WeblogicServerLabel              = "WeblogicServer.v1.weblogic.oracle.com"
-	WeblogicServerResourceKind       = "WeblogicServer"
-	WeblogicServerResourceKindPlural = "weblogicservers"
-	WeblogicServerGroupName          = "weblogic.oracle.com"
-	WeblogicServerSchemeVersion      = "v1"
-	WeblogicImageName                = "docker.io/store/oracle/weblogic"
+	WebLogicGroupName = "weblogic.oracle.com"
+
+	WebLogicManagedServerLabel              = "WebLogicManagedServer.v1.weblogic.oracle.com"
+	WebLogicManagedServerResourceKind       = "WebLogicManagedServer"
+	WebLogicManagedServerResourceKindPlural = "weblogicmanagedservers"
+	WebLogicManagedServerSchemeVersion      = "v1"
 
 	WebLogicDomainLabel              = "WebLogicDomain.v1.weblogic.oracle.com"
 	WebLogicDomainResourceKind       = "WebLogicDomain"
 	WebLogicDomainResourceKindPlural = "weblogicdomains"
-	WebLogicGroupName		         = "weblogic.oracle.com"
-	WeblogicDomainSchemeVersion      = "v1"
+	WebLogicDomainSchemeVersion      = "v1"
 
 	//Constants for Horizontal Pod Autoscaling
-	HorizontalPodAutoscalerKind 		= "ReplicaSet"
-	HorizontalPodAutoscalerKindPlural 	= "replicasets"
-	HorizontalPodAutoscalerName 		= "managedserver-scaler"
-	HorizontalPodAutoscalerTargetLabel 	= "managedserver"
+	HorizontalPodAutoscalerKind        = "ReplicaSet"
+	HorizontalPodAutoscalerKindPlural  = "replicasets"
+	HorizontalPodAutoscalerName        = "managedserver-scaler"
+	HorizontalPodAutoscalerTargetLabel = "managedserver"
+
+	WeblogicImageName = "docker.io/store/oracle/weblogic"
 )

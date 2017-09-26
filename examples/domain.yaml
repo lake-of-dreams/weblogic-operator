@@ -1,6 +1,6 @@
 ---
 apiVersion: "weblogic.oracle.com/v1"
-kind: WeblogicDomain
+kind: WebLogicDomain
 metadata:
   name: kubedomain
   spec:

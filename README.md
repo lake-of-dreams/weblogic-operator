@@ -36,15 +36,15 @@ make image
 make push                                       #Pushes to docker.io/fmwplt/weblogic-operator
 ``` 
 
-**Create Secret to be used for pulling _WeblogicServer_ image from registry**
+**Create Secret to be used for pulling _WebLogicManagedServer_ image from registry**
 ```
 kubectl create secret docker-registry weblogic-docker-store --docker-server=docker.io \
 --docker-username=YOUR_USERNAME --docker-password=YOUR_PASSWORD --docker-email=YOUR_EMAIL
 ``` 
 
-**Create CRD of type _WeblogicServer_ into k8s**
+**Create CRD of type _WebLogicManagedServer_ into k8s**
 ```
-kubectl apply -f manifests/weblogic-crd.yaml    #Creates custom object of type WeblogicServer
+kubectl apply -f manifests/weblogic-crd.yaml    #Creates custom object of type WebLogicManagedServer
 ``` 
 
 **Deploy _weblogic-operator_ into k8s**
@@ -53,20 +53,20 @@ kubectl apply -f manifests/weblogic-operator.yaml
 kubectl -n weblogic-operator get pods
 ``` 
 
-**Create objects of type _WeblogicServer_**
+**Create objects of type _WebLogicManagedServer_**
 ```
 kubectl apply -f examples/server.yaml
-kubectl get weblogicservers,services
+kubectl get weblogicmanagedservers,services
 ``` 
 
-**Delete objects of type _WeblogicServer_**
+**Delete objects of type _WebLogicManagedServer_**
 ```
-kubectl delete weblogicserver managedserver
+kubectl delete weblogicmanagedserver managedserver
 ``` 
 
 **Cleanup**
 ```
-kubectl delete weblogicservers --all
+kubectl delete weblogicmanagedservers --all
 kubectl delete -n weblogic-operator deployment weblogic-operator
 kubectl delete ns weblogic-operator
 ```

@@ -24,7 +24,7 @@ import (
 // server name.
 func HasServerNameLabel(labels map[string]string, servername string) bool {
 	for label, value := range labels {
-		if label == constants.WeblogicServerLabel {
+		if label == constants.WebLogicManagedServerLabel {
 			if value == servername {
 				return true
 			}
@@ -34,12 +34,12 @@ func HasServerNameLabel(labels map[string]string, servername string) bool {
 }
 
 // Return a label that uniquely identifies a Weblogic server
-func getLabelSelectorForServer(server *types.WeblogicServer) string {
-	return fmt.Sprintf("%s=%s", constants.WeblogicServerLabel, server.Name)
+func getLabelSelectorForServer(server *types.WebLogicManagedServer) string {
+	return fmt.Sprintf("%s=%s", constants.WebLogicManagedServerLabel, server.Name)
 }
 
-//// GetStatefulSetForWeblogicServer finds the associated StatefulSet for a Weblogic server
-//func GetStatefulSetForWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.Interface) (*v1beta1.StatefulSet, error) {
+//// GetStatefulSetForWebLogicManagedServer finds the associated StatefulSet for a Weblogic server
+//func GetStatefulSetForWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient kubernetes.Interface) (*v1beta1.StatefulSet, error) {
 //	opts := metav1.ListOptions{LabelSelector: getLabelSelectorForServer(server)}
 //	statefulsets, err := kubeClient.AppsV1beta1().StatefulSets(server.Namespace).List(opts)
 //	if err != nil {
@@ -55,10 +55,10 @@ func getLabelSelectorForServer(server *types.WeblogicServer) string {
 //	return nil, nil
 //}
 //
-//// CreateStatefulSetForWeblogicServer will create a new Kubernetes StatefulSet based on a predefined template
-//func CreateStatefulSetForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer, service *v1.Service) (*v1beta1.StatefulSet, error) {
+//// CreateStatefulSetForWebLogicManagedServer will create a new Kubernetes StatefulSet based on a predefined template
+//func CreateStatefulSetForWebLogicManagedServer(clientset kubernetes.Interface, server *types.WebLogicManagedServer, service *v1.Service) (*v1beta1.StatefulSet, error) {
 //	// Find StatefulSet and if it does not exist create it
-//	existingStatefulSet, err := GetStatefulSetForWeblogicServer(server, clientset)
+//	existingStatefulSet, err := GetStatefulSetForWebLogicManagedServer(server, clientset)
 //	if err != nil {
 //		glog.Errorf("Error finding stateful set for server: %v", err)
 //		return nil, err
@@ -70,15 +70,15 @@ func getLabelSelectorForServer(server *types.WeblogicServer) string {
 //	}
 //
 //	glog.V(4).Infof("Creating a new stateful set for server %s", server.Name)
-//	ss := statefulsets.NewForServer(server, service.Name)
+//	ss := statefulsets.NewServiceForServer(server, service.Name)
 //
 //	glog.V(4).Infof("Creating server %+v", ss)
 //	return clientset.AppsV1beta1().StatefulSets(server.Namespace).Create(ss)
 //}
 //
-//// DeleteStatefulSetForWeblogicServer will delete a stateful set by name
-//func DeleteStatefulSetForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer) error {
-//	statefulSet, err := GetStatefulSetForWeblogicServer(server, clientset)
+//// DeleteStatefulSetForWebLogicManagedServer will delete a stateful set by name
+//func DeleteStatefulSetForWebLogicManagedServer(clientset kubernetes.Interface, server *types.WebLogicManagedServer) error {
+//	statefulSet, err := GetStatefulSetForWebLogicManagedServer(server, clientset)
 //	if err != nil || statefulSet == nil {
 //		glog.Errorf("Could not delete stateful set: %s", err)
 //		return err
@@ -91,8 +91,8 @@ func getLabelSelectorForServer(server *types.WeblogicServer) string {
 //		Delete(statefulSet.Name, &metav1.DeleteOptions{PropagationPolicy: &policy})
 //}
 
-// GetReplicaSetForWeblogicServer finds the associated ReplicaSet for a Weblogic server
-func GetReplicaSetForWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.Interface) (*v1beta1.ReplicaSet, error) {
+// GetReplicaSetForWebLogicManagedServer finds the associated ReplicaSet for a Weblogic server
+func GetReplicaSetForWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient kubernetes.Interface) (*v1beta1.ReplicaSet, error) {
 	opts := metav1.ListOptions{LabelSelector: getLabelSelectorForServer(server)}
 	replicasets, err := kubeClient.ExtensionsV1beta1().ReplicaSets(server.Namespace).List(opts)
 	if err != nil {
@@ -108,10 +108,10 @@ func GetReplicaSetForWeblogicServer(server *types.WeblogicServer, kubeClient kub
 	return nil, nil
 }
 
-// CreateReplicaSetForWeblogicServer will create a new Kubernetes ReplicaSet based on a predefined template
-func CreateReplicaSetForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer, service *v1.Service) (controller *v1beta1.ReplicaSet, err error) {
+// CreateReplicaSetForWebLogicManagedServer will create a new Kubernetes ReplicaSet based on a predefined template
+func CreateReplicaSetForWebLogicManagedServer(clientset kubernetes.Interface, server *types.WebLogicManagedServer, service *v1.Service) (controller *v1beta1.ReplicaSet, err error) {
 	// Find ReplicaSet and if it does not exist create it
-	existingReplicaSet, err := GetReplicaSetForWeblogicServer(server, clientset)
+	existingReplicaSet, err := GetReplicaSetForWebLogicManagedServer(server, clientset)
 	if err != nil {
 		glog.Errorf("Error finding replica set for server: %v", err)
 		return nil, err
@@ -129,18 +129,18 @@ func CreateReplicaSetForWeblogicServer(clientset kubernetes.Interface, server *t
 	return clientset.ExtensionsV1beta1().ReplicaSets(server.Namespace).Create(rs)
 }
 
-// DeleteReplicaSetForWeblogicServer will delete a replica set by name
-func DeleteReplicaSetForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer) error {
+// DeleteReplicaSetForWebLogicManagedServer will delete a replica set by name
+func DeleteReplicaSetForWebLogicManagedServer(clientset kubernetes.Interface, server *types.WebLogicManagedServer) error {
 
 	if strings.EqualFold(server.Name, constants.HorizontalPodAutoscalerTargetLabel) {
 		glog.V(4).Infof("Deleting HPA for managed server!!!!!!!!!!!!!")
-		err := DeleteHorizontalPodAutoscalerForWeblogicServer(clientset, server)
+		err := DeleteHorizontalPodAutoscalerForWebLogicManagedServer(clientset, server)
 		if err != nil {
 			return err
 		}
 	}
 
-	replicaSet, err := GetReplicaSetForWeblogicServer(server, clientset)
+	replicaSet, err := GetReplicaSetForWebLogicManagedServer(server, clientset)
 	if err != nil || replicaSet == nil {
 		glog.Errorf("Could not delete replica set: %s", err)
 		return err
@@ -153,8 +153,8 @@ func DeleteReplicaSetForWeblogicServer(clientset kubernetes.Interface, server *t
 		Delete(replicaSet.Name, &metav1.DeleteOptions{PropagationPolicy: &policy})
 }
 
-// GetHorizontalPodAutoscalerForWeblogicServer finds the associated ReplicaSet for a Weblogic server
-func GetHorizontalPodAutoscalerForWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.Interface) (*autoscalingv1.HorizontalPodAutoscaler, error) {
+// GetHorizontalPodAutoscalerForWebLogicManagedServer finds the associated ReplicaSet for a Weblogic server
+func GetHorizontalPodAutoscalerForWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient kubernetes.Interface) (*autoscalingv1.HorizontalPodAutoscaler, error) {
 	opts := metav1.ListOptions{LabelSelector: getLabelSelectorForServer(server)}
 	horizontalpodautoscalers, err := kubeClient.AutoscalingV1().HorizontalPodAutoscalers(server.Namespace).List(opts)
 	glog.V(4).Infof("5555555555555555555")
@@ -174,10 +174,10 @@ func GetHorizontalPodAutoscalerForWeblogicServer(server *types.WeblogicServer, k
 	return nil, nil
 }
 
-// CreateHorizontalPodAutoscalerForWeblogicServer will create a new Kubernetes HorizontalPodAutoscaler based on a predefined template
-func CreateHorizontalPodAutoscalerForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer, service *v1.Service) (controller *autoscalingv1.HorizontalPodAutoscaler, err error) {
+// CreateHorizontalPodAutoscalerForWebLogicManagedServer will create a new Kubernetes HorizontalPodAutoscaler based on a predefined template
+func CreateHorizontalPodAutoscalerForWebLogicManagedServer(clientset kubernetes.Interface, server *types.WebLogicManagedServer, service *v1.Service) (controller *autoscalingv1.HorizontalPodAutoscaler, err error) {
 	// Find ReplicaSet and if it does not exist create it
-	existingHorizontalPodAutoscaler, err := GetHorizontalPodAutoscalerForWeblogicServer(server, clientset)
+	existingHorizontalPodAutoscaler, err := GetHorizontalPodAutoscalerForWebLogicManagedServer(server, clientset)
 	if err != nil {
 		glog.Errorf("Error finding Horizontal Pod Autoscaler for server: %v", err)
 		return nil, err
@@ -195,9 +195,9 @@ func CreateHorizontalPodAutoscalerForWeblogicServer(clientset kubernetes.Interfa
 	return clientset.AutoscalingV1().HorizontalPodAutoscalers(server.Namespace).Create(rs)
 }
 
-// DeleteHorizontalPodAutoscalerForWeblogicServer will delete a replica set by name
-func DeleteHorizontalPodAutoscalerForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer) error {
-	horizontalPodAutoscaler, err := GetHorizontalPodAutoscalerForWeblogicServer(server, clientset)
+// DeleteHorizontalPodAutoscalerForWebLogicManagedServer will delete a replica set by name
+func DeleteHorizontalPodAutoscalerForWebLogicManagedServer(clientset kubernetes.Interface, server *types.WebLogicManagedServer) error {
+	horizontalPodAutoscaler, err := GetHorizontalPodAutoscalerForWebLogicManagedServer(server, clientset)
 	glog.V(4).Infof("value of horizontalPodAutoscaler")
 	if err != nil && horizontalPodAutoscaler == nil {
 		glog.Errorf("Could not delete Horizontal Pod Autoscaler: %s", err)
@@ -210,7 +210,7 @@ func DeleteHorizontalPodAutoscalerForWeblogicServer(clientset kubernetes.Interfa
 		Delete(horizontalPodAutoscaler.Name, &metav1.DeleteOptions{PropagationPolicy: &policy})
 }
 
-func createWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.Interface, restClient *rest.RESTClient) error {
+func createWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient kubernetes.Interface, restClient *rest.RESTClient) error {
 	server.EnsureDefaults()
 
 	err := server.Validate()
@@ -224,26 +224,26 @@ func createWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.In
 		if server.Labels == nil {
 			server.Labels = make(map[string]string)
 		}
-		server.Labels[constants.WeblogicServerLabel] = server.Name
-		return updateWeblogicServer(server, restClient)
+		server.Labels[constants.WebLogicManagedServerLabel] = server.Name
+		return updateWebLogicManagedServer(server, restClient)
 	}
 
-	serverService, err := CreateServiceForWeblogicServer(kubeClient, server)
+	serverService, err := CreateServiceForWebLogicManagedServer(kubeClient, server)
 	if err != nil {
 		return err
 	}
 
-	//_, err = CreateStatefulSetForWeblogicServer(kubeClient, server, serverService)
+	//_, err = CreateStatefulSetForWebLogicManagedServer(kubeClient, server, serverService)
 	//if err != nil {
 	//	return err
 	//}
 
-	_, err = CreateReplicaSetForWeblogicServer(kubeClient, server, serverService)
+	_, err = CreateReplicaSetForWebLogicManagedServer(kubeClient, server, serverService)
 	if err != nil {
 		return err
 	}
 
-	_, err = CreateHorizontalPodAutoscalerForWeblogicServer(kubeClient, server, serverService)
+	_, err = CreateHorizontalPodAutoscalerForWebLogicManagedServer(kubeClient, server, serverService)
 	if err != nil {
 		return err
 	}
@@ -251,9 +251,9 @@ func createWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.In
 	return nil
 }
 
-func updateWeblogicServer(server *types.WeblogicServer, restClient *rest.RESTClient) error {
+func updateWebLogicManagedServer(server *types.WebLogicManagedServer, restClient *rest.RESTClient) error {
 	result := restClient.Put().
-		Resource(constants.WeblogicServerResourceKindPlural).
+		Resource(constants.WebLogicManagedServerResourceKindPlural).
 		Namespace(server.Namespace).
 		Name(server.Name).
 		Body(server).
@@ -263,28 +263,28 @@ func updateWeblogicServer(server *types.WeblogicServer, restClient *rest.RESTCli
 
 // When delete server is called we will delete the stateful set (which also deletes the associated service)
 //TODO handling to call stopWeblogic.sh needs to be done here
-func deleteWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.Interface, restClient *rest.RESTClient) error {
+func deleteWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient kubernetes.Interface, restClient *rest.RESTClient) error {
 	err := server.Validate()
 	if err != nil {
 		return err
 	}
 
-	err = DeleteReplicaSetForWeblogicServer(kubeClient, server)
+	err = DeleteReplicaSetForWebLogicManagedServer(kubeClient, server)
 	if err != nil {
 		return err
 	}
 
-	err = RunStopForWeblogicServer(kubeClient, restClient, server)
+	err = RunStopForWebLogicManagedServer(kubeClient, restClient, server)
 	if err != nil {
 		return err
 	}
 
-	//err = DeleteStatefulSetForWeblogicServer(kubeClient, server)
+	//err = DeleteStatefulSetForWebLogicManagedServer(kubeClient, server)
 	//if err != nil {
 	//	return err
 	//}
 	//
-	//err = DeleteServiceForWeblogicServer(kubeClient, server)
+	//err = DeleteServiceForWebLogicManagedServer(kubeClient, server)
 	//if err != nil {
 	//	return err
 	//}
@@ -292,8 +292,8 @@ func deleteWeblogicServer(server *types.WeblogicServer, kubeClient kubernetes.In
 	return nil
 }
 
-// GetServiceForWeblogicServer returns the associated service for a given server
-func GetServiceForWeblogicServer(server *types.WeblogicServer, clientset kubernetes.Interface) (*v1.Service, error) {
+// GetServiceForWebLogicManagedServer returns the associated service for a given server
+func GetServiceForWebLogicManagedServer(server *types.WebLogicManagedServer, clientset kubernetes.Interface) (*v1.Service, error) {
 	opts := metav1.ListOptions{LabelSelector: getLabelSelectorForServer(server)}
 	services, err := clientset.CoreV1().Services(server.Namespace).List(opts)
 	if err != nil {
@@ -309,10 +309,10 @@ func GetServiceForWeblogicServer(server *types.WeblogicServer, clientset kuberne
 	return nil, nil
 }
 
-// CreateServiceForWeblogicServer will create a new Kubernetes Service based on a predefined template
-func CreateServiceForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer) (*v1.Service, error) {
+// CreateServiceForWebLogicManagedServer will create a new Kubernetes Service based on a predefined template
+func CreateServiceForWebLogicManagedServer(clientset kubernetes.Interface, server *types.WebLogicManagedServer) (*v1.Service, error) {
 	// Find Service and if it does not exist create it
-	existingService, err := GetServiceForWeblogicServer(server, clientset)
+	existingService, err := GetServiceForWebLogicManagedServer(server, clientset)
 	if err != nil {
 		glog.Errorf("Error finding service for server: %s", err)
 		return nil, err
@@ -325,13 +325,13 @@ func CreateServiceForWeblogicServer(clientset kubernetes.Interface, server *type
 
 	glog.V(4).Infof("Creating a new service for server %s", server.Name)
 
-	svc := services.NewForServer(server)
+	svc := services.NewServiceForServer(server)
 	return clientset.CoreV1().Services(server.Namespace).Create(svc)
 }
 
-// DeleteServiceForWeblogicServer deletes the Service associated with a Weblogic server.
-func DeleteServiceForWeblogicServer(clientset kubernetes.Interface, server *types.WeblogicServer) error {
-	service, err := GetServiceForWeblogicServer(server, clientset)
+// DeleteServiceForWebLogicManagedServer deletes the Service associated with a Weblogic server.
+func DeleteServiceForWebLogicManagedServer(clientset kubernetes.Interface, server *types.WebLogicManagedServer) error {
+	service, err := GetServiceForWebLogicManagedServer(server, clientset)
 	if err != nil || service == nil {
 		glog.Errorf("Could not delete service: %s", err)
 		return err
@@ -340,21 +340,21 @@ func DeleteServiceForWeblogicServer(clientset kubernetes.Interface, server *type
 	return clientset.CoreV1().Services(server.Namespace).Delete(service.Name, nil)
 }
 
-//func GetServerForStatefulSet(statefulSet *v1beta1.StatefulSet, restClient *rest.RESTClient) (server *types.WeblogicServer, err error) {
-//	if weblogicServerName, ok := statefulSet.Labels[constants.WeblogicServerLabel]; ok {
-//		server = &types.WeblogicServer{}
+//func GetServerForStatefulSet(statefulSet *v1beta1.StatefulSet, restClient *rest.RESTClient) (server *types.WebLogicManagedServer, err error) {
+//	if weblogicServerName, ok := statefulSet.Labels[constants.WebLogicManagedServerLabel]; ok {
+//		server = &types.WebLogicManagedServer{}
 //		result := restClient.Get().
-//			Resource(constants.WeblogicServerResourceKindPlural).
+//			Resource(constants.WebLogicManagedServerResourceKindPlural).
 //			Namespace(statefulSet.Namespace).
 //			Name(weblogicServerName).
 //			Do().
 //			Into(server)
 //		return server, result
 //	}
-//	return nil, fmt.Errorf("unable to get Label %s from statefulset. Not part of server", constants.WeblogicServerLabel)
+//	return nil, fmt.Errorf("unable to get Label %s from statefulset. Not part of server", constants.WebLogicManagedServerLabel)
 //}
 
-func setWeblogicServerState(server *types.WeblogicServer, restClient *rest.RESTClient, phase types.WeblogicServerPhase, err error) error {
+func setWebLogicManagedServerState(server *types.WebLogicManagedServer, restClient *rest.RESTClient, phase types.WebLogicManagedServerPhase, err error) error {
 	modified := false
 	if server.Status.Phase != phase {
 		server.Status.Phase = phase
@@ -372,7 +372,7 @@ func setWeblogicServerState(server *types.WeblogicServer, restClient *rest.RESTC
 
 	if modified {
 		result := restClient.Put().
-			Resource(constants.WeblogicServerResourceKindPlural).
+			Resource(constants.WebLogicManagedServerResourceKindPlural).
 			Namespace(server.Namespace).
 			Name(server.Name).
 			Body(server).
@@ -384,7 +384,7 @@ func setWeblogicServerState(server *types.WeblogicServer, restClient *rest.RESTC
 	return nil
 }
 
-//func updateServerWithStatefulSet(server *types.WeblogicServer, statefulSet *v1beta1.StatefulSet, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
+//func updateServerWithStatefulSet(server *types.WebLogicManagedServer, statefulSet *v1beta1.StatefulSet, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
 //	// Some simple logic for the time being.
 //	// To add
 //	// connection to the server
@@ -393,28 +393,28 @@ func setWeblogicServerState(server *types.WeblogicServer, restClient *rest.RESTC
 //	// check version of each pod
 //
 //	if statefulSet.Status.ReadyReplicas < statefulSet.Status.Replicas {
-//		setWeblogicServerState(server, restClient, types.WeblogicServerPending, nil)
+//		setWebLogicManagedServerState(server, restClient, types.WebLogicManagedServerPending, nil)
 //	} else if statefulSet.Status.ReadyReplicas == statefulSet.Status.Replicas {
-//		setWeblogicServerState(server, restClient, types.WeblogicServerRunning, nil)
+//		setWebLogicManagedServerState(server, restClient, types.WebLogicManagedServerRunning, nil)
 //	}
 //	return err
 //}
 
-func GetServerForReplicaSet(replicaset *v1beta1.ReplicaSet, restClient *rest.RESTClient) (server *types.WeblogicServer, err error) {
-	if weblogicServerName, ok := replicaset.Labels[constants.WeblogicServerLabel]; ok {
-		server = &types.WeblogicServer{}
+func GetServerForReplicaSet(replicaset *v1beta1.ReplicaSet, restClient *rest.RESTClient) (server *types.WebLogicManagedServer, err error) {
+	if weblogicServerName, ok := replicaset.Labels[constants.WebLogicManagedServerLabel]; ok {
+		server = &types.WebLogicManagedServer{}
 		result := restClient.Get().
-			Resource(constants.WeblogicServerResourceKindPlural).
+			Resource(constants.WebLogicManagedServerResourceKindPlural).
 			Namespace(replicaset.Namespace).
 			Name(weblogicServerName).
 			Do().
 			Into(server)
 		return server, result
 	}
-	return nil, fmt.Errorf("unable to get Label %s from replicaset. Not part of server", constants.WeblogicServerLabel)
+	return nil, fmt.Errorf("unable to get Label %s from replicaset. Not part of server", constants.WebLogicManagedServerLabel)
 }
 
-func updateServerWithReplicaSet(server *types.WeblogicServer, replicaSet *v1beta1.ReplicaSet, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
+func updateServerWithReplicaSet(server *types.WebLogicManagedServer, replicaSet *v1beta1.ReplicaSet, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
 	// Some simple logic for the time being.
 	// To add
 	// connection to the server
@@ -423,18 +423,18 @@ func updateServerWithReplicaSet(server *types.WeblogicServer, replicaSet *v1beta
 	// check version of each pod
 
 	if replicaSet.Status.ReadyReplicas < replicaSet.Status.Replicas {
-		setWeblogicServerState(server, restClient, types.WeblogicServerPending, nil)
+		setWebLogicManagedServerState(server, restClient, types.WebLogicManagedServerPending, nil)
 	} else if replicaSet.Status.ReadyReplicas == replicaSet.Status.Replicas {
-		setWeblogicServerState(server, restClient, types.WeblogicServerRunning, nil)
+		setWebLogicManagedServerState(server, restClient, types.WebLogicManagedServerRunning, nil)
 	}
 	return err
 }
 
-func GetServerForHorizontalPodAutoscaler(horizontalPodAutoscaler *autoscalingv1.HorizontalPodAutoscaler, restClient *rest.RESTClient) (server *types.WeblogicServer, err error) {
+func GetServerForHorizontalPodAutoscaler(horizontalPodAutoscaler *autoscalingv1.HorizontalPodAutoscaler, restClient *rest.RESTClient) (server *types.WebLogicManagedServer, err error) {
 	if weblogicServerName, ok := horizontalPodAutoscaler.Labels[constants.HorizontalPodAutoscalerTargetLabel]; ok {
-		server = &types.WeblogicServer{}
+		server = &types.WebLogicManagedServer{}
 		result := restClient.Get().
-			Resource(constants.WeblogicServerResourceKindPlural).
+			Resource(constants.WebLogicManagedServerResourceKindPlural).
 			Namespace(horizontalPodAutoscaler.Namespace).
 			Name(weblogicServerName).
 			Do().
@@ -444,7 +444,7 @@ func GetServerForHorizontalPodAutoscaler(horizontalPodAutoscaler *autoscalingv1.
 	return nil, fmt.Errorf("unable to get Label %s from horizontalPodAutoscaler. Not part of server", constants.HorizontalPodAutoscalerTargetLabel)
 }
 
-func updateServerWithHorizontalPodAutoscaler(server *types.WeblogicServer, horizontalPodAutoscaler *autoscalingv1.HorizontalPodAutoscaler, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
+func updateServerWithHorizontalPodAutoscaler(server *types.WebLogicManagedServer, horizontalPodAutoscaler *autoscalingv1.HorizontalPodAutoscaler, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
 	// Some simple logic for the time being.
 	// To add
 	// connection to the server
@@ -453,15 +453,15 @@ func updateServerWithHorizontalPodAutoscaler(server *types.WeblogicServer, horiz
 	// check version of each pod
 
 	if horizontalPodAutoscaler.Status.CurrentReplicas < horizontalPodAutoscaler.Status.DesiredReplicas {
-		setWeblogicServerState(server, restClient, types.WeblogicServerPending, nil)
+		setWebLogicManagedServerState(server, restClient, types.WebLogicManagedServerPending, nil)
 	} else if horizontalPodAutoscaler.Status.CurrentReplicas == horizontalPodAutoscaler.Status.DesiredReplicas {
-		setWeblogicServerState(server, restClient, types.WeblogicServerRunning, nil)
+		setWebLogicManagedServerState(server, restClient, types.WebLogicManagedServerRunning, nil)
 	}
 	return err
 }
 
-// GetPodForWeblogicServer finds the associated pod for a Weblogic server
-func GetPodForWeblogicServer(server *types.WeblogicServer, clientset kubernetes.Interface) (*v1.Pod, error) {
+// GetPodForWebLogicManagedServer finds the associated pod for a Weblogic server
+func GetPodForWebLogicManagedServer(server *types.WebLogicManagedServer, clientset kubernetes.Interface) (*v1.Pod, error) {
 	opts := metav1.ListOptions{LabelSelector: getLabelSelectorForServer(server)}
 	pods, err := clientset.CoreV1().Pods(server.Namespace).List(opts)
 	if err != nil {
@@ -477,8 +477,8 @@ func GetPodForWeblogicServer(server *types.WeblogicServer, clientset kubernetes.
 	return nil, nil
 }
 
-// GetPodForWeblogicServer finds the associated pod for a Weblogic server
-func GetContainerForPod(server *types.WeblogicServer, pod *v1.Pod) (*v1.Container, error) {
+// GetPodForWebLogicManagedServer finds the associated pod for a Weblogic server
+func GetContainerForPod(server *types.WebLogicManagedServer, pod *v1.Pod) (*v1.Container, error) {
 	containers := pod.Spec.Containers
 
 	for _, container := range containers {
@@ -490,9 +490,9 @@ func GetContainerForPod(server *types.WeblogicServer, pod *v1.Pod) (*v1.Containe
 	return nil, nil
 }
 
-// RunStopForWeblogicServer will run stopWebLogic to stop a Weblogic server container in a pod
-func RunStopForWeblogicServer(clientset kubernetes.Interface, restClient *rest.RESTClient, server *types.WeblogicServer) error {
-	pod, err := GetPodForWeblogicServer(server, clientset)
+// RunStopForWebLogicManagedServer will run stopWebLogic to stop a Weblogic server container in a pod
+func RunStopForWebLogicManagedServer(clientset kubernetes.Interface, restClient *rest.RESTClient, server *types.WebLogicManagedServer) error {
+	pod, err := GetPodForWebLogicManagedServer(server, clientset)
 	if err != nil || pod == nil {
 		glog.Errorf("Could not find pod: %s", err)
 		return err

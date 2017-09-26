@@ -17,7 +17,7 @@ import (
 	"k8s.io/api/autoscaling/v1"
 )
 
-type StoreToWeblogicServerLister struct {
+type StoreToWebLogicManagedServerLister struct {
 	cache.Store
 }
 
@@ -40,7 +40,7 @@ type WeblogicController struct {
 	startTime                     			time.Time
 	shutdown                      			bool
 	weblogicServerController      			cache.Controller
-	weblogicServerStore           			StoreToWeblogicServerLister
+	weblogicServerStore           			StoreToWebLogicManagedServerLister
 	//weblogicStatefulSetController 			cache.Controller
 	//weblogicStatefulSetStore      			StoreToWeblogicStatefulSetLister
 	weblogicReplicaSet 						cache.Controller
@@ -63,10 +63,10 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 		UpdateFunc: m.onUpdate,
 	}
 
-	watcher := cache.NewListWatchFromClient(restClient, constants.WeblogicServerResourceKindPlural, namespace, fields.Everything())
+	watcher := cache.NewListWatchFromClient(restClient, constants.WebLogicManagedServerResourceKindPlural, namespace, fields.Everything())
 	m.weblogicServerStore.Store, m.weblogicServerController = cache.NewInformer(
 		watcher,
-		&types.WeblogicServer{},
+		&types.WebLogicManagedServer{},
 		resyncPeriod,
 		weblogicServerHandlers)
 
@@ -79,11 +79,11 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 	//m.weblogicStatefulSetStore.Store, m.weblogicStatefulSetController = cache.NewInformer(
 	//	&cache.ListWatch{
 	//		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
-	//			options.LabelSelector = constants.WeblogicServerLabel
+	//			options.LabelSelector = constants.WebLogicManagedServerLabel
 	//			return kubeClient.AppsV1beta1().StatefulSets(namespace).List(options)
 	//		},
 	//		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-	//			options.LabelSelector = constants.WeblogicServerLabel
+	//			options.LabelSelector = constants.WebLogicManagedServerLabel
 	//			return kubeClient.AppsV1beta1().StatefulSets(namespace).Watch(options)
 	//		},
 	//	},
@@ -100,11 +100,11 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 	m.weblogicReplicaSetStore.Store, m.weblogicReplicaSet = cache.NewInformer(
 		&cache.ListWatch{
 			ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
-				options.LabelSelector = constants.WeblogicServerLabel
+				options.LabelSelector = constants.WebLogicManagedServerLabel
 				return kubeClient.ExtensionsV1beta1().ReplicaSets(namespace).List(options)
 			},
 			WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-				options.LabelSelector = constants.WeblogicServerLabel
+				options.LabelSelector = constants.WebLogicManagedServerLabel
 				return kubeClient.ExtensionsV1beta1().ReplicaSets(namespace).Watch(options)
 			},
 		},
@@ -121,11 +121,11 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 	m.weblogicHorizontalPodAutoscalingStore.Store, m.weblogicHorizontalPodAutoscaling = cache.NewInformer(
 		&cache.ListWatch{
 			ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
-				options.LabelSelector = constants.WeblogicServerLabel
+				options.LabelSelector = constants.WebLogicManagedServerLabel
 				return kubeClient.AutoscalingV1().HorizontalPodAutoscalers(namespace).List(options)
 			},
 			WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-				options.LabelSelector = constants.WeblogicServerLabel
+				options.LabelSelector = constants.WebLogicManagedServerLabel
 				return kubeClient.AutoscalingV1().HorizontalPodAutoscalers(namespace).Watch(options)
 			},
 		},
@@ -139,29 +139,29 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 func (m *WeblogicController) onAdd(obj interface{}) {
 	glog.V(4).Info("WeblogicController.onAdd() called")
 
-	weblogicServer := obj.(*types.WeblogicServer)
-	err := createWeblogicServer(weblogicServer, m.client, m.restClient)
+	weblogicServer := obj.(*types.WebLogicManagedServer)
+	err := createWebLogicManagedServer(weblogicServer, m.client, m.restClient)
 	if err != nil {
 		glog.Errorf("Failed to create weblogicServer: %s", err)
-		err = setWeblogicServerState(weblogicServer, m.restClient, types.WeblogicServerFailed, err)
+		err = setWebLogicManagedServerState(weblogicServer, m.restClient, types.WebLogicManagedServerFailed, err)
 	}
 }
 
 func (m *WeblogicController) onDelete(obj interface{}) {
 	glog.V(4).Info("WeblogicController.onDelete() called")
 
-	weblogicServer := obj.(*types.WeblogicServer)
-	err := deleteWeblogicServer(weblogicServer, m.client, m.restClient)
+	weblogicServer := obj.(*types.WebLogicManagedServer)
+	err := deleteWebLogicManagedServer(weblogicServer, m.client, m.restClient)
 	if err != nil {
 		glog.Errorf("Failed to delete weblogicServer: %s", err)
-		err = setWeblogicServerState(weblogicServer, m.restClient, types.WeblogicServerFailed, err)
+		err = setWebLogicManagedServerState(weblogicServer, m.restClient, types.WebLogicManagedServerFailed, err)
 	}
 }
 
 func (m *WeblogicController) onUpdate(old, cur interface{}) {
 	glog.V(4).Info("WeblogicController.onUpdate() called")
-	curServer := cur.(*types.WeblogicServer)
-	oldServer := old.(*types.WeblogicServer)
+	curServer := cur.(*types.WebLogicManagedServer)
+	oldServer := old.(*types.WebLogicManagedServer)
 	if curServer.ResourceVersion == oldServer.ResourceVersion {
 		// Periodic resync will send update events for all known servers.
 		// Two different versions of the same server will always have
@@ -169,10 +169,10 @@ func (m *WeblogicController) onUpdate(old, cur interface{}) {
 		return
 	}
 
-	err := createWeblogicServer(curServer, m.client, m.restClient)
+	err := createWebLogicManagedServer(curServer, m.client, m.restClient)
 	if err != nil {
 		glog.Errorf("Failed to update server: %s", err)
-		err = setWeblogicServerState(curServer, m.restClient, types.WeblogicServerFailed, err)
+		err = setWebLogicManagedServerState(curServer, m.restClient, types.WebLogicManagedServerFailed, err)
 	}
 }
 

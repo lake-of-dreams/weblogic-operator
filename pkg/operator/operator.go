@@ -124,7 +124,7 @@ func newRESTClient(config *rest.Config) (*rest.RESTClient, error) {
 	//if err := types.AddToScheme(scheme.Scheme); err != nil {
 	//	return nil, err
 	//}
-	config.GroupVersion = &types.SchemeGroupVersion
+	config.GroupVersion = &types.WeblogicManagedServerSchemeGroupVersion
 	config.APIPath = "/apis"
 	config.ContentType = runtime.ContentTypeJSON
 	config.NegotiatedSerializer = serializer.DirectCodecFactory{CodecFactory: serializer.NewCodecFactory(scheme.Scheme)}

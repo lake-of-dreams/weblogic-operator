@@ -22,6 +22,10 @@ spec:
   selector:
     matchLabels:
       app: weblogic-operator
+  volumes:
+  - name: weblogic-operator-storage
+    persistentVolumeClaim:
+    claimName: weblogic-operator-claim
   template:
     metadata:
       labels:
@@ -32,6 +36,9 @@ spec:
       - name: weblogic-operator-controller
         imagePullPolicy: Always
         image: fmwplt/weblogic-operator:1709211423
+        volumeMounts:
+        - mountPath: "/u01/oracle/weblogic-operator"
+          name: weblogic-operator-storage
         ports:
         - containerPort: 9999
         args:

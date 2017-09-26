@@ -16,29 +16,29 @@ import (
 	"weblogic-operator/pkg/constants"
 )
 
-type StoreToWeblogicDomainLister struct {
+type StoreToWebLogicDomainLister struct {
 	cache.Store
 }
 
-type StoreToWeblogicDomainStatefulSetLister struct {
+type StoreToWebLogicDomainStatefulSetLister struct {
 	cache.Store
 }
 
 // The WeblogicController watches the Kubernetes API for changes to Weblogic resources
-type WeblogicDomainController struct {
+type WebLogicDomainController struct {
 	client                              kubernetes.Interface
 	restClient                          *rest.RESTClient
 	startTime                           time.Time
 	shutdown                            bool
 	weblogicDomainController            cache.Controller
-	weblogicDomainStore                 StoreToWeblogicDomainLister
+	weblogicDomainStore                 StoreToWebLogicDomainLister
 	weblogicDomainStatefulSetController cache.Controller
-	weblogicDomainStatefulSetStore      StoreToWeblogicDomainStatefulSetLister
+	weblogicDomainStatefulSetStore      StoreToWebLogicDomainStatefulSetLister
 }
 
 // NewController creates a new WeblogicController.
-func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient, resyncPeriod time.Duration, namespace string) (*WeblogicDomainController, error) {
-	m := WeblogicDomainController{
+func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient, resyncPeriod time.Duration, namespace string) (*WebLogicDomainController, error) {
+	m := WebLogicDomainController{
 		client:     kubeClient,
 		restClient: restClient,
 		startTime:  time.Now(),
@@ -53,7 +53,7 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 	watcher := cache.NewListWatchFromClient(restClient, types.DomainCRDResourcePlural, namespace, fields.Everything())
 	m.weblogicDomainStore.Store, m.weblogicDomainController = cache.NewInformer(
 		watcher,
-		&types.WeblogicDomain{},
+		&types.WebLogicDomain{},
 		resyncPeriod,
 		weblogicDomainHandlers)
 
@@ -81,32 +81,32 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 	return &m, nil
 }
 
-func (m *WeblogicDomainController) onAdd(obj interface{}) {
+func (m *WebLogicDomainController) onAdd(obj interface{}) {
 	glog.V(4).Info("WeblogicController.onAdd() called")
 
-	weblogicDomain := obj.(*types.WeblogicDomain)
-	err := createWeblogicDomain(weblogicDomain, m.client, m.restClient)
+	weblogicDomain := obj.(*types.WebLogicDomain)
+	err := createWebLogicDomain(weblogicDomain, m.client, m.restClient)
 	if err != nil {
 		glog.Errorf("Failed to create weblogicDomain: %s", err)
-		err = setWeblogicDomainState(weblogicDomain, m.restClient, types.WeblogicDomainFailed, err)
+		err = setWebLogicDomainState(weblogicDomain, m.restClient, types.WebLogicDomainFailed, err)
 	}
 }
 
-func (m *WeblogicDomainController) onDelete(obj interface{}) {
+func (m *WebLogicDomainController) onDelete(obj interface{}) {
 	glog.V(4).Info("WeblogicController.onDelete() called")
 
-	weblogicDomain := obj.(*types.WeblogicDomain)
-	err := deleteWeblogicDomain(weblogicDomain, m.client, m.restClient)
+	weblogicDomain := obj.(*types.WebLogicDomain)
+	err := deleteWebLogicDomain(weblogicDomain, m.client, m.restClient)
 	if err != nil {
 		glog.Errorf("Failed to delete weblogicDomain: %s", err)
-		err = setWeblogicDomainState(weblogicDomain, m.restClient, types.WeblogicDomainFailed, err)
+		err = setWebLogicDomainState(weblogicDomain, m.restClient, types.WebLogicDomainFailed, err)
 	}
 }
 
-func (m *WeblogicDomainController) onUpdate(old, cur interface{}) {
+func (m *WebLogicDomainController) onUpdate(old, cur interface{}) {
 	glog.V(4).Info("WeblogicController.onUpdate() called")
-	curDomain := cur.(*types.WeblogicDomain)
-	oldDomain := old.(*types.WeblogicDomain)
+	curDomain := cur.(*types.WebLogicDomain)
+	oldDomain := old.(*types.WebLogicDomain)
 	if curDomain.ResourceVersion == oldDomain.ResourceVersion {
 		// Periodic resync will send update events for all known servers.
 		// Two different versions of the same server will always have
@@ -114,14 +114,14 @@ func (m *WeblogicDomainController) onUpdate(old, cur interface{}) {
 		return
 	}
 
-	err := createWeblogicDomain(curDomain, m.client, m.restClient)
+	err := createWebLogicDomain(curDomain, m.client, m.restClient)
 	if err != nil {
 		glog.Errorf("Failed to update domain: %s", err)
-		err = setWeblogicDomainState(curDomain, m.restClient, types.WeblogicDomainFailed, err)
+		err = setWebLogicDomainState(curDomain, m.restClient, types.WebLogicDomainFailed, err)
 	}
 }
 
-func (m *WeblogicDomainController) onStatefulSetAdd(obj interface{}) {
+func (m *WebLogicDomainController) onStatefulSetAdd(obj interface{}) {
 	glog.V(4).Info("WeblogicController.onStatefulSetAdd() called")
 
 	statefulSet := obj.(*v1beta1.StatefulSet)
@@ -140,18 +140,18 @@ func (m *WeblogicDomainController) onStatefulSetAdd(obj interface{}) {
 }
 
 //TODO Fix hanldings here. Need to call onStatefulSetAdd ???
-func (m *WeblogicDomainController) onStatefulSetDelete(obj interface{}) {
+func (m *WebLogicDomainController) onStatefulSetDelete(obj interface{}) {
 	glog.V(4).Info("WeblogicController.onStatefulSetDelete() called")
 	m.onStatefulSetAdd(obj)
 }
 
-func (m *WeblogicDomainController) onStatefulSetUpdate(old, new interface{}) {
+func (m *WebLogicDomainController) onStatefulSetUpdate(old, new interface{}) {
 	glog.V(4).Info("WeblogicController.onStatefulSetUpdate() called")
 	m.onStatefulSetAdd(new)
 }
 
 // Run the Weblogic controller
-func (m *WeblogicDomainController) Run(stopChan <-chan struct{}) {
+func (m *WebLogicDomainController) Run(stopChan <-chan struct{}) {
 	glog.Infof("Starting Weblogic controller")
 	go m.weblogicDomainController.Run(stopChan)
 	go m.weblogicDomainStatefulSetController.Run(stopChan)

@@ -9,11 +9,11 @@ import (
 	"weblogic-operator/pkg/types"
 )
 
-func serverNameEnvVar(server *types.WeblogicServer) v1.EnvVar {
+func serverNameEnvVar(server *types.WebLogicManagedServer) v1.EnvVar {
 	return v1.EnvVar{Name: "WEBLOGIC_SERVER_NAME", Value: server.Name}
 }
 
-func domainNameEnvVar(domain *types.WeblogicDomain) v1.EnvVar {
+func domainNameEnvVar(domain *types.WebLogicDomain) v1.EnvVar {
 	return v1.EnvVar{Name: "WEBLOGIC_DOMAIN_NAME", Value: domain.Name}
 }
 
@@ -28,8 +28,8 @@ func namespaceEnvVar() v1.EnvVar {
 	}
 }
 
-// Builds the WeblogicServer container
-func weblogicOperatorContainer(server *types.WeblogicServer) v1.Container {
+// Builds the WebLogicManagedServer container
+func weblogicOperatorContainer(server *types.WebLogicManagedServer) v1.Container {
 	return v1.Container{
 		//TODO : Use different container names ???
 		Name:            server.Name,
@@ -50,8 +50,8 @@ func weblogicOperatorContainer(server *types.WeblogicServer) v1.Container {
 	}
 }
 
-// Builds the WeblogicServer container
-func buildWeblogicOperatorContainer(domain *types.WeblogicDomain) v1.Container {
+// Builds the WebLogicManagedServer container
+func buildWeblogicOperatorContainer(domain *types.WebLogicDomain) v1.Container {
 	return v1.Container{
 		Name:            "weblogic",
 		Image:           fmt.Sprintf("%s:%s", constants.WeblogicImageName, domain.Spec.Version),
@@ -71,8 +71,8 @@ func buildWeblogicOperatorContainer(domain *types.WeblogicDomain) v1.Container {
 	}
 }
 
-// NewForServer creates a new StatefulSet for the given WeblogicServer.
-func NewForServer(server *types.WeblogicServer, serviceName string) *v1beta1.StatefulSet {
+// NewForServer creates a new StatefulSet for the given WebLogicManagedServer.
+func NewForServer(server *types.WebLogicManagedServer, serviceName string) *v1beta1.StatefulSet {
 	var timeOut int64 = 120
 	containers := []v1.Container{weblogicOperatorContainer(server)}
 
@@ -81,7 +81,7 @@ func NewForServer(server *types.WeblogicServer, serviceName string) *v1beta1.Sta
 			Namespace: server.Namespace,
 			Name:      server.Name,
 			Labels: map[string]string{
-				constants.WeblogicServerLabel: server.Name,
+				constants.WebLogicManagedServerLabel: server.Name,
 			},
 		},
 		Spec: v1beta1.StatefulSetSpec{
@@ -89,7 +89,7 @@ func NewForServer(server *types.WeblogicServer, serviceName string) *v1beta1.Sta
 			Template: v1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: map[string]string{
-						constants.WeblogicServerLabel: server.Name,
+						constants.WebLogicManagedServerLabel: server.Name,
 					},
 				},
 				Spec: v1.PodSpec{
@@ -110,7 +110,7 @@ func NewForServer(server *types.WeblogicServer, serviceName string) *v1beta1.Sta
 	return ss
 }
 
-func NewServiceForDomain(domain *types.WeblogicDomain, serviceName string) *v1beta1.StatefulSet {
+func NewServiceForDomain(domain *types.WebLogicDomain, serviceName string) *v1beta1.StatefulSet {
 	var timeOut int64 = 120
 	containers := []v1.Container{buildWeblogicOperatorContainer(domain)}
 

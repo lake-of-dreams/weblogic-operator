@@ -8,7 +8,7 @@ spec:
   version: v1
   scope: Namespaced
   names:
-    kind: WeblogicDomain
+    kind: WebLogicDomain
     singular: weblogicdomain
     plural: weblogicdomains
 ---

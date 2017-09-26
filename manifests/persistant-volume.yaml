@@ -1,0 +1,14 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: weblogic-operator-volume
+  labels:
+    type: local
+spec:
+  storageClassName: weblogic-operator
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/scratch"

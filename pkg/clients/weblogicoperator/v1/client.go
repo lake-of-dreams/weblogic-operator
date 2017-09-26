@@ -10,7 +10,7 @@ import (
 
 type WeblogicV1Interface interface {
 	RESTClient() rest.Interface
-	WeblogicServersGetter
+	WebLogicManagedServersGetter
 }
 
 // WeblogicV1Client is used to interact with features provided by the group.
@@ -42,7 +42,7 @@ func setConfigDefaults(config *rest.Config) error {
 		return err
 	}
 
-	gv := types.SchemeGroupVersion
+	gv := types.WeblogicManagedServerSchemeGroupVersion
 	config.GroupVersion = &gv
 	config.APIPath = "/apis"
 	config.NegotiatedSerializer = serializer.DirectCodecFactory{
@@ -52,10 +52,10 @@ func setConfigDefaults(config *rest.Config) error {
 	return nil
 }
 
-// WeblogicServers returns a WeblogicServerInterface used to interact with
-// WeblogicServer custom resources.
-func (c *WeblogicV1Client) WeblogicServers(namespace string) WeblogicServerInterface {
-	return newWeblogicServers(c, namespace)
+// WebLogicManagedServers returns a WebLogicManagedServerInterface used to interact with
+// WebLogicManagedServer custom resources.
+func (c *WeblogicV1Client) WebLogicManagedServers(namespace string) WebLogicManagedServerInterface {
+	return newWebLogicManagedServers(c, namespace)
 }
 
 // RESTClient returns a RESTClient that is used to communicate with the API

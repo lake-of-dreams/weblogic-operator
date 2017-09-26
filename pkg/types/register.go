@@ -12,75 +12,61 @@ import (
 )
 
 var (
-	schemeBuilder      = runtime.NewSchemeBuilder(addKnownTypes)
-	AddToScheme        = schemeBuilder.AddToScheme
-	SchemeGroupVersion = schema.GroupVersion{Group: constants.WeblogicServerGroupName, Version: constants.WeblogicServerSchemeVersion}
-	WebLogicDomainSchemeGroupVersion = schema.GroupVersion{Group: constants.WeblogicServerGroupName, Version: constants.WeblogicServerSchemeVersion}
+	schemeBuilder                           = runtime.NewSchemeBuilder(addKnownTypes)
+	AddToScheme                             = schemeBuilder.AddToScheme
+	WeblogicManagedServerSchemeGroupVersion = schema.GroupVersion{Group: constants.WebLogicGroupName, Version: constants.WebLogicManagedServerSchemeVersion}
+	WebLogicDomainSchemeGroupVersion        = schema.GroupVersion{Group: constants.WebLogicGroupName, Version: constants.WebLogicManagedServerSchemeVersion}
 )
 
 // addKnownTypes adds the set of types defined in this package to the supplied
 // scheme.
 func addKnownTypes(s *runtime.Scheme) error {
-	s.AddKnownTypes(SchemeGroupVersion,
-		&WeblogicServer{},
-		&WeblogicServerList{})
-	metav1.AddToGroupVersion(s, SchemeGroupVersion)
+	s.AddKnownTypes(WeblogicManagedServerSchemeGroupVersion,
+		&WebLogicManagedServer{},
+		&WebLogicManagedServerList{})
+	metav1.AddToGroupVersion(s, WeblogicManagedServerSchemeGroupVersion)
 
 	s.AddKnownTypes(WebLogicDomainSchemeGroupVersion,
-		&WeblogicDomain{},
-		&WeblogicDomainList{})
+		&WebLogicDomain{},
+		&WebLogicDomainList{})
 	metav1.AddToGroupVersion(s, WebLogicDomainSchemeGroupVersion)
 	return nil
 }
 
 func registerDefaults(scheme *runtime.Scheme) error {
-	scheme.AddTypeDefaultingFunc(&WeblogicServer{}, defaultWeblogicServer)
-	scheme.AddTypeDefaultingFunc(&WeblogicServerList{}, defaultWeblogicServerList)
-	scheme.AddTypeDefaultingFunc(&WeblogicDomain{}, defaultWeblogicDomain)
-	scheme.AddTypeDefaultingFunc(&WeblogicServerList{}, defaultWeblogicDomainList)
+	scheme.AddTypeDefaultingFunc(&WebLogicManagedServer{}, defaultWebLogicManagedServer)
+	scheme.AddTypeDefaultingFunc(&WebLogicManagedServerList{}, defaultWebLogicManagedServerList)
+	scheme.AddTypeDefaultingFunc(&WebLogicDomain{}, defaultWebLogicDomain)
+	scheme.AddTypeDefaultingFunc(&WebLogicManagedServerList{}, defaultWebLogicDomainList)
 	return nil
 }
 
 // TODO currently unused
 
-func defaultWeblogicServerList(obj interface{}) {
-	serverList := obj.(*WeblogicServerList)
+func defaultWebLogicManagedServerList(obj interface{}) {
+	serverList := obj.(*WebLogicManagedServerList)
 	for _, server := range serverList.Items {
-		defaultWeblogicServer(server)
+		defaultWebLogicManagedServer(server)
 	}
 }
 
-func defaultWeblogicServer(obj interface{}) {
-	server := obj.(*WeblogicServer)
+func defaultWebLogicManagedServer(obj interface{}) {
+	server := obj.(*WebLogicManagedServer)
 	server.Spec.Replicas = defaultReplicas
 	server.Spec.Version = defaultVersion
-	defaultWeblogicServerStatus(server.Status)
 }
 
-func defaultWeblogicServerStatus(obj interface{}) {
-	serverStatus := obj.(*WeblogicServerStatus)
-	serverStatus.Phase = WeblogicServerUnknown
-	serverStatus.Errors = []string{}
-}
-
-func defaultWeblogicDomainList(obj interface{}) {
-	domainList := obj.(*WeblogicDomainList)
+func defaultWebLogicDomainList(obj interface{}) {
+	domainList := obj.(*WebLogicDomainList)
 	for _, domain := range domainList.Items {
-		defaultWeblogicDomain(domain)
+		defaultWebLogicDomain(domain)
 	}
 }
 
-func defaultWeblogicDomain(obj interface{}) {
-	domain := obj.(*WeblogicDomain)
+func defaultWebLogicDomain(obj interface{}) {
+	domain := obj.(*WebLogicDomain)
 	domain.Spec.Replicas = defaultDomainReplicas
 	domain.Spec.Version = defaultDomainVersion
-	defaultWeblogicDomainStatus(domain.Status)
-}
-
-func defaultWeblogicDomainStatus(obj interface{}) {
-	serverStatus := obj.(*WeblogicDomainStatus)
-	serverStatus.Phase = WeblogicDomainUnknown
-	serverStatus.Errors = []string{}
 }
 
 func init() {
