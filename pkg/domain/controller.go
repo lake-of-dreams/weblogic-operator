@@ -3,7 +3,7 @@ package domain
 import (
 	"time"
 
-	"k8s.io/api/apps/v1beta1"
+	"k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -20,25 +20,29 @@ type StoreToWebLogicDomainLister struct {
 	cache.Store
 }
 
-type StoreToWebLogicDomainStatefulSetLister struct {
+type StoreToWeblogicReplicaSetLister struct {
 	cache.Store
 }
 
-// The WeblogicController watches the Kubernetes API for changes to Weblogic resources
-type WebLogicDomainController struct {
-	client                              kubernetes.Interface
-	restClient                          *rest.RESTClient
-	startTime                           time.Time
-	shutdown                            bool
-	weblogicDomainController            cache.Controller
-	weblogicDomainStore                 StoreToWebLogicDomainLister
-	weblogicDomainStatefulSetController cache.Controller
-	weblogicDomainStatefulSetStore      StoreToWebLogicDomainStatefulSetLister
+type StoreToWeblogicHorizontalPodAutoscalingLister struct {
+	cache.Store
 }
 
-// NewController creates a new WeblogicController.
-func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient, resyncPeriod time.Duration, namespace string) (*WebLogicDomainController, error) {
-	m := WebLogicDomainController{
+// The WeblogicDomainController watches the Kubernetes API for changes to WeblogicDomain resources
+type WeblogicDomainController struct {
+	client                        kubernetes.Interface
+	restClient                    *rest.RESTClient
+	startTime                     time.Time
+	shutdown                      bool
+	weblogicDomainController      cache.Controller
+	weblogicDomainStore           StoreToWebLogicDomainLister
+	weblogicDomainReplicaSet      cache.Controller
+	weblogicDomainReplicaSetStore StoreToWeblogicReplicaSetLister
+}
+
+// NewController creates a new WeblogicDomainController.
+func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient, resyncPeriod time.Duration, namespace string) (*WeblogicDomainController, error) {
+	m := WeblogicDomainController{
 		client:     kubeClient,
 		restClient: restClient,
 		startTime:  time.Now(),
@@ -50,111 +54,108 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 		UpdateFunc: m.onUpdate,
 	}
 
-	watcher := cache.NewListWatchFromClient(restClient, types.DomainCRDResourcePlural, namespace, fields.Everything())
+	watcher := cache.NewListWatchFromClient(restClient, constants.WebLogicDomainResourceKindPlural, namespace, fields.Everything())
+
 	m.weblogicDomainStore.Store, m.weblogicDomainController = cache.NewInformer(
 		watcher,
 		&types.WebLogicDomain{},
 		resyncPeriod,
 		weblogicDomainHandlers)
 
-	statefulSetHandler := cache.ResourceEventHandlerFuncs{
-		AddFunc:    m.onStatefulSetAdd,
-		DeleteFunc: m.onStatefulSetDelete,
-		UpdateFunc: m.onStatefulSetUpdate,
+	replicaSetHandler := cache.ResourceEventHandlerFuncs{
+		AddFunc:    m.onReplicaSetAdd,
+		DeleteFunc: m.onReplicaSetDelete,
+		UpdateFunc: m.onReplicaSetUpdate,
 	}
 
-	m.weblogicDomainStatefulSetStore.Store, m.weblogicDomainStatefulSetController = cache.NewInformer(
+	m.weblogicDomainReplicaSetStore.Store, m.weblogicDomainReplicaSet = cache.NewInformer(
 		&cache.ListWatch{
 			ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 				options.LabelSelector = constants.WebLogicDomainLabel
-				return kubeClient.AppsV1beta1().StatefulSets(namespace).List(options)
+				return kubeClient.ExtensionsV1beta1().ReplicaSets(namespace).List(options)
 			},
 			WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
 				options.LabelSelector = constants.WebLogicDomainLabel
-				return kubeClient.AppsV1beta1().StatefulSets(namespace).Watch(options)
+				return kubeClient.ExtensionsV1beta1().ReplicaSets(namespace).Watch(options)
 			},
 		},
-		&v1beta1.StatefulSet{},
+		&v1beta1.ReplicaSet{},
 		resyncPeriod,
-		statefulSetHandler)
+		replicaSetHandler,
+	)
 
 	return &m, nil
 }
 
-func (m *WebLogicDomainController) onAdd(obj interface{}) {
-	glog.V(4).Info("WeblogicController.onAdd() called")
+func (m *WeblogicDomainController) onAdd(obj interface{}) {
+	glog.V(4).Info("WeblogicDomainController.onAdd() called")
 
 	weblogicDomain := obj.(*types.WebLogicDomain)
 	err := createWebLogicDomain(weblogicDomain, m.client, m.restClient)
 	if err != nil {
 		glog.Errorf("Failed to create weblogicDomain: %s", err)
-		err = setWebLogicDomainState(weblogicDomain, m.restClient, types.WebLogicDomainFailed, err)
 	}
 }
 
-func (m *WebLogicDomainController) onDelete(obj interface{}) {
-	glog.V(4).Info("WeblogicController.onDelete() called")
+func (m *WeblogicDomainController) onDelete(obj interface{}) {
+	glog.V(4).Info("WeblogicDomainController.onDelete() called")
 
 	weblogicDomain := obj.(*types.WebLogicDomain)
 	err := deleteWebLogicDomain(weblogicDomain, m.client, m.restClient)
 	if err != nil {
 		glog.Errorf("Failed to delete weblogicDomain: %s", err)
-		err = setWebLogicDomainState(weblogicDomain, m.restClient, types.WebLogicDomainFailed, err)
 	}
 }
 
-func (m *WebLogicDomainController) onUpdate(old, cur interface{}) {
-	glog.V(4).Info("WeblogicController.onUpdate() called")
+func (m *WeblogicDomainController) onUpdate(old, cur interface{}) {
+	glog.V(4).Info("WeblogicDomainController.onUpdate() called")
 	curDomain := cur.(*types.WebLogicDomain)
 	oldDomain := old.(*types.WebLogicDomain)
 	if curDomain.ResourceVersion == oldDomain.ResourceVersion {
-		// Periodic resync will send update events for all known servers.
-		// Two different versions of the same server will always have
-		// different RVs.
 		return
 	}
 
 	err := createWebLogicDomain(curDomain, m.client, m.restClient)
 	if err != nil {
 		glog.Errorf("Failed to update domain: %s", err)
-		err = setWebLogicDomainState(curDomain, m.restClient, types.WebLogicDomainFailed, err)
 	}
 }
 
-func (m *WebLogicDomainController) onStatefulSetAdd(obj interface{}) {
-	glog.V(4).Info("WeblogicController.onStatefulSetAdd() called")
+func (m *WeblogicDomainController) onReplicaSetAdd(obj interface{}) {
+	glog.V(4).Info("WeblogicDomainController.onReplicaSetAdd() called")
 
-	statefulSet := obj.(*v1beta1.StatefulSet)
+	replicaSet := obj.(*v1beta1.ReplicaSet)
 
-	weblogicDomain, err := GetDomainForStatefulSet(statefulSet, m.restClient)
+	weblogicDomain, err := GetDomainForReplicaSet(replicaSet, m.restClient)
 	if err != nil {
-		// FIXME: Should we delete the stateful set here???
-		// it has no server but it has the label.
-		glog.Errorf("Failed to find server for stateful set: %s(%s):%#v", statefulSet.Name, err.Error(), statefulSet.Labels)
+		// FIXME: Should we delete the replica set here???
+		// it has no domain but it has the label.
+		glog.Errorf("Failed to find domain for replica set: %s(%s):%#v", replicaSet.Name, err.Error(), replicaSet.Labels)
 		return
 	}
-	err = updateDomainWithStatefulSet(weblogicDomain, statefulSet, m.client, m.restClient)
+	err = updateDomainWithReplicaSet(weblogicDomain, replicaSet, m.client, m.restClient)
 	if err != nil {
-		glog.Errorf("Failed to create update Server: %s", err)
+		glog.Errorf("Failed to create Domain: %s", err)
 	}
 }
 
 //TODO Fix hanldings here. Need to call onStatefulSetAdd ???
-func (m *WebLogicDomainController) onStatefulSetDelete(obj interface{}) {
-	glog.V(4).Info("WeblogicController.onStatefulSetDelete() called")
-	m.onStatefulSetAdd(obj)
+func (m *WeblogicDomainController) onReplicaSetDelete(obj interface{}) {
+	glog.V(4).Info("WeblogicDomainController.onReplicaSetDelete() called")
+	m.onReplicaSetAdd(obj)
 }
 
-func (m *WebLogicDomainController) onStatefulSetUpdate(old, new interface{}) {
-	glog.V(4).Info("WeblogicController.onStatefulSetUpdate() called")
-	m.onStatefulSetAdd(new)
+func (m *WeblogicDomainController) onReplicaSetUpdate(old, new interface{}) {
+	glog.V(4).Info("WeblogicDomainController.onReplicaSetUpdate() called")
+	m.onReplicaSetAdd(new)
 }
 
 // Run the Weblogic controller
-func (m *WebLogicDomainController) Run(stopChan <-chan struct{}) {
-	glog.Infof("Starting Weblogic controller")
+func (m *WeblogicDomainController) Run(stopChan <-chan struct{}) {
+	glog.Infof("Starting Weblogic Domain controller")
 	go m.weblogicDomainController.Run(stopChan)
-	go m.weblogicDomainStatefulSetController.Run(stopChan)
+	//go m.weblogicStatefulSetController.Run(stopChan)
+	go m.weblogicDomainReplicaSet.Run(stopChan)
 	<-stopChan
-	glog.Infof("Shutting down Weblogic controller")
+	glog.Infof("Shutting down Weblogic Domain controller")
 }
