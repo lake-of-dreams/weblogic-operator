@@ -46,10 +46,6 @@ try:
     set('Name', domainName)
     setOption('DomainName', domainName)
 
-    # Disable Admin Console
-    # --------------------
-    # cmo.setConsoleEnabled(false)
-
     # Configure the Administration Server and SSL port.
     # =========================================================
     cd('/Servers/AdminServer')
