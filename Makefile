@@ -38,6 +38,7 @@ build: ${BIN_DIR}/${OPERATOR_BIN_NAME}
 ${BIN_DIR}/${OPERATOR_BIN_NAME}: ${GO_SRC}
 	@mkdir -p ${BIN_DIR}
 	GOOS=$(GOOS) CGO_ENABLED=0 $(GO) build -v -ldflags '${LD_FLAGS}' -o $@ ./cmd/weblogic-operator
+	@cp -r scripts ${BUILD_DIR}/
 
 .PHONY: image
 image: ${BIN_DIR}/${OPERATOR_BIN_NAME}

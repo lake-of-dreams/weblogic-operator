@@ -15,7 +15,7 @@ var (
 	schemeBuilder                           = runtime.NewSchemeBuilder(addKnownTypes)
 	AddToScheme                             = schemeBuilder.AddToScheme
 	WeblogicManagedServerSchemeGroupVersion = schema.GroupVersion{Group: constants.WebLogicGroupName, Version: constants.WebLogicManagedServerSchemeVersion}
-	WebLogicDomainSchemeGroupVersion        = schema.GroupVersion{Group: constants.WebLogicGroupName, Version: constants.WebLogicManagedServerSchemeVersion}
+	WebLogicDomainSchemeGroupVersion        = schema.GroupVersion{Group: constants.WebLogicGroupName, Version: constants.WebLogicDomainSchemeVersion}
 )
 
 // addKnownTypes adds the set of types defined in this package to the supplied
