@@ -21,75 +21,49 @@ type StoreToWebLogicManagedServerLister struct {
 	cache.Store
 }
 
-//type StoreToWeblogicStatefulSetLister struct {
-//	cache.Store
-//}
-
-type StoreToWeblogicReplicaSetLister struct {
+type StoreToWebLogicManagedServerReplicaSetLister struct {
 	cache.Store
 }
 
-type StoreToWeblogicHorizontalPodAutoscalingLister struct {
+type StoreToWebLogicManagedServerHorizontalPodAutoscalingLister struct {
 	cache.Store
 }
 
-// The WeblogicController watches the Kubernetes API for changes to Weblogic resources
-type WeblogicController struct {
-	client                        			kubernetes.Interface
-	restClient                    			*rest.RESTClient
-	startTime                     			time.Time
-	shutdown                      			bool
-	weblogicServerController      			cache.Controller
-	weblogicServerStore           			StoreToWebLogicManagedServerLister
-	//weblogicStatefulSetController 			cache.Controller
-	//weblogicStatefulSetStore      			StoreToWeblogicStatefulSetLister
-	weblogicReplicaSet 						cache.Controller
-	weblogicReplicaSetStore					StoreToWeblogicReplicaSetLister
-	weblogicHorizontalPodAutoscaling 		cache.Controller
-	weblogicHorizontalPodAutoscalingStore	StoreToWeblogicHorizontalPodAutoscalingLister
+// The WebLogicManagedServerController watches the Kubernetes API for changes to WebLogicManagedServer resources
+type WebLogicManagedServerController struct {
+	client                                             kubernetes.Interface
+	restClient                                         *rest.RESTClient
+	startTime                                          time.Time
+	shutdown                                           bool
+	weblogicManagedServerController                    cache.Controller
+	weblogicManagedServerStore                         StoreToWebLogicManagedServerLister
+	weblogicManagedServerReplicaSet                    cache.Controller
+	weblogicManagedServerReplicaSetStore               StoreToWebLogicManagedServerReplicaSetLister
+	weblogicManagedServerHorizontalPodAutoscaling      cache.Controller
+	weblogicManagedServerHorizontalPodAutoscalingStore StoreToWebLogicManagedServerHorizontalPodAutoscalingLister
 }
 
-// NewController creates a new WeblogicController.
-func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient, resyncPeriod time.Duration, namespace string) (*WeblogicController, error) {
-	m := WeblogicController{
+// NewController creates a new WebLogicManagedServerController.
+func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient, resyncPeriod time.Duration, namespace string) (*WebLogicManagedServerController, error) {
+	m := WebLogicManagedServerController{
 		client:     kubeClient,
 		restClient: restClient,
 		startTime:  time.Now(),
 	}
 
-	weblogicServerHandlers := cache.ResourceEventHandlerFuncs{
+	weblogicManagedServerHandlers := cache.ResourceEventHandlerFuncs{
 		AddFunc:    m.onAdd,
 		DeleteFunc: m.onDelete,
 		UpdateFunc: m.onUpdate,
 	}
 
 	watcher := cache.NewListWatchFromClient(restClient, constants.WebLogicManagedServerResourceKindPlural, namespace, fields.Everything())
-	m.weblogicServerStore.Store, m.weblogicServerController = cache.NewInformer(
+
+	m.weblogicManagedServerStore.Store, m.weblogicManagedServerController = cache.NewInformer(
 		watcher,
 		&types.WebLogicManagedServer{},
 		resyncPeriod,
-		weblogicServerHandlers)
-
-	//statefulSetHandler := cache.ResourceEventHandlerFuncs{
-	//	AddFunc:    m.onStatefulSetAdd,
-	//	DeleteFunc: m.onStatefulSetDelete,
-	//	UpdateFunc: m.onStatefulSetUpdate,
-	//}
-	//
-	//m.weblogicStatefulSetStore.Store, m.weblogicStatefulSetController = cache.NewInformer(
-	//	&cache.ListWatch{
-	//		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
-	//			options.LabelSelector = constants.WebLogicManagedServerLabel
-	//			return kubeClient.AppsV1beta1().StatefulSets(namespace).List(options)
-	//		},
-	//		WatchFunc: func(options metav1.ListOptions) (watch.Interface, error) {
-	//			options.LabelSelector = constants.WebLogicManagedServerLabel
-	//			return kubeClient.AppsV1beta1().StatefulSets(namespace).Watch(options)
-	//		},
-	//	},
-	//	&v1beta1.StatefulSet{},
-	//	resyncPeriod,
-	//	statefulSetHandler)
+		weblogicManagedServerHandlers)
 
 	replicaSetHandler := cache.ResourceEventHandlerFuncs{
 		AddFunc:    m.onReplicaSetAdd,
@@ -97,7 +71,7 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 		UpdateFunc: m.onReplicaSetUpdate,
 	}
 
-	m.weblogicReplicaSetStore.Store, m.weblogicReplicaSet = cache.NewInformer(
+	m.weblogicManagedServerReplicaSetStore.Store, m.weblogicManagedServerReplicaSet = cache.NewInformer(
 		&cache.ListWatch{
 			ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 				options.LabelSelector = constants.WebLogicManagedServerLabel
@@ -118,7 +92,7 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 		UpdateFunc: m.onHorizontalPodAutoscalerUpdate,
 	}
 
-	m.weblogicHorizontalPodAutoscalingStore.Store, m.weblogicHorizontalPodAutoscaling = cache.NewInformer(
+	m.weblogicManagedServerHorizontalPodAutoscalingStore.Store, m.weblogicManagedServerHorizontalPodAutoscaling = cache.NewInformer(
 		&cache.ListWatch{
 			ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 				options.LabelSelector = constants.WebLogicManagedServerLabel
@@ -136,30 +110,28 @@ func NewController(kubeClient kubernetes.Interface, restClient *rest.RESTClient,
 	return &m, nil
 }
 
-func (m *WeblogicController) onAdd(obj interface{}) {
-	glog.V(4).Info("WeblogicController.onAdd() called")
+func (m *WebLogicManagedServerController) onAdd(obj interface{}) {
+	glog.V(4).Info("WebLogicManagedServerController.onAdd() called")
 
-	weblogicServer := obj.(*types.WebLogicManagedServer)
-	err := createWebLogicManagedServer(weblogicServer, m.client, m.restClient)
+	weblogicManagedServer := obj.(*types.WebLogicManagedServer)
+	err := createWebLogicManagedServer(weblogicManagedServer, m.client, m.restClient)
 	if err != nil {
-		glog.Errorf("Failed to create weblogicServer: %s", err)
-		err = setWebLogicManagedServerState(weblogicServer, m.restClient, types.WebLogicManagedServerFailed, err)
+		glog.Errorf("Failed to create weblogicManagedServer: %s", err)
 	}
 }
 
-func (m *WeblogicController) onDelete(obj interface{}) {
-	glog.V(4).Info("WeblogicController.onDelete() called")
+func (m *WebLogicManagedServerController) onDelete(obj interface{}) {
+	glog.V(4).Info("WebLogicManagedServerController.onDelete() called")
 
-	weblogicServer := obj.(*types.WebLogicManagedServer)
-	err := deleteWebLogicManagedServer(weblogicServer, m.client, m.restClient)
+	weblogicManagedServer := obj.(*types.WebLogicManagedServer)
+	err := deleteWebLogicManagedServer(weblogicManagedServer, m.client, m.restClient)
 	if err != nil {
-		glog.Errorf("Failed to delete weblogicServer: %s", err)
-		err = setWebLogicManagedServerState(weblogicServer, m.restClient, types.WebLogicManagedServerFailed, err)
+		glog.Errorf("Failed to delete weblogicManagedServer: %s", err)
 	}
 }
 
-func (m *WeblogicController) onUpdate(old, cur interface{}) {
-	glog.V(4).Info("WeblogicController.onUpdate() called")
+func (m *WebLogicManagedServerController) onUpdate(old, cur interface{}) {
+	glog.V(4).Info("WebLogicManagedServerController.onUpdate() called")
 	curServer := cur.(*types.WebLogicManagedServer)
 	oldServer := old.(*types.WebLogicManagedServer)
 	if curServer.ResourceVersion == oldServer.ResourceVersion {
@@ -172,104 +144,73 @@ func (m *WeblogicController) onUpdate(old, cur interface{}) {
 	err := createWebLogicManagedServer(curServer, m.client, m.restClient)
 	if err != nil {
 		glog.Errorf("Failed to update server: %s", err)
-		err = setWebLogicManagedServerState(curServer, m.restClient, types.WebLogicManagedServerFailed, err)
 	}
 }
 
-//func (m *WeblogicController) onStatefulSetAdd(obj interface{}) {
-//	glog.V(4).Info("WeblogicController.onStatefulSetAdd() called")
-//
-//	statefulSet := obj.(*v1beta1.StatefulSet)
-//
-//	weblogicServer, err := GetServerForStatefulSet(statefulSet, m.restClient)
-//	if err != nil {
-//		// FIXME: Should we delete the stateful set here???
-//		// it has no server but it has the label.
-//		glog.Errorf("Failed to find server for stateful set: %s(%s):%#v", statefulSet.Name, err.Error(), statefulSet.Labels)
-//		return
-//	}
-//	err = updateServerWithStatefulSet(weblogicServer, statefulSet, m.client, m.restClient)
-//	if err != nil {
-//		glog.Errorf("Failed to create update Server: %s", err)
-//	}
-//}
-//
-////TODO Fix hanldings here. Need to call onStatefulSetAdd ???
-//func (m *WeblogicController) onStatefulSetDelete(obj interface{}) {
-//	glog.V(4).Info("WeblogicController.onStatefulSetDelete() called")
-//	m.onStatefulSetAdd(obj)
-//}
-//
-//func (m *WeblogicController) onStatefulSetUpdate(old, new interface{}) {
-//	glog.V(4).Info("WeblogicController.onStatefulSetUpdate() called")
-//	m.onStatefulSetAdd(new)
-//}
-
-func (m *WeblogicController) onReplicaSetAdd(obj interface{}) {
-	glog.V(4).Info("WeblogicController.onReplicaSetAdd() called")
+func (m *WebLogicManagedServerController) onReplicaSetAdd(obj interface{}) {
+	glog.V(4).Info("WebLogicManagedServerController.onReplicaSetAdd() called")
 
 	replicaSet := obj.(*v1beta1.ReplicaSet)
 
-	weblogicServer, err := GetServerForReplicaSet(replicaSet, m.restClient)
+	weblogicManagedServer, err := GetServerForReplicaSet(replicaSet, m.restClient)
 	if err != nil {
 		// FIXME: Should we delete the replica set here???
 		// it has no server but it has the label.
 		glog.Errorf("Failed to find server for replica set: %s(%s):%#v", replicaSet.Name, err.Error(), replicaSet.Labels)
 		return
 	}
-	err = updateServerWithReplicaSet(weblogicServer, replicaSet, m.client, m.restClient)
+	err = updateServerWithReplicaSet(weblogicManagedServer, replicaSet, m.client, m.restClient)
 	if err != nil {
 		glog.Errorf("Failed to create update Server: %s", err)
 	}
 }
 
 //TODO Fix hanldings here. Need to call onStatefulSetAdd ???
-func (m *WeblogicController) onReplicaSetDelete(obj interface{}) {
-	glog.V(4).Info("WeblogicController.onReplicaSetDelete() called")
+func (m *WebLogicManagedServerController) onReplicaSetDelete(obj interface{}) {
+	glog.V(4).Info("WebLogicManagedServerController.onReplicaSetDelete() called")
 	m.onReplicaSetAdd(obj)
 }
 
-func (m *WeblogicController) onReplicaSetUpdate(old, new interface{}) {
-	glog.V(4).Info("WeblogicController.onReplicaSetUpdate() called")
+func (m *WebLogicManagedServerController) onReplicaSetUpdate(old, new interface{}) {
+	glog.V(4).Info("WebLogicManagedServerController.onReplicaSetUpdate() called")
 	m.onReplicaSetAdd(new)
 }
 
-func (m *WeblogicController) onHorizontalPodAutoscalerAdd(obj interface{}) {
-	glog.V(4).Info("WeblogicController.onHorizontalPodAutoscalerAdd() called")
+func (m *WebLogicManagedServerController) onHorizontalPodAutoscalerAdd(obj interface{}) {
+	glog.V(4).Info("WebLogicManagedServerController.onHorizontalPodAutoscalerAdd() called")
 
 	horizontalPodAutoscaler := obj.(*v1.HorizontalPodAutoscaler)
 
-	weblogicServer, err := GetServerForHorizontalPodAutoscaler(horizontalPodAutoscaler, m.restClient)
+	weblogicManagedServer, err := GetServerForHorizontalPodAutoscaler(horizontalPodAutoscaler, m.restClient)
 	if err != nil {
 		// FIXME: Should we delete the replica set here???
 		// it has no server but it has the label.
 		glog.Errorf("Failed to find server for horizontal pod autoscaler: %s(%s):%#v", horizontalPodAutoscaler.Name, err.Error(), horizontalPodAutoscaler.Labels)
 		return
 	}
-	err = updateServerWithHorizontalPodAutoscaler(weblogicServer, horizontalPodAutoscaler, m.client, m.restClient)
+	err = updateServerWithHorizontalPodAutoscaler(weblogicManagedServer, horizontalPodAutoscaler, m.client, m.restClient)
 	if err != nil {
 		glog.Errorf("Failed to create update Server: %s", err)
 	}
 }
 
 //TODO Fix hanldings here. Need to call onStatefulSetAdd ???
-func (m *WeblogicController) onHorizontalPodAutoscalerDelete(obj interface{}) {
-	glog.V(4).Info("WeblogicController.onHorizontalPodAutoscalerDelete() called")
+func (m *WebLogicManagedServerController) onHorizontalPodAutoscalerDelete(obj interface{}) {
+	glog.V(4).Info("WebLogicManagedServerController.onHorizontalPodAutoscalerDelete() called")
 	m.onHorizontalPodAutoscalerAdd(obj)
 }
 
-func (m *WeblogicController) onHorizontalPodAutoscalerUpdate(old, new interface{}) {
-	glog.V(4).Info("WeblogicController.onHorizontalPodAutoscalerUpdate() called")
+func (m *WebLogicManagedServerController) onHorizontalPodAutoscalerUpdate(old, new interface{}) {
+	glog.V(4).Info("WebLogicManagedServerController.onHorizontalPodAutoscalerUpdate() called")
 	m.onHorizontalPodAutoscalerAdd(new)
 }
 
-// Run the Weblogic controller
-func (m *WeblogicController) Run(stopChan <-chan struct{}) {
-	glog.Infof("Starting Weblogic controller")
-	go m.weblogicServerController.Run(stopChan)
-	//go m.weblogicStatefulSetController.Run(stopChan)
-	go m.weblogicReplicaSet.Run(stopChan)
-	go m.weblogicHorizontalPodAutoscaling.Run(stopChan)
+// Run the WebLogic controller
+func (m *WebLogicManagedServerController) Run(stopChan <-chan struct{}) {
+	glog.Infof("Starting WebLogic controller")
+	go m.weblogicManagedServerController.Run(stopChan)
+	go m.weblogicManagedServerReplicaSet.Run(stopChan)
+	go m.weblogicManagedServerHorizontalPodAutoscaling.Run(stopChan)
 	<-stopChan
-	glog.Infof("Shutting down Weblogic controller")
+	glog.Infof("Shutting down WebLogic controller")
 }
