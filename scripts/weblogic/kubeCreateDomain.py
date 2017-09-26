@@ -56,7 +56,10 @@ try:
 
     # Define the user password for weblogic
     # =====================================
-    cd('/Security/%s/User/weblogic' % domainName)
+    cd('/')
+
+    cd('Security/' + domainName + '/User/weblogic')
+    cmo.setName(username)
     cmo.setPassword(password)
 
     # Create Managed Servers
@@ -88,6 +91,7 @@ try:
     # ============
     writeDomain(domainHome)
     closeTemplate()
+    print "Domain Created Successfully "
 
     # Exit WLST
     # =========
