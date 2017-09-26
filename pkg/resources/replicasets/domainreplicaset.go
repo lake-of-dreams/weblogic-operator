@@ -22,7 +22,7 @@ func domainHomeEnvVar(domain *types.WebLogicDomain) v1.EnvVar {
 }
 
 func managedServerCountEnvVar(domain *types.WebLogicDomain) v1.EnvVar {
-	return v1.EnvVar{Name: "MANAGED_SERVER_COUNT", Value: domain.Spec.ManagedServerCount}
+	return v1.EnvVar{Name: "MANAGED_SERVER_COUNT", Value: fmt.Sprint(domain.Spec.ManagedServerCount)}
 }
 
 func domainNamespaceEnvVar() v1.EnvVar {

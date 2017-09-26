@@ -9,8 +9,8 @@ import (
 var _ = runtime.Object(&WebLogicDomain{})
 
 const (
-	defaultDomainVersion  = "12.2.1.2"
-	defaultDomainReplicas = 1
+	defaultDomainVersion            = "12.2.1.2"
+	defaultDomainManagedServerCount = 1
 )
 
 // WebLogicManagedServerSpec defines the attributes a user can specify when creating a server
@@ -24,7 +24,7 @@ type WebLogicDomainSpec struct {
 	// More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 	// +optional
 	NodeSelector       map[string]string `json:"nodeSelector,omitempty"`
-	ManagedServerCount string            `json:"managedServerCount,omitempty"`
+	ManagedServerCount int             `json:"managedServerCount"`
 }
 
 // WebLogicDomain represents a doamin spec and associated metadata
@@ -45,8 +45,8 @@ type WebLogicDomainList struct {
 // For example a user can choose to omit the version
 // and number of replicas
 func (c *WebLogicDomain) EnsureDefaults() *WebLogicDomain {
-	if c.Spec.Replicas == 0 || c.Spec.Replicas > 1 {
-		c.Spec.Replicas = defaultDomainReplicas
+	if c.Spec.ManagedServerCount == 0 {
+		c.Spec.ManagedServerCount = defaultDomainManagedServerCount
 	}
 
 	if c.Spec.Version == "" {
