@@ -1,10 +1,9 @@
-import sys, socket
-
 def addCluster(clusterName):
     cd('/')
     clusterId = create(clusterName, 'Cluster')
     cd('/')
     return clusterId;
+
 
 def addManagedServer(serverName, serverPort):
     cd('/')
@@ -17,6 +16,7 @@ def addManagedServer(serverName, serverPort):
 
     cd('/')
     return;
+
 
 ### MAIN
 
@@ -69,7 +69,7 @@ try:
     serverlist = [];
     for x in range(1, managedServerCount + 1):
         port += 2
-        servername = 'managedserver-' + (x-1)
+        servername = 'managedserver-' + (x - 1)
         host = 'localhost'
         dictServer = {'ServerName': servername, 'Port': port, 'Host': host}
         serverlist.append(dict)
@@ -94,4 +94,4 @@ try:
 except Exception, e:
     e.printStackTrace()
     dumpStack()
-    raise("Create Domain Failed")
+    raise ("Create Domain Failed")
