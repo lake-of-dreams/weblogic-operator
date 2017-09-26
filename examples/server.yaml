@@ -1,16 +1,12 @@
 ---
 apiVersion: "weblogic.oracle.com/v1"
 kind: WebLogicManagedServer
-metadata:
-  name: adminserver
----
-apiVersion: "weblogic.oracle.com/v1"
-kind: WebLogicManagedServer
-metadata:
-  name: managedserver
+#metadata:
+#  name: managedserver
 spec:
   version: 12.2.1.2
-  replicas: 1
+  replicas: 2
+  domainName: basedomain
   resources:
     requests:
       memory: "64Mi"

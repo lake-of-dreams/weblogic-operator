@@ -28,10 +28,17 @@ spec:
         app: weblogic-operator
     spec:
 #      serviceAccountName: weblogic-operator
+      volumes:
+      - name: weblogic-operator-storage
+        persistentVolumeClaim:
+        claimName: weblogic-operator-claim
       containers:
       - name: weblogic-operator-controller
         imagePullPolicy: Always
         image: fmwplt/weblogic-operator:{{VERSION}}
+        volumeMounts:
+        - mountPath: "/u01/oracle/weblogic-operator"
+          name: weblogic-operator-storage
         ports:
         - containerPort: 9999
         args:
