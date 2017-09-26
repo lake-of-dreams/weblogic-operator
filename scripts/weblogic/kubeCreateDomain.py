@@ -6,126 +6,94 @@ def addCluster(clusterName):
     cd('/')
     return clusterId;
 
-
-def addMachine(machineName):
-    cd('/')
-    machine = create(machineName, 'Machine')
-    cd('/')
-    return machine;
-
-
-def addNodeManager(nmHost):
-    cd('/')
-    cd('/Machines/' + nmHost)
-    nm = create(nmHost, 'NodeManager')
-    nm.setListenAddress(nmHost)
-    nm.setListenPort(nodeMgrPort)
-    nm.setDebugEnabled(true)
-    cd('/')
-    print(nm)
-    return;
-
-
-def addManagedServer(serverName, serverPort, serverHost, serverMac):
+def addManagedServer(serverName, serverPort):
     cd('/')
     create(serverName, 'Server')
     cd('Servers/' + serverName)
     set('ListenPort', serverPort)
-    set('ListenAddress', serverHost)
-    set('Machine', serverMac)
+    set('ListenAddress', '')
     if clusterExist:
         set('Cluster', cluster)
 
     cd('/')
     return;
 
-
-def addAdminServer():
-    cd('/')
-    set('Name', domainName)
-    cd('/Servers/AdminServer')
-    set('Name', 'AdminServer')
-    set('ListenPort', adminPort)
-    set('ListenAddress', adminHost)
-
-    cd('/')
-
-    cd('Security/' + domainName + '/User/weblogic')
-    cmo.setName(username)
-    cmo.setPassword(password)
-
-    cd('/')
-    macA = create(adminHost, 'Machine')
-    cd('/Machines/' + adminHost)
-    nm = create(adminHost, 'NodeManager')
-    nm.setListenAddress(adminHost)
-    nm.setListenPort(nodeMgrPort)
-    nm.setDebugEnabled(true)
-
-    cd('/')
-    cd('/Servers/AdminServer')
-    set('Machine', macA)
-    return;
-
 ### MAIN
 
 try:
-    clusterExist = False
+    # Variable Definitions
+    # ======================
+    oracleHome = os.environ.get("ORACLE_HOME", "/u01/oracle")
+    domainName = os.environ.get("DOMAIN_NAME", "basedomain")
+    domainHome = os.environ.get("DOMAIN_HOME", '/u01/oracle/user_projects/domains/%s' % domainName)
+    managedServerCount = int(os.environ.get("MANAGED_SERVER_COUNT", "1"))
+    adminPort = int("7001")
+    username = 'weblogic'
+    password = 'welcome1'
 
-    domainDir = sys.argv[1]
-    username = sys.argv[2]
-    password = sys.argv[3]
+    print('ORACLE_HOME              : [%s]' % oracleHome);
+    print('DOMAIN_NAME              : [%s]' % domainName);
+    print('DOMAIN_HOME              : [%s]' % domainHome);
+    print('MANAGED_SERVER_COUNT     : [%s]' % managedServerCount);
+    print('ADMIN_PORT               : [%s]' % adminPort);
+    print('USERNAME                 : [%s]' % username);
+    print('PASSWORD                 : [%s]' % password);
 
-    adminHost = sys.argv[4]
-    adminPort = int(sys.argv[5])
+    # Open default domain template
+    # ======================
+    readTemplate('%s/wlserver/common/templates/wls/wls.jar' % oracleHome)
 
-    managedHostCount = int(sys.argv[6])
+    set('Name', domainName)
+    setOption('DomainName', domainName)
 
-    nodeMgrPort = int(sys.argv[7])
+    # Disable Admin Console
+    # --------------------
+    # cmo.setConsoleEnabled(false)
 
-    if domainDir.endsWith("/"):
-        domainDir[-1].replace("/", "")
+    # Configure the Administration Server and SSL port.
+    # =========================================================
+    cd('/Servers/AdminServer')
+    set('ListenAddress', '')
+    set('ListenPort', adminPort)
 
-    data = domainDir.split("/");
-    domainName = data(len(data) - 1)
+    # Define the user password for weblogic
+    # =====================================
+    cd('/Security/%s/User/weblogic' % domainName)
+    cmo.setPassword(password)
 
-    print "DOMAIN NAME: " + domainName
-    print "DOMAIN HOME: " + domainDir
-    print "USERNAME: " + username
-    print "PASSWORD: " + password
-
-    print "ADMIN SERVER HOST: " + adminHost
-    print "ADMIN SERVER PORT: " + str(adminPort)
-    print "NODE MANAGER PORT: " + str(nodeMgrPort)
-
-    selectTemplate('Basic WebLogic Server Domain')
-    loadTemplates()
-
-    addAdminServer()
-
-    if managedHostCount > 1:
+    # Create Managed Servers
+    # =====================================
+    if managedServerCount > 1:
         clusterExist = True
 
     if clusterExist:
-        cluster = addCluster('Cluster1')
+        cluster = addCluster('cluster-0')
 
-    initport = adminPort;
-    list = [];
-    for x in range(1, managedHostCount + 1):
-        initport += 2
-        servername = 'Server' + x
+    port = adminPort;
+    serverlist = [];
+    for x in range(1, managedServerCount + 1):
+        port += 2
+        servername = 'managedserver-' + (x-1)
         host = 'localhost'
-        dictServer = {'ServerName': servername, 'Port': initport, 'Host': host}
-        list.append(dict)
+        dictServer = {'ServerName': servername, 'Port': port, 'Host': host}
+        serverlist.append(dict)
 
-        mac = addMachine(host)
-        addNodeManager(host)
-        addManagedServer(servername, initport, host, mac)
+        addManagedServer(servername, initport)
 
-    writeDomain(domainDir)
+    serverListFile = '%s/serverList.txt' % domainHome
+    file = open(serverListFile, 'w')
+    for item in serverlist:
+        file.write("%s\n" % item)
+    file.close()
+
+    # Write Domain
+    # ============
+    writeDomain(domainHome)
     closeTemplate()
-    print
-    "Domain " + domainName + " Created Successfully!"
+
+    # Exit WLST
+    # =========
+    exit()
 
 except Exception, e:
     e.printStackTrace()
