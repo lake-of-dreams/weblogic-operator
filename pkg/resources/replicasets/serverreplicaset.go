@@ -7,6 +7,7 @@ import (
 	"weblogic-operator/pkg/constants"
 	"k8s.io/api/extensions/v1beta1"
 	"weblogic-operator/pkg/types"
+	"weblogic-operator/pkg/domain"
 )
 
 func serverNameEnvVar(server *types.WebLogicManagedServer) v1.EnvVar {
@@ -34,7 +35,7 @@ func WebLogicManagedServerContainer(server *types.WebLogicManagedServer) v1.Cont
 			ContainerPort: 7001},
 		},
 		VolumeMounts: []v1.VolumeMount{{
-			Name:      server.Spec.DomainName + "_storage",
+			Name:      server.Spec.DomainName + "-storage",
 			MountPath: "/u01/oracle/user_projects"},
 		},
 		Env: []v1.EnvVar{
@@ -49,11 +50,11 @@ func WebLogicManagedServerContainer(server *types.WebLogicManagedServer) v1.Cont
 			"welcome1",
 		},
 		Lifecycle: &v1.Lifecycle{
-			PostStart: &v1.Handler{
-				Exec: &v1.ExecAction{
-					Command: []string{"echo Hello World!!"},
-				},
-			},
+			//PostStart: &v1.Handler{
+			//	Exec: &v1.ExecAction{
+			//		Command: []string{"echo Hello World!!"},
+			//	},
+			//},
 			PreStop: &v1.Handler{
 				Exec: &v1.ExecAction{
 					Command: []string{"/u01/oracle/user_projects/domains/" + server.Spec.DomainName + "/bin/stopManagedWebLogic.sh",
@@ -91,6 +92,7 @@ func NewForServer(server *types.WebLogicManagedServer, serviceName string) *v1be
 			},
 			Template: v1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
+					Name: server.Spec.DomainName + "-managedserver",
 					Labels: map[string]string{
 						constants.WebLogicManagedServerLabel: server.Name,
 						constants.WebLogicDomainLabel:        server.Spec.DomainName,
@@ -99,7 +101,7 @@ func NewForServer(server *types.WebLogicManagedServer, serviceName string) *v1be
 				},
 				Spec: v1.PodSpec{
 					Volumes: []v1.Volume{{
-						Name: server.Spec.DomainName + "_storage",
+						Name: server.Spec.DomainName + "-storage",
 						VolumeSource: v1.VolumeSource{
 							PersistentVolumeClaim: &v1.PersistentVolumeClaimVolumeSource{
 								ClaimName: "weblogic-operator-claim",

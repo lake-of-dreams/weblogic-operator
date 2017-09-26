@@ -17,6 +17,14 @@ func domainNameEnvVar(domain *types.WebLogicDomain) v1.EnvVar {
 	return v1.EnvVar{Name: "DOMAIN_NAME", Value: domain.Name}
 }
 
+func domainHomeEnvVar(domain *types.WebLogicDomain) v1.EnvVar {
+	return v1.EnvVar{Name: "DOMAIN_HOME", Value: "/u01/oracle/user_projects/domains/" + domain.Name}
+}
+
+func managedServerCountEnvVar(domain *types.WebLogicDomain) v1.EnvVar {
+	return v1.EnvVar{Name: "MANAGED_SERVER_COUNT", Value: domain.Spec.ManagedServerCount}
+}
+
 func domainNamespaceEnvVar() v1.EnvVar {
 	return v1.EnvVar{
 		Name: "POD_NAMESPACE",
@@ -38,29 +46,23 @@ func weblogicDomainContainer(domain *types.WebLogicDomain) v1.Container {
 			ContainerPort: 7001},
 		},
 		VolumeMounts: []v1.VolumeMount{{
-			Name:      domain.Name + "_storage",
+			Name:      domain.Name + "-storage",
 			MountPath: "/u01/oracle/user_projects"},
 		},
 		Env: []v1.EnvVar{
 			oracleHomeEnvVar(),
 			domainNameEnvVar(domain),
+			domainHomeEnvVar(domain),
+			managedServerCountEnvVar(domain),
 			domainNamespaceEnvVar(),
 		},
-		Command: []string{"/u01/oracle/user_projects/domainSetup.sh",
-			"/u01/oracle/user_projects/domains/" + domain.Name,
-			"weblogic",
-			"welcome1",
-			"localhost",
-			"7001",
-			string(domain.Spec.Server.Spec.Replicas),
-			"5556",
-		},
+		Command: []string{"/u01/oracle/user_projects/domainSetup.sh"},
 		Lifecycle: &v1.Lifecycle{
-			PostStart: &v1.Handler{
-				Exec: &v1.ExecAction{
-					Command: []string{"echo Hello World!!"},
-				},
-			},
+			//PostStart: &v1.Handler{
+			//	Exec: &v1.ExecAction{
+			//		Command: []string{"echo Hello World!!"},
+			//	},
+			//},
 			PreStop: &v1.Handler{
 				Exec: &v1.ExecAction{
 					Command: []string{"/u01/oracle/user_projects/domains/" + domain.Name + "/bin/stopWebLogic.sh"},
@@ -93,6 +95,7 @@ func NewForDomain(domain *types.WebLogicDomain, serviceName string) *v1beta1.Rep
 			},
 			Template: v1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
+					Name: domain.Name + "-adminserver",
 					Labels: map[string]string{
 						constants.WebLogicDomainLabel: domain.Name,
 						domain.Name:                   "adminserver",
@@ -100,7 +103,7 @@ func NewForDomain(domain *types.WebLogicDomain, serviceName string) *v1beta1.Rep
 				},
 				Spec: v1.PodSpec{
 					Volumes: []v1.Volume{{
-						Name: domain.Name + "_storage",
+						Name: domain.Name + "-storage",
 						VolumeSource: v1.VolumeSource{
 							PersistentVolumeClaim: &v1.PersistentVolumeClaimVolumeSource{
 								ClaimName: "weblogic-operator-claim",
