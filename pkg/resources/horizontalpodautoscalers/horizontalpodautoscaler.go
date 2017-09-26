@@ -1,10 +1,10 @@
 package horizontalpodautoscalers
 
 import (
+	"k8s.io/api/autoscaling/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"weblogic-operator/pkg/constants"
 	"weblogic-operator/pkg/types"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/api/autoscaling/v1"
 )
 
 // NewForHorizontalPodAutoscaling creates a new HPA for the given WebLogicManagedServer - managedserver.
@@ -17,15 +17,15 @@ func NewForHorizontalPodAutoscaling(server *types.WebLogicManagedServer, service
 
 	hpa := &v1.HorizontalPodAutoscaler{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      constants.HorizontalPodAutoscalerName,
+			Name: constants.HorizontalPodAutoscalerName,
 		},
 		Spec: v1.HorizontalPodAutoscalerSpec{
 			ScaleTargetRef: v1.CrossVersionObjectReference{
 				Kind: constants.HorizontalPodAutoscalerKind,
 				Name: constants.HorizontalPodAutoscalerTargetLabel,
 			},
-			MinReplicas: hpaMinReplicas,
-			MaxReplicas: maxReplicas,
+			MinReplicas:                    hpaMinReplicas,
+			MaxReplicas:                    maxReplicas,
 			TargetCPUUtilizationPercentage: hpaTargetCPUUtilization,
 		},
 	}

@@ -24,20 +24,20 @@ type WebLogicDomainSpec struct {
 	// More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 	// +optional
 	NodeSelector       map[string]string `json:"nodeSelector,omitempty"`
-	ManagedServerCount string             `json:"managedServerCount,omitempty"`
+	ManagedServerCount string            `json:"managedServerCount,omitempty"`
 }
 
 // WebLogicDomain represents a doamin spec and associated metadata
 type WebLogicDomain struct {
-	metav1.TypeMeta         `json:",inline"`
-	metav1.ObjectMeta       `json:"metadata"`
-	Spec WebLogicDomainSpec `json:"spec"`
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata"`
+	Spec              WebLogicDomainSpec `json:"spec"`
 }
 
 type WebLogicDomainList struct {
-	metav1.TypeMeta        `json:",inline"`
-	metav1.ListMeta        `json:"metadata"`
-	Items []WebLogicDomain `json:"items"`
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata"`
+	Items           []WebLogicDomain `json:"items"`
 }
 
 // EnsureDefaults will ensure that if a user omits and fields in the

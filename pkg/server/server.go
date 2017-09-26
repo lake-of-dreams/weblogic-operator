@@ -3,21 +3,21 @@ package server
 import (
 	"fmt"
 
-	"k8s.io/api/extensions/v1beta1"
-	"k8s.io/api/core/v1"
 	autoscalingv1 "k8s.io/api/autoscaling/v1"
+	"k8s.io/api/core/v1"
+	"k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 
 	"github.com/golang/glog"
 
+	"strings"
 	"weblogic-operator/pkg/constants"
+	"weblogic-operator/pkg/resources/horizontalpodautoscalers"
+	"weblogic-operator/pkg/resources/replicasets"
 	"weblogic-operator/pkg/resources/services"
 	"weblogic-operator/pkg/types"
-	"weblogic-operator/pkg/resources/replicasets"
-	"weblogic-operator/pkg/resources/horizontalpodautoscalers"
-	"strings"
 )
 
 // HasServerNameLabel returns true if the given labels map matches the given

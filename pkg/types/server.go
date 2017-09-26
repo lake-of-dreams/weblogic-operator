@@ -1,10 +1,10 @@
 package types
 
 import (
+	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/api/core/v1"
 )
 
 var _ = runtime.Object(&WebLogicManagedServer{})
@@ -29,21 +29,21 @@ type WebLogicManagedServerSpec struct {
 	// Cannot be updated.
 	// More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 	// +optional
-	Resources v1.ResourceRequirements `json:"resources,omitempty" protobuf:"bytes,8,opt,name=resources"`
-	DomainName string `json:"domainName"`
+	Resources  v1.ResourceRequirements `json:"resources,omitempty" protobuf:"bytes,8,opt,name=resources"`
+	DomainName string                  `json:"domainName"`
 }
 
 // WebLogicManagedServer represents a server spec and associated metadata
 type WebLogicManagedServer struct {
-	metav1.TypeMeta                    `json:",inline"`
-	metav1.ObjectMeta                  `json:"metadata"`
-	Spec   WebLogicManagedServerSpec   `json:"spec"`
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata"`
+	Spec              WebLogicManagedServerSpec `json:"spec"`
 }
 
 type WebLogicManagedServerList struct {
-	metav1.TypeMeta               `json:",inline"`
-	metav1.ListMeta               `json:"metadata"`
-	Items []WebLogicManagedServer `json:"items"`
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata"`
+	Items           []WebLogicManagedServer `json:"items"`
 }
 
 // EnsureDefaults will ensure that if a user omits and fields in the

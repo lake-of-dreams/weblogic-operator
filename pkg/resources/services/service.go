@@ -30,6 +30,7 @@ func NewServiceForServer(server *types.WebLogicManagedServer) *v1.Service {
 }
 
 func NewServiceForDomain(domain *types.WebLogicDomain) *v1.Service {
+	weblogicPort := v1.ServicePort{Port: 7001}
 	svc := &v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels:    map[string]string{constants.WebLogicDomainLabel: domain.Name},
@@ -37,6 +38,8 @@ func NewServiceForDomain(domain *types.WebLogicDomain) *v1.Service {
 			Namespace: domain.Namespace,
 		},
 		Spec: v1.ServiceSpec{
+			Type:  v1.ServiceTypeNodePort,
+			Ports: []v1.ServicePort{weblogicPort},
 			Selector: map[string]string{
 				constants.WebLogicDomainLabel: domain.Name,
 			},

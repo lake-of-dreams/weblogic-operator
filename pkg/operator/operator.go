@@ -15,13 +15,13 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 
+	"io"
+	"k8s.io/apimachinery/pkg/api/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"weblogic-operator/pkg/controllers"
+	"weblogic-operator/pkg/domain"
 	"weblogic-operator/pkg/server"
 	"weblogic-operator/pkg/types"
-	"weblogic-operator/pkg/domain"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
-	"io"
 )
 
 // Operator operates things!

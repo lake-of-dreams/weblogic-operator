@@ -3,11 +3,11 @@ package replicasets
 import (
 	"fmt"
 	"k8s.io/api/core/v1"
+	"k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"weblogic-operator/pkg/constants"
-	"k8s.io/api/extensions/v1beta1"
-	"weblogic-operator/pkg/types"
 	"weblogic-operator/pkg/domain"
+	"weblogic-operator/pkg/types"
 )
 
 func serverNameEnvVar(server *types.WebLogicManagedServer) v1.EnvVar {
@@ -77,7 +77,7 @@ func NewForServer(server *types.WebLogicManagedServer, serviceName string) *v1be
 			Labels: map[string]string{
 				constants.WebLogicManagedServerLabel: server.Name,
 				constants.WebLogicDomainLabel:        server.Spec.DomainName,
-				server.Spec.DomainName:              "managedserver",
+				server.Spec.DomainName:               "managedserver",
 			},
 		},
 		Spec: v1beta1.ReplicaSetSpec{
@@ -87,7 +87,7 @@ func NewForServer(server *types.WebLogicManagedServer, serviceName string) *v1be
 				MatchLabels: map[string]string{
 					constants.WebLogicManagedServerLabel: server.Name,
 					constants.WebLogicDomainLabel:        server.Spec.DomainName,
-					server.Spec.DomainName:              "managedserver",
+					server.Spec.DomainName:               "managedserver",
 				},
 			},
 			Template: v1.PodTemplateSpec{
@@ -96,7 +96,7 @@ func NewForServer(server *types.WebLogicManagedServer, serviceName string) *v1be
 					Labels: map[string]string{
 						constants.WebLogicManagedServerLabel: server.Name,
 						constants.WebLogicDomainLabel:        server.Spec.DomainName,
-						server.Spec.DomainName:              "managedserver",
+						server.Spec.DomainName:               "managedserver",
 					},
 				},
 				Spec: v1.PodSpec{

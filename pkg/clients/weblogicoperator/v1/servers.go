@@ -5,8 +5,8 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 
-	"weblogic-operator/pkg/types"
 	"weblogic-operator/pkg/constants"
+	"weblogic-operator/pkg/types"
 )
 
 // WebLogicManagedServersGetter has a method to return a WebLogicManagedServerInterface.
