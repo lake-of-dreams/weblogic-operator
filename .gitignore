@@ -6,7 +6,6 @@ target/
 # IntelliJ Idea
 .idea/
 vendor/
-dist/
 out/
 *.ipr
 *.iws
