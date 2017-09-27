@@ -3,6 +3,7 @@ package domain
 import (
 	"time"
 
+	"github.com/golang/glog"
 	"k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -11,9 +12,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
-	"github.com/golang/glog"
-	"weblogic-operator/pkg/types"
 	"weblogic-operator/pkg/constants"
+	"weblogic-operator/pkg/types"
 )
 
 type StoreToWebLogicDomainLister struct {

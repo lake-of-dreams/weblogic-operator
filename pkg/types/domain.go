@@ -9,8 +9,8 @@ import (
 var _ = runtime.Object(&WebLogicDomain{})
 
 const (
-	defaultDomainVersion  = "12.2.1.2"
-	defaultDomainReplicas = 1
+	defaultDomainVersion            = "12.2.1.2"
+	defaultDomainReplicas           = 1
 	defaultDomainManagedServerCount = 1
 )
 

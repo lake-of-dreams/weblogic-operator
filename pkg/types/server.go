@@ -18,7 +18,7 @@ const (
 // WebLogicManagedServerSpec defines the attributes a user can specify when creating a server
 type WebLogicManagedServerSpec struct {
 	DomainName   string `json:"domainName"`
-	ServersToRun int32    `json:"serversToRun,omitempty"`
+	ServersToRun int32  `json:"serversToRun,omitempty"`
 	Domain       WebLogicDomain
 	// NodeSelector is a selector which must be true for the pod to fit on a node.
 	// Selector which must match a node's labels for the pod to be scheduled on that node.
