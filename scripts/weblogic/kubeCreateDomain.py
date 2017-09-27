@@ -43,7 +43,8 @@ try:
 
     # Open default domain template
     # ======================
-    readTemplate("/u01/oracle/wlserver/common/templates/wls/wls_jrf.jar")
+    selectTemplate('Basic WebLogic Server Domain')
+    loadTemplates()
 
     set('Name', domainName)
     setOption('DomainName', domainName)
