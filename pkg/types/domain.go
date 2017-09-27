@@ -9,7 +9,7 @@ import (
 var _ = runtime.Object(&WebLogicDomain{})
 
 const (
-	defaultDomainVersion            = "12.2.1.2"
+	defaultDomainVersion  = "12.2.1.2"
 	defaultDomainReplicas = 1
 	defaultDomainManagedServerCount = 1
 )
@@ -17,15 +17,15 @@ const (
 // WebLogicManagedServerSpec defines the attributes a user can specify when creating a server
 type WebLogicDomainSpec struct {
 	// Version defines the Weblogic Docker image version
-	Version string `json:"version"`
+	Version            string `json:"version"`
+	ManagedServerCount int    `json:"managedServerCount"`
 	// Replicas defines the number of running Weblogic server instances
 	Replicas int32 `json:"replicas,omitempty"`
 	// NodeSelector is a selector which must be true for the pod to fit on a node.
 	// Selector which must match a node's labels for the pod to be scheduled on that node.
 	// More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 	// +optional
-	NodeSelector       map[string]string `json:"nodeSelector,omitempty"`
-	ManagedServerCount int             `json:"managedServerCount"`
+	NodeSelector map[string]string `json:"nodeSelector,omitempty"`
 }
 
 // WebLogicDomain represents a doamin spec and associated metadata
