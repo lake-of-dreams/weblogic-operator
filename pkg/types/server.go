@@ -5,11 +5,14 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/runtime/serializer"
+	"k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/rest"
 	"weblogic-operator/pkg/constants"
-	"weblogic-operator/pkg/operator"
 )
 
 var _ = runtime.Object(&WebLogicManagedServer{})
+var ServerRESTClient *rest.RESTClient
 
 const (
 	defaultServersToRun = 0
@@ -34,15 +37,15 @@ type WebLogicManagedServerSpec struct {
 
 // WebLogicManagedServer represents a server spec and associated metadata
 type WebLogicManagedServer struct {
-	metav1.TypeMeta                `json:",inline"`
-	metav1.ObjectMeta              `json:"metadata"`
-	Spec WebLogicManagedServerSpec `json:"spec"`
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata"`
+	Spec              WebLogicManagedServerSpec `json:"spec"`
 }
 
 type WebLogicManagedServerList struct {
-	metav1.TypeMeta               `json:",inline"`
-	metav1.ListMeta               `json:"metadata"`
-	Items []WebLogicManagedServer `json:"items"`
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata"`
+	Items           []WebLogicManagedServer `json:"items"`
 }
 
 // EnsureDefaults will ensure that if a user omits and fields in the
@@ -59,7 +62,7 @@ func (c *WebLogicManagedServer) EnsureDefaults() *WebLogicManagedServer {
 
 func (c *WebLogicManagedServer) PopulateDomain() *WebLogicManagedServer {
 	domain := &WebLogicDomain{}
-	_ := operator.DomainRESTClient.Get().
+	_ := DomainRESTClient.Get().
 		Resource(constants.WebLogicDomainResourceKindPlural).
 		Namespace(c.Namespace).
 		Name(c.Spec.DomainName).
@@ -76,4 +79,17 @@ func (c *WebLogicManagedServer) GetObjectKind() schema.ObjectKind {
 
 func (c *WebLogicManagedServerList) GetObjectKind() schema.ObjectKind {
 	return &c.TypeMeta
+}
+
+func NewManagedServerRESTClient(config *rest.Config) (*rest.RESTClient, error) {
+	//if err := types.AddToScheme(scheme.Scheme); err != nil {
+	//	return nil, err
+	//}
+	config.GroupVersion = &WeblogicManagedServerSchemeGroupVersion
+	config.APIPath = "/apis"
+	config.ContentType = runtime.ContentTypeJSON
+	config.NegotiatedSerializer = serializer.DirectCodecFactory{CodecFactory: serializer.NewCodecFactory(scheme.Scheme)}
+
+	ServerRESTClient, _ = rest.RESTClientFor(config)
+	return rest.RESTClientFor(config)
 }

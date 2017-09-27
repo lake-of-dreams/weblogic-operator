@@ -9,10 +9,7 @@ import (
 	"github.com/golang/glog"
 
 	"k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 
 	"io"
@@ -24,9 +21,6 @@ import (
 	"weblogic-operator/pkg/types"
 )
 
-var DomainRESTClient *rest.RESTClient
-var ServerRESTClient *rest.RESTClient
-
 // Operator operates things!
 type Operator struct {
 	Controllers []controllers.Controller
@@ -34,8 +28,8 @@ type Operator struct {
 
 // NewWeblogicOperator instantiates a Weblogic Operator.
 func NewWeblogicOperator(restConfig *rest.Config) (*Operator, error) {
-	managedServerRESTClient, err := newManagedServerRESTClient(restConfig)
-	domainRESTClient, err := newDomainRESTClient(restConfig)
+	managedServerRESTClient, err := types.NewManagedServerRESTClient(restConfig)
+	domainRESTClient, err := types.NewDomainRESTClient(restConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -127,32 +121,6 @@ func (o *Operator) Run() {
 		glog.Infof("Received %s, shutting down...", signal.String())
 		close(stopChan)
 	}
-}
-
-func newManagedServerRESTClient(config *rest.Config) (*rest.RESTClient, error) {
-	//if err := types.AddToScheme(scheme.Scheme); err != nil {
-	//	return nil, err
-	//}
-	config.GroupVersion = &types.WeblogicManagedServerSchemeGroupVersion
-	config.APIPath = "/apis"
-	config.ContentType = runtime.ContentTypeJSON
-	config.NegotiatedSerializer = serializer.DirectCodecFactory{CodecFactory: serializer.NewCodecFactory(scheme.Scheme)}
-
-	ServerRESTClient, _ = rest.RESTClientFor(config)
-	return rest.RESTClientFor(config)
-}
-
-func newDomainRESTClient(config *rest.Config) (*rest.RESTClient, error) {
-	//if err := types.AddToScheme(scheme.Scheme); err != nil {
-	//	return nil, err
-	//}
-	config.GroupVersion = &types.WebLogicDomainSchemeGroupVersion
-	config.APIPath = "/apis"
-	config.ContentType = runtime.ContentTypeJSON
-	config.NegotiatedSerializer = serializer.DirectCodecFactory{CodecFactory: serializer.NewCodecFactory(scheme.Scheme)}
-
-	DomainRESTClient, _ = rest.RESTClientFor(config)
-	return rest.RESTClientFor(config)
 }
 
 func copyScripts() error {

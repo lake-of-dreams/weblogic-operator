@@ -4,9 +4,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/runtime/serializer"
+	"k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/rest"
 )
 
 var _ = runtime.Object(&WebLogicDomain{})
+var DomainRESTClient *rest.RESTClient
 
 const (
 	defaultDomainVersion            = "12.2.1.2"
@@ -30,15 +34,15 @@ type WebLogicDomainSpec struct {
 
 // WebLogicDomain represents a doamin spec and associated metadata
 type WebLogicDomain struct {
-	metav1.TypeMeta         `json:",inline"`
-	metav1.ObjectMeta       `json:"metadata"`
-	Spec WebLogicDomainSpec `json:"spec"`
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata"`
+	Spec              WebLogicDomainSpec `json:"spec"`
 }
 
 type WebLogicDomainList struct {
-	metav1.TypeMeta        `json:",inline"`
-	metav1.ListMeta        `json:"metadata"`
-	Items []WebLogicDomain `json:"items"`
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata"`
+	Items           []WebLogicDomain `json:"items"`
 }
 
 // EnsureDefaults will ensure that if a user omits and fields in the
@@ -67,4 +71,17 @@ func (c *WebLogicDomain) GetObjectKind() schema.ObjectKind {
 
 func (c *WebLogicDomainList) GetObjectKind() schema.ObjectKind {
 	return &c.TypeMeta
+}
+
+func NewDomainRESTClient(config *rest.Config) (*rest.RESTClient, error) {
+	//if err := types.AddToScheme(scheme.Scheme); err != nil {
+	//	return nil, err
+	//}
+	config.GroupVersion = &WebLogicDomainSchemeGroupVersion
+	config.APIPath = "/apis"
+	config.ContentType = runtime.ContentTypeJSON
+	config.NegotiatedSerializer = serializer.DirectCodecFactory{CodecFactory: serializer.NewCodecFactory(scheme.Scheme)}
+
+	DomainRESTClient, _ = rest.RESTClientFor(config)
+	return rest.RESTClientFor(config)
 }
