@@ -5,15 +5,23 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"weblogic-operator/pkg/constants"
 	"weblogic-operator/pkg/types"
+	"github.com/golang/glog"
+	"fmt"
 )
 
 // NewServiceForServer will return a new NodePort Kubernetes service for a WeblogicManagedServer
 func NewServiceForServer(server *types.WebLogicManagedServer) *v1.Service {
-	startPort := 7001
+	var startPort int32 = 7001
+	//var weblogicPorts []v1.ServicePort
 	weblogicPorts := make([]v1.ServicePort, server.Spec.Domain.Spec.ManagedServerCount)
+
 	for i := 1; i <= server.Spec.Domain.Spec.ManagedServerCount; i++ {
-		port := startPort + (i * 2)
-		weblogicPorts = append(weblogicPorts, v1.ServicePort{Port: int32(port)})
+		var port = startPort + int32(i*2)
+		glog.V(4).Info("Calculated port ", fmt.Sprint(port))
+		weblogicPorts[i-1] = v1.ServicePort{
+			Name: fmt.Sprint("managedserver-", i-1, "port"),
+			Port: port,
+		}
 	}
 	svc := &v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
