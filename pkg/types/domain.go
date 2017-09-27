@@ -10,6 +10,7 @@ var _ = runtime.Object(&WebLogicDomain{})
 
 const (
 	defaultDomainVersion            = "12.2.1.2"
+	defaultDomainReplicas = 1
 	defaultDomainManagedServerCount = 1
 )
 
@@ -47,6 +48,10 @@ type WebLogicDomainList struct {
 func (c *WebLogicDomain) EnsureDefaults() *WebLogicDomain {
 	if c.Spec.ManagedServerCount == 0 {
 		c.Spec.ManagedServerCount = defaultDomainManagedServerCount
+	}
+
+	if c.Spec.Replicas == 0 || c.Spec.Replicas > 1 {
+		c.Spec.Replicas = defaultDomainReplicas
 	}
 
 	if c.Spec.Version == "" {
