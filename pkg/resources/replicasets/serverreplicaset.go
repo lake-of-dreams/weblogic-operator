@@ -29,7 +29,7 @@ func WebLogicManagedServerContainer(server *types.WebLogicManagedServer) v1.Cont
 	return v1.Container{
 		Name:            server.Spec.DomainName + "-managedserver",
 		Image:           fmt.Sprintf("%s:%s", constants.WeblogicImageName, server.Spec.Domain.Spec.Version),
-		ImagePullPolicy: v1.PullAlways,
+		ImagePullPolicy: v1.PullIfNotPresent,
 		//Ports: []v1.ContainerPort{{
 		//	ContainerPort: 7001},
 		//},

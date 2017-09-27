@@ -41,7 +41,7 @@ func weblogicDomainContainer(domain *types.WebLogicDomain) v1.Container {
 	return v1.Container{
 		Name:            domain.Name + "-adminserver",
 		Image:           fmt.Sprintf("%s:%s", constants.WeblogicImageName, domain.Spec.Version),
-		ImagePullPolicy: v1.PullAlways,
+		ImagePullPolicy: v1.PullIfNotPresent,
 		Ports: []v1.ContainerPort{{
 			ContainerPort: 7001},
 		},

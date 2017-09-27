@@ -34,8 +34,8 @@ spec:
           claimName: weblogic-operator-claim
       containers:
       - name: weblogic-operator-controller
-        imagePullPolicy: Always
-        image: fmwplt/weblogic-operator:1709271228
+        imagePullPolicy: PullIfNotPresent
+        image: fmwplt/weblogic-operator:1709280328
         volumeMounts:
         - mountPath: "/u01/oracle/user_projects"
           name: weblogic-operator-storage
