@@ -1,6 +1,7 @@
 package types
 
 import (
+	"github.com/golang/glog"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -9,7 +10,6 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"weblogic-operator/pkg/constants"
-	"github.com/golang/glog"
 )
 
 var _ = runtime.Object(&WebLogicManagedServer{})
@@ -38,15 +38,15 @@ type WebLogicManagedServerSpec struct {
 
 // WebLogicManagedServer represents a server spec and associated metadata
 type WebLogicManagedServer struct {
-	metav1.TypeMeta                `json:",inline"`
-	metav1.ObjectMeta              `json:"metadata"`
-	Spec WebLogicManagedServerSpec `json:"spec"`
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata"`
+	Spec              WebLogicManagedServerSpec `json:"spec"`
 }
 
 type WebLogicManagedServerList struct {
-	metav1.TypeMeta               `json:",inline"`
-	metav1.ListMeta               `json:"metadata"`
-	Items []WebLogicManagedServer `json:"items"`
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata"`
+	Items           []WebLogicManagedServer `json:"items"`
 }
 
 // EnsureDefaults will ensure that if a user omits and fields in the
@@ -71,7 +71,7 @@ func (c *WebLogicManagedServer) PopulateDomain() *WebLogicManagedServer {
 		Into(domain)
 
 	if result != nil {
-		glog.Infof("Extracted domain %s for server %s", domain.Name, c.Name)
+		glog.V(4).Info("Extracted domain %s for server %s", domain.Name, c.Name)
 	}
 
 	c.Spec.Domain = *domain
