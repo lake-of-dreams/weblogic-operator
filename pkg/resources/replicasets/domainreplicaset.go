@@ -58,11 +58,6 @@ func weblogicDomainContainer(domain *types.WebLogicDomain) v1.Container {
 		},
 		Command: []string{"/u01/oracle/user_projects/domainSetup.sh"},
 		Lifecycle: &v1.Lifecycle{
-			//PostStart: &v1.Handler{
-			//	Exec: &v1.ExecAction{
-			//		Command: []string{"echo Hello World!!"},
-			//	},
-			//},
 			PreStop: &v1.Handler{
 				Exec: &v1.ExecAction{
 					Command: []string{"/u01/oracle/user_projects/domains/" + domain.Name + "/bin/stopWebLogic.sh"},
