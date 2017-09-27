@@ -28,11 +28,11 @@ func serverNamespaceEnvVar() v1.EnvVar {
 func WebLogicManagedServerContainer(server *types.WebLogicManagedServer) v1.Container {
 	return v1.Container{
 		Name:            server.Spec.DomainName + "-managedserver",
-		Image:           fmt.Sprintf("%s:%s", constants.WeblogicImageName, server.Spec.Version),
+		Image:           fmt.Sprintf("%s:%s", constants.WeblogicImageName, server.Spec.Domain.Spec.Version),
 		ImagePullPolicy: v1.PullAlways,
-		Ports: []v1.ContainerPort{{
-			ContainerPort: 7001},
-		},
+		//Ports: []v1.ContainerPort{{
+		//	ContainerPort: 7001},
+		//},
 		VolumeMounts: []v1.VolumeMount{{
 			Name:      server.Spec.DomainName + "-storage",
 			MountPath: "/u01/oracle/user_projects"},
@@ -40,27 +40,26 @@ func WebLogicManagedServerContainer(server *types.WebLogicManagedServer) v1.Cont
 		Env: []v1.EnvVar{
 			oracleHomeEnvVar(),
 			serverNameEnvVar(server),
+			domainNameEnvVar(&server.Spec.Domain),
+			domainHomeEnvVar(&server.Spec.Domain),
 			serverNamespaceEnvVar(),
 		},
-		Command: []string{"/u01/oracle/user_projects/startServer.sh",
-			"/u01/oracle/user_projects/domains/" + server.Spec.DomainName,
-			server.Name,
-			"weblogic",
-			"welcome1",
-		},
+		Command: []string{"/u01/oracle/user_projects/startServer.sh"},
 		Lifecycle: &v1.Lifecycle{
 			//PostStart: &v1.Handler{
 			//	Exec: &v1.ExecAction{
 			//		Command: []string{"echo Hello World!!"},
 			//	},
 			//},
-			PreStop: &v1.Handler{
-				Exec: &v1.ExecAction{
-					Command: []string{"/u01/oracle/user_projects/domains/" + server.Spec.DomainName + "/bin/stopManagedWebLogic.sh",
-						server.Name,
-					},
-				},
-			},
+			//PreStop: &v1.Handler{
+			//	Exec: &v1.ExecAction{
+			//		Command: []string{"/u01/oracle/user_projects/domains/" + server.Spec.DomainName + "/bin/stopManagedWebLogic.sh",
+			//			server.Name,
+			//			"http://localhost:7001",
+			//			"/u01/oracle/user_projects/startServer.sh",
+			//		},
+			//	},
+			//},
 		},
 	}
 }
@@ -80,7 +79,7 @@ func NewForServer(server *types.WebLogicManagedServer, serviceName string) *v1be
 			},
 		},
 		Spec: v1beta1.ReplicaSetSpec{
-			Replicas:        &server.Spec.Replicas,
+			Replicas:        &server.Spec.ServersToRun,
 			MinReadySeconds: 0,
 			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{

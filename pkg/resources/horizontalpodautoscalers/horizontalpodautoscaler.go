@@ -9,8 +9,8 @@ import (
 
 // NewForHorizontalPodAutoscaling creates a new HPA for the given WebLogicManagedServer - managedserver.
 func NewForHorizontalPodAutoscaling(server *types.WebLogicManagedServer, serviceName string) *v1.HorizontalPodAutoscaler {
-	var minReplicas int32 = 1
-	var maxReplicas int32 = server.Spec.Replicas
+	var minReplicas int32 = 0
+	var maxReplicas int32 = int32(server.Spec.Domain.Spec.ManagedServerCount)
 	var targetCPUUtilization int32 = 50
 	hpaMinReplicas := &minReplicas
 	hpaTargetCPUUtilization := &targetCPUUtilization
@@ -22,7 +22,7 @@ func NewForHorizontalPodAutoscaling(server *types.WebLogicManagedServer, service
 		Spec: v1.HorizontalPodAutoscalerSpec{
 			ScaleTargetRef: v1.CrossVersionObjectReference{
 				Kind: constants.HorizontalPodAutoscalerKind,
-				Name: constants.HorizontalPodAutoscalerTargetLabel,
+				Name: server.Name,
 			},
 			MinReplicas:                    hpaMinReplicas,
 			MaxReplicas:                    maxReplicas,

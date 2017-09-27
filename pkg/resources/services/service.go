@@ -9,7 +9,12 @@ import (
 
 // NewServiceForServer will return a new NodePort Kubernetes service for a WeblogicManagedServer
 func NewServiceForServer(server *types.WebLogicManagedServer) *v1.Service {
-	weblogicPort := v1.ServicePort{Port: 7001}
+	startPort := 7001
+	weblogicPorts := make([]v1.ServicePort, server.Spec.Domain.Spec.ManagedServerCount)
+	for i := 1; i <= server.Spec.Domain.Spec.ManagedServerCount; i++ {
+		port := startPort + (i * 2)
+		weblogicPorts = append(weblogicPorts, v1.ServicePort{Port: int32(port)})
+	}
 	svc := &v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels: map[string]string{constants.WebLogicManagedServerLabel: server.Name,
@@ -19,7 +24,7 @@ func NewServiceForServer(server *types.WebLogicManagedServer) *v1.Service {
 		},
 		Spec: v1.ServiceSpec{
 			Type:  v1.ServiceTypeNodePort,
-			Ports: []v1.ServicePort{weblogicPort},
+			Ports: weblogicPorts,
 			Selector: map[string]string{
 				constants.WebLogicManagedServerLabel: server.Name,
 				constants.WebLogicDomainLabel:        server.Spec.DomainName,

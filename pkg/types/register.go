@@ -52,8 +52,7 @@ func defaultWebLogicManagedServerList(obj interface{}) {
 
 func defaultWebLogicManagedServer(obj interface{}) {
 	server := obj.(*WebLogicManagedServer)
-	server.Spec.Replicas = defaultReplicas
-	server.Spec.Version = defaultVersion
+	server.Spec.ServersToRun = defaultServersToRun
 }
 
 func defaultWebLogicDomainList(obj interface{}) {

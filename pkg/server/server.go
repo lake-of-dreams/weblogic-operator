@@ -156,6 +156,7 @@ func DeleteHorizontalPodAutoscalerForWebLogicManagedServer(clientset kubernetes.
 
 func createWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient kubernetes.Interface, restClient *rest.RESTClient) error {
 	server.EnsureDefaults()
+	server.PopulateDomain()
 
 	// Validate that a label is set on the server
 	if !HasServerNameLabel(server.Labels, server.Name) {
@@ -164,6 +165,7 @@ func createWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient
 			server.Labels = make(map[string]string)
 		}
 		server.Labels[constants.WebLogicManagedServerLabel] = server.Name
+		server.Labels[server.Spec.Domain.Name] = server.Name
 		return updateWebLogicManagedServer(server, restClient)
 	}
 
@@ -171,11 +173,6 @@ func createWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient
 	if err != nil {
 		return err
 	}
-
-	//_, err = CreateStatefulSetForWebLogicManagedServer(kubeClient, server, serverService)
-	//if err != nil {
-	//	return err
-	//}
 
 	_, err = CreateReplicaSetForWebLogicManagedServer(kubeClient, server, serverService)
 	if err != nil {

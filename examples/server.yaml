@@ -19,10 +19,10 @@
 apiVersion: "weblogic.oracle.com/v1"
 kind: WebLogicManagedServer
 metadata:
-  name: managedserver
+  name: basedomain
 spec:
-  version: 12.2.1.2
-  weblogicDomain: basedomain
+  domainName: basedomain
+  serversToRun: 2
   resources:
     requests:
       memory: "64Mi"

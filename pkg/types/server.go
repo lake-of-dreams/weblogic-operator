@@ -5,21 +5,21 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"weblogic-operator/pkg/constants"
+	"weblogic-operator/pkg/operator"
 )
 
 var _ = runtime.Object(&WebLogicManagedServer{})
 
 const (
-	defaultVersion  = "12.2.1.2"
-	defaultReplicas = 0
+	defaultServersToRun = 0
 )
 
 // WebLogicManagedServerSpec defines the attributes a user can specify when creating a server
 type WebLogicManagedServerSpec struct {
-	// Version defines the Weblogic Docker image version
-	Version string `json:"version"`
-	// Replicas defines the number of running Weblogic server instances
-	Replicas int32 `json:"replicas,omitempty"`
+	DomainName   string `json:"domainName"`
+	ServersToRun int32    `json:"serversToRun,omitempty"`
+	Domain       WebLogicDomain
 	// NodeSelector is a selector which must be true for the pod to fit on a node.
 	// Selector which must match a node's labels for the pod to be scheduled on that node.
 	// More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
@@ -29,8 +29,7 @@ type WebLogicManagedServerSpec struct {
 	// Cannot be updated.
 	// More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
 	// +optional
-	Resources  v1.ResourceRequirements `json:"resources,omitempty" protobuf:"bytes,8,opt,name=resources"`
-	DomainName string                  `json:"domainName"`
+	Resources v1.ResourceRequirements `json:"resources,omitempty" protobuf:"bytes,8,opt,name=resources"`
 }
 
 // WebLogicManagedServer represents a server spec and associated metadata
@@ -51,14 +50,23 @@ type WebLogicManagedServerList struct {
 // For example a user can choose to omit the version
 // and number of replicas
 func (c *WebLogicManagedServer) EnsureDefaults() *WebLogicManagedServer {
-	if c.Spec.Replicas == 0 {
-		c.Spec.Replicas = defaultReplicas
+	if c.Spec.ServersToRun == 0 {
+		c.Spec.ServersToRun = defaultServersToRun
 	}
 
-	if c.Spec.Version == "" {
-		c.Spec.Version = defaultVersion
-	}
+	return c
+}
 
+func (c *WebLogicManagedServer) PopulateDomain() *WebLogicManagedServer {
+	domain := &WebLogicDomain{}
+	_ := operator.DomainRESTClient.Get().
+		Resource(constants.WebLogicDomainResourceKindPlural).
+		Namespace(c.Namespace).
+		Name(c.Spec.DomainName).
+		Do().
+		Into(domain)
+
+	c.Spec.Domain = *domain
 	return c
 }
 

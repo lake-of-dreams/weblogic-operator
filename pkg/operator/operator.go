@@ -24,6 +24,9 @@ import (
 	"weblogic-operator/pkg/types"
 )
 
+var DomainRESTClient *rest.RESTClient
+var ServerRESTClient *rest.RESTClient
+
 // Operator operates things!
 type Operator struct {
 	Controllers []controllers.Controller
@@ -135,6 +138,7 @@ func newManagedServerRESTClient(config *rest.Config) (*rest.RESTClient, error) {
 	config.ContentType = runtime.ContentTypeJSON
 	config.NegotiatedSerializer = serializer.DirectCodecFactory{CodecFactory: serializer.NewCodecFactory(scheme.Scheme)}
 
+	ServerRESTClient, _ = rest.RESTClientFor(config)
 	return rest.RESTClientFor(config)
 }
 
@@ -147,6 +151,7 @@ func newDomainRESTClient(config *rest.Config) (*rest.RESTClient, error) {
 	config.ContentType = runtime.ContentTypeJSON
 	config.NegotiatedSerializer = serializer.DirectCodecFactory{CodecFactory: serializer.NewCodecFactory(scheme.Scheme)}
 
+	DomainRESTClient, _ = rest.RESTClientFor(config)
 	return rest.RESTClientFor(config)
 }
 
