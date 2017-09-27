@@ -9,6 +9,7 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"weblogic-operator/pkg/constants"
+	"github.com/golang/glog"
 )
 
 var _ = runtime.Object(&WebLogicManagedServer{})
@@ -37,15 +38,15 @@ type WebLogicManagedServerSpec struct {
 
 // WebLogicManagedServer represents a server spec and associated metadata
 type WebLogicManagedServer struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata"`
-	Spec              WebLogicManagedServerSpec `json:"spec"`
+	metav1.TypeMeta                `json:",inline"`
+	metav1.ObjectMeta              `json:"metadata"`
+	Spec WebLogicManagedServerSpec `json:"spec"`
 }
 
 type WebLogicManagedServerList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata"`
-	Items           []WebLogicManagedServer `json:"items"`
+	metav1.TypeMeta               `json:",inline"`
+	metav1.ListMeta               `json:"metadata"`
+	Items []WebLogicManagedServer `json:"items"`
 }
 
 // EnsureDefaults will ensure that if a user omits and fields in the
@@ -62,12 +63,16 @@ func (c *WebLogicManagedServer) EnsureDefaults() *WebLogicManagedServer {
 
 func (c *WebLogicManagedServer) PopulateDomain() *WebLogicManagedServer {
 	domain := &WebLogicDomain{}
-	_ := DomainRESTClient.Get().
+	result := DomainRESTClient.Get().
 		Resource(constants.WebLogicDomainResourceKindPlural).
 		Namespace(c.Namespace).
 		Name(c.Spec.DomainName).
 		Do().
 		Into(domain)
+
+	if result != nil {
+		glog.Infof("Extracted domain %s for server %s", domain.Name, c.Name)
+	}
 
 	c.Spec.Domain = *domain
 	return c
