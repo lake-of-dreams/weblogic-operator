@@ -25,13 +25,14 @@ def addManagedServer(serverName, serverPort):
 try:
     # Variable Definitions
     # ======================
-    oracleHome = os.environ.get("ORACLE_HOME", "/u01/oracle")
-    domainName = os.environ.get("DOMAIN_NAME", "basedomain")
-    domainHome = os.environ.get("DOMAIN_HOME", '/u01/oracle/user_projects/domains/%s' % domainName)
-    managedServerCount = int(os.environ.get("MANAGED_SERVER_COUNT", "1"))
-    adminPort = int("7001")
-    username = 'weblogic'
-    password = 'welcome1'
+    clusterExist = False
+    oracleHome = sys.argv[1]
+    domainName = sys.argv[2]
+    domainHome = sys.argv[3]
+    managedServerCount = int(sys.argv[4])
+    adminPort = int(sys.argv[5])
+    username = sys.argv[6]
+    password = sys.argv[7]
 
     print('ORACLE_HOME              : [%s]' % oracleHome);
     print('DOMAIN_NAME              : [%s]' % domainName);
@@ -75,24 +76,27 @@ try:
     serverlist = [];
     for x in range(1, managedServerCount + 1):
         port += 2
-        servername = 'managedserver-' + (x - 1)
+        servername = 'managedserver-' + str((x - 1))
         host = 'localhost'
         dictServer = {'ServerName': servername, 'Port': port, 'Host': host}
         serverlist.append(dictServer)
 
         addManagedServer(servername, port)
 
-    serverListFile = '%s/serverList.txt' % domainHome
-    file = open(serverListFile, 'w')
-    for item in serverlist:
-        file.write("%s\n" % item)
-    file.close()
-
     # Write Domain
     # ============
     writeDomain(domainHome)
     closeTemplate()
     print "Domain Created Successfully "
+
+    # Save Server List
+    # ================
+    serverListFile = '%s/serverList.txt' % domainHome
+    os.system("touch %s" % serverListFile)
+    file = open(serverListFile, "w+")
+    for item in serverlist:
+        file.write("%s\n" % item)
+    file.close()
 
     # Exit WLST
     # =========
