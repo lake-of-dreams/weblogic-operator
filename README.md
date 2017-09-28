@@ -11,7 +11,7 @@ git                                             #Git (with bash) for Windows v2.
 go 1.9
 dep                                             #Dependency Management 
                                                 (go get -u github.com/golang/dep/cmd/dep)
-make                                            #MinGW or GNU Make for Windows
+make                                            #MinGW Make for Windows
 ```
 
 **Start minikube and export docker env** 
@@ -36,15 +36,24 @@ make image
 make push                                       #Pushes to docker.io/fmwplt/weblogic-operator
 ``` 
 
-**Create Secret to be used for pulling _WebLogicManagedServer_ image from registry**
+**Create Secret to be used for pulling _WebLogic_ image from registry**
 ```
 kubectl create secret docker-registry weblogic-docker-store --docker-server=docker.io \
 --docker-username=YOUR_USERNAME --docker-password=YOUR_PASSWORD --docker-email=YOUR_EMAIL
 ``` 
 
-**Create CRD of type _WebLogicManagedServer_ into k8s**
+**Create CRD's of type _WebLogicDomain_ and _WebLogicManagedServer_ into k8s**
 ```
-kubectl apply -f manifests/weblogic-crd.yaml    #Creates custom object of type WebLogicManagedServer
+kubectl apply -f manifests/weblogic-crd.yaml    #Creates custom object of type WebLogicDomain and WebLogicManagedServer
+``` 
+
+**Configure Persistant Volume Storage**
+```
+# Currently uses hostPath type. Host folder used is /scratch
+# In Windows/VirtualBox, modify the minikube machine to add a new shared volume to any location in host and
+specify it to be mount as /scratch.  
+  
+kubectl apply -f manifests/persistant-volume.yaml
 ``` 
 
 **Deploy _weblogic-operator_ into k8s**
@@ -53,20 +62,23 @@ kubectl apply -f manifests/weblogic-operator.yaml
 kubectl -n weblogic-operator get pods
 ``` 
 
-**Create objects of type _WebLogicManagedServer_**
+**Create objects of type _WebLogicDomain_**
 ```
-kubectl apply -f examples/server.yaml
-kubectl get weblogicmanagedservers,services
+#Domain will be created in persistant volume with managed servers named as managedserver-0...n and starts AdminServer
+#Default credentials used are weblogic/welcome1.  
+  
+kubectl apply -f examples/domain.yaml
+kubectl get weblogicdomains,services
 ``` 
 
-**Delete objects of type _WebLogicManagedServer_**
+**Delete objects of type _WebLogicDomain_**
 ```
-kubectl delete weblogicmanagedserver managedserver
+kubectl delete weblogicdomain basedomain
 ``` 
 
 **Cleanup**
 ```
-kubectl delete weblogicmanagedservers --all
+kubectl delete weblogicdomains --all
 kubectl delete -n weblogic-operator deployment weblogic-operator
 kubectl delete ns weblogic-operator
 ```
