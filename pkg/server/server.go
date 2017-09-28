@@ -187,6 +187,7 @@ func createWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient
 	return nil
 }
 
+//TODO update the replica set
 func updateWebLogicManagedServer(server *types.WebLogicManagedServer, restClient *rest.RESTClient) error {
 	result := restClient.Put().
 		Resource(constants.WebLogicManagedServerResourceKindPlural).
