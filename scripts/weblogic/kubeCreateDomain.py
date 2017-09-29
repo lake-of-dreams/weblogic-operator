@@ -80,7 +80,7 @@ try:
         port += 2
         servername = 'managedserver-' + str((x - 1))
         host = 'localhost'
-        dictServer = {'ServerName': servername, 'Port': port, 'Host': host}
+        dictServer = {"serverName": servername, "port": port, "host": host}
         serverlist.append(dictServer)
 
         addManagedServer(servername, port)
@@ -93,12 +93,21 @@ try:
 
     # Save Server List
     # ================
-    serverListFile = '%s/serverList.txt' % domainHome
+    serverListFile = '%s/serverList.json' % domainHome
     os.system("touch %s" % serverListFile)
     file = open(serverListFile, "w+")
+    file.write("[")
     for item in serverlist:
-        file.write("%s\n" % item)
+        file.write("\n%s," % item)
+    file.write("]\n")
     file.close()
+
+    file = open(serverListFile, "r")
+    filedata = file.read()
+    filedata = filedata.replace('\'', '\"')
+    filedata = filedata.replace(",]", "]")
+    file = open(serverListFile, "w")
+    file.write(filedata)
 
     # Exit WLST
     # =========
