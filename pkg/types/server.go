@@ -19,6 +19,8 @@ const (
 	defaultServersToRun = 0
 )
 
+
+
 // WebLogicManagedServerSpec defines the attributes a user can specify when creating a server
 type WebLogicManagedServerSpec struct {
 	DomainName   string `json:"domainName"`

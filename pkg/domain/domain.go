@@ -15,6 +15,8 @@ import (
 	"weblogic-operator/pkg/resources/replicasets"
 	"weblogic-operator/pkg/resources/services"
 	"weblogic-operator/pkg/types"
+	"io/ioutil"
+	"encoding/json"
 )
 
 // HasDomainNameLabel returns true if the given labels map matches the given
@@ -203,12 +205,31 @@ func GetDomainForReplicaSet(replicaset *v1beta1.ReplicaSet, restClient *rest.RES
 }
 
 func updateDomainWithReplicaSet(domain *types.WebLogicDomain, replicaSet *v1beta1.ReplicaSet, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
-	// Some simple logic for the time being.
-	// To add
-	// connection to the domain
-	// validate each pod?
-	// Check how a rolling upgrade effects this
-	// check version of each pod
+	if domain.Spec.ServersAvailable == nil && domain.Spec.ServersRunning == nil {
+		err = PopulateServerDetailsForWebLogicDomain(domain, restClient)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func PopulateServerDetailsForWebLogicDomain(domain *types.WebLogicDomain, restClient *rest.RESTClient) error {
+	serverListFile := "/u01/oracle/user_projects/domains/" + domain.Name + "/serverList.json"
+
+	file, err := ioutil.ReadFile(serverListFile)
+	if err != nil {
+		glog.V(4).Infof(err.Error())
+	}
+	err = json.Unmarshal(file, &domain.Spec.ServersAvailable)
+	if err != nil {
+		glog.V(4).Infof(err.Error())
+	}
+
+	err = updateWebLogicDomain(domain, restClient)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

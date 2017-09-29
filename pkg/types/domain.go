@@ -18,11 +18,19 @@ const (
 	defaultDomainManagedServerCount = 1
 )
 
+type Server struct {
+	Host       string `json:"host"`
+	ServerName string `json:"serverName"`
+	Port       int32  `json:"port"`
+}
+
 // WebLogicManagedServerSpec defines the attributes a user can specify when creating a server
 type WebLogicDomainSpec struct {
 	// Version defines the Weblogic Docker image version
-	Version            string `json:"version"`
-	ManagedServerCount int    `json:"managedServerCount"`
+	Version            string   `json:"version"`
+	ManagedServerCount int      `json:"managedServerCount"`
+	ServersAvailable   []Server `json:"serversAvailable"`
+	ServersRunning     []Server `json:"serversRunning"`
 	// Replicas defines the number of running Weblogic server instances
 	Replicas int32 `json:"replicas,omitempty"`
 	// NodeSelector is a selector which must be true for the pod to fit on a node.
@@ -34,15 +42,15 @@ type WebLogicDomainSpec struct {
 
 // WebLogicDomain represents a doamin spec and associated metadata
 type WebLogicDomain struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata"`
-	Spec              WebLogicDomainSpec `json:"spec"`
+	metav1.TypeMeta         `json:",inline"`
+	metav1.ObjectMeta       `json:"metadata"`
+	Spec WebLogicDomainSpec `json:"spec"`
 }
 
 type WebLogicDomainList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata"`
-	Items           []WebLogicDomain `json:"items"`
+	metav1.TypeMeta        `json:",inline"`
+	metav1.ListMeta        `json:"metadata"`
+	Items []WebLogicDomain `json:"items"`
 }
 
 // EnsureDefaults will ensure that if a user omits and fields in the
