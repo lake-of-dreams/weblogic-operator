@@ -44,22 +44,22 @@ func WebLogicManagedServerContainer(server *types.WebLogicManagedServer) v1.Cont
 			domainHomeEnvVar(&server.Spec.Domain),
 			serverNamespaceEnvVar(),
 		},
-		Command:   []string{"/u01/oracle/user_projects/startServer.sh"},
+		Command: []string{"/u01/oracle/user_projects/startServer.sh"},
 		Lifecycle: &v1.Lifecycle{
-		//PostStart: &v1.Handler{
-		//	Exec: &v1.ExecAction{
-		//		Command: []string{"echo Hello World!!"},
-		//	},
-		//},
-		//PreStop: &v1.Handler{
-		//	Exec: &v1.ExecAction{
-		//		Command: []string{"/u01/oracle/user_projects/domains/" + server.Spec.DomainName + "/bin/stopManagedWebLogic.sh",
-		//			server.Name,
-		//			"http://localhost:7001",
-		//			"/u01/oracle/user_projects/startServer.sh",
-		//		},
-		//	},
-		//},
+			//PostStart: &v1.Handler{
+			//	Exec: &v1.ExecAction{
+			//		Command: []string{"echo Hello World!!"},
+			//	},
+			//},
+			//PreStop: &v1.Handler{
+			//	Exec: &v1.ExecAction{
+			//		Command: []string{"/u01/oracle/user_projects/domains/" + server.Spec.DomainName + "/bin/stopManagedWebLogic.sh",
+			//			server.Name,
+			//			"http://localhost:7001",
+			//			"/u01/oracle/user_projects/startServer.sh",
+			//		},
+			//	},
+			//},
 		},
 	}
 }
@@ -98,19 +98,22 @@ func NewForServer(server *types.WebLogicManagedServer, serviceName string) *v1be
 					},
 				},
 				Spec: v1.PodSpec{
-					Volumes: []v1.Volume{{
-						Name: server.Spec.DomainName + "-storage",
-						VolumeSource: v1.VolumeSource{
-							PersistentVolumeClaim: &v1.PersistentVolumeClaimVolumeSource{
-								ClaimName: "weblogic-operator-claim",
+					Volumes: []v1.Volume{
+						{
+							Name: server.Spec.DomainName + "-storage",
+							VolumeSource: v1.VolumeSource{
+								PersistentVolumeClaim: &v1.PersistentVolumeClaimVolumeSource{
+									ClaimName: "weblogic-operator-claim",
+								},
 							},
 						},
 					},
-					},
+					//TODO: refer to same selector of this.replicaset spec
 					NodeSelector: server.Spec.NodeSelector,
-					ImagePullSecrets: []v1.LocalObjectReference{{
-						Name: "weblogic-docker-store",
-					},
+					ImagePullSecrets: []v1.LocalObjectReference{
+						{
+							Name: "weblogic-docker-store",
+						},
 					},
 					Containers: containers,
 				},

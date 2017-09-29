@@ -169,6 +169,11 @@ func createWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient
 		return updateWebLogicManagedServer(server, restClient)
 	}
 
+	for i := 0; i < int(server.Spec.ServersToRun); i++ {
+		server.Spec.Domain.Spec.ServersRunning = append(server.Spec.Domain.Spec.ServersRunning, server.Spec.Domain.Spec.ServersAvailable[i])
+		server.Spec.Domain.Spec.ServersAvailable = append(server.Spec.Domain.Spec.ServersAvailable[:i], server.Spec.Domain.Spec.ServersAvailable[i+1:]...)
+	}
+
 	serverService, err := CreateServiceForWebLogicManagedServer(kubeClient, server)
 	if err != nil {
 		return err
@@ -201,17 +206,12 @@ func updateWebLogicManagedServer(server *types.WebLogicManagedServer, restClient
 // When delete server is called we will delete the stateful set (which also deletes the associated service)
 //TODO handling to call stopWeblogic.sh needs to be done here
 func deleteWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient kubernetes.Interface, restClient *rest.RESTClient) error {
-	err := DeleteReplicaSetForWebLogicManagedServer(kubeClient, server)
-	if err != nil {
-		return err
-	}
-
 	//err = RunStopForWebLogicManagedServer(kubeClient, restClient, server)
 	//if err != nil {
 	//	return err
 	//}
 
-	err = DeleteReplicaSetForWebLogicManagedServer(kubeClient, server)
+	err := DeleteReplicaSetForWebLogicManagedServer(kubeClient, server)
 	if err != nil {
 		return err
 	}
