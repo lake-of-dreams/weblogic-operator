@@ -1,23 +1,12 @@
 import os
 import sys
 
-
-def addCluster(clusterName):
-    cd('/')
-    clusterId = create(clusterName, 'Cluster')
-    cd('/')
-    return clusterId;
-
-
 def addManagedServer(serverName, serverPort):
     cd('/')
     create(serverName, 'Server')
     cd('Servers/' + serverName)
     set('ListenPort', serverPort)
     set('ListenAddress', '')
-    if clusterExist:
-        set('Cluster', cluster)
-
     cd('/')
     return;
 
@@ -27,7 +16,6 @@ def addManagedServer(serverName, serverPort):
 try:
     # Variable Definitions
     # ======================
-    clusterExist = False
     oracleHome = sys.argv[1]
     domainName = sys.argv[2]
     domainHome = sys.argv[3]
@@ -68,19 +56,15 @@ try:
 
     # Create Managed Servers
     # =====================================
-    if managedServerCount > 1:
-        clusterExist = True
-
-    if clusterExist:
-        cluster = addCluster('cluster-0')
-
     port = adminPort;
     serverlist = [];
+    dictServer = {"serverName": "AdminServer", "port": adminPort, "host": "localhost", "podName": ""}
+    serverlist.append(dictServer)
     for x in range(1, managedServerCount + 1):
         port += 2
         servername = 'managedserver-' + str((x - 1))
         host = 'localhost'
-        dictServer = {'ServerName': servername, 'Port': port, 'Host': host}
+        dictServer = {"serverName": servername, "port": port, "host": host, "podName": ""}
         serverlist.append(dictServer)
 
         addManagedServer(servername, port)
@@ -93,12 +77,21 @@ try:
 
     # Save Server List
     # ================
-    serverListFile = '%s/serverList.txt' % domainHome
+    serverListFile = '%s/serverList.json' % domainHome
     os.system("touch %s" % serverListFile)
     file = open(serverListFile, "w+")
+    file.write("[")
     for item in serverlist:
-        file.write("%s\n" % item)
+        file.write("\n%s," % item)
+    file.write("]\n")
     file.close()
+
+    file = open(serverListFile, "r")
+    filedata = file.read()
+    filedata = filedata.replace('\'', '\"')
+    filedata = filedata.replace(',]', '\n]')
+    file = open(serverListFile, "w")
+    file.write(filedata)
 
     # Exit WLST
     # =========

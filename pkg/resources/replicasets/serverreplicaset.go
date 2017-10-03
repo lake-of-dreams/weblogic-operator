@@ -9,16 +9,23 @@ import (
 	"weblogic-operator/pkg/types"
 )
 
-func serverNameEnvVar(server *types.WebLogicManagedServer) v1.EnvVar {
-	return v1.EnvVar{Name: "SERVER_NAME", Value: server.Name}
-}
-
 func serverNamespaceEnvVar() v1.EnvVar {
 	return v1.EnvVar{
 		Name: "POD_NAMESPACE",
 		ValueFrom: &v1.EnvVarSource{
 			FieldRef: &v1.ObjectFieldSelector{
 				FieldPath: "metadata.namespace",
+			},
+		},
+	}
+}
+
+func podNameEnvVar() v1.EnvVar {
+	return v1.EnvVar{
+		Name: "MY_POD_NAME",
+		ValueFrom: &v1.EnvVarSource{
+			FieldRef: &v1.ObjectFieldSelector{
+				FieldPath: "metadata.name",
 			},
 		},
 	}
@@ -39,7 +46,7 @@ func WebLogicManagedServerContainer(server *types.WebLogicManagedServer) v1.Cont
 		},
 		Env: []v1.EnvVar{
 			oracleHomeEnvVar(),
-			serverNameEnvVar(server),
+			podNameEnvVar(),
 			domainNameEnvVar(&server.Spec.Domain),
 			domainHomeEnvVar(&server.Spec.Domain),
 			serverNamespaceEnvVar(),

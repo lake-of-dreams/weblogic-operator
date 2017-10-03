@@ -1,23 +1,12 @@
 import os
 import sys
 
-
-def addCluster(clusterName):
-    cd('/')
-    clusterId = create(clusterName, 'Cluster')
-    cd('/')
-    return clusterId;
-
-
 def addManagedServer(serverName, serverPort):
     cd('/')
     create(serverName, 'Server')
     cd('Servers/' + serverName)
     set('ListenPort', serverPort)
     set('ListenAddress', '')
-    if clusterExist:
-        set('Cluster', cluster)
-
     cd('/')
     return;
 
@@ -27,7 +16,6 @@ def addManagedServer(serverName, serverPort):
 try:
     # Variable Definitions
     # ======================
-    clusterExist = False
     oracleHome = sys.argv[1]
     domainName = sys.argv[2]
     domainHome = sys.argv[3]
@@ -68,19 +56,15 @@ try:
 
     # Create Managed Servers
     # =====================================
-    if managedServerCount > 1:
-        clusterExist = True
-
-    if clusterExist:
-        cluster = addCluster('cluster-0')
-
     port = adminPort;
     serverlist = [];
+    dictServer = {"serverName": "AdminServer", "port": adminPort, "host": "localhost", "podName": ""}
+    serverlist.append(dictServer)
     for x in range(1, managedServerCount + 1):
         port += 2
         servername = 'managedserver-' + str((x - 1))
         host = 'localhost'
-        dictServer = {"serverName": servername, "port": port, "host": host}
+        dictServer = {"serverName": servername, "port": port, "host": host, "podName": ""}
         serverlist.append(dictServer)
 
         addManagedServer(servername, port)
@@ -105,7 +89,7 @@ try:
     file = open(serverListFile, "r")
     filedata = file.read()
     filedata = filedata.replace('\'', '\"')
-    filedata = filedata.replace(",]", "]")
+    filedata = filedata.replace(',]', '\n]')
     file = open(serverListFile, "w")
     file.write(filedata)
 

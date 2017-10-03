@@ -60,3 +60,27 @@ func NewServiceForDomain(domain *types.WebLogicDomain) *v1.Service {
 	}
 	return svc
 }
+
+func NewHeadlessServiceForDomain(domain *types.WebLogicDomain) *v1.Service {
+	weblogicPort := v1.ServicePort{
+		Name:     domain.Name,
+		Port:     7001,
+		Protocol: v1.ProtocolTCP,
+	}
+	svc := &v1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Labels:    map[string]string{constants.WebLogicDomainLabel: domain.Name},
+			Name:      domain.Name,
+			Namespace: domain.Namespace,
+		},
+		Spec: v1.ServiceSpec{
+			Ports: []v1.ServicePort{
+				weblogicPort},
+			Selector: map[string]string{
+				constants.WebLogicDomainLabel: domain.Name,
+			},
+			ClusterIP: v1.ClusterIPNone,
+		},
+	}
+	return svc
+}

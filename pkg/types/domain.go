@@ -21,6 +21,7 @@ const (
 type Server struct {
 	Host       string `json:"host"`
 	ServerName string `json:"serverName"`
+	PodName    string `json:"podName"`
 	Port       int32  `json:"port"`
 }
 
