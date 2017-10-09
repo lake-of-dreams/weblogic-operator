@@ -76,6 +76,27 @@ func CreateReplicaSetForWebLogicManagedServer(clientset kubernetes.Interface, se
 	return clientset.ExtensionsV1beta1().ReplicaSets(server.Namespace).Create(rs)
 }
 
+func UpdateReplicaSetForWebLogicManagedServer(clientset kubernetes.Interface, server *types.WebLogicManagedServer, service *v1.Service) (controller *v1beta1.ReplicaSet, err error) {
+	// Find ReplicaSet and if it does not exist create it
+	existingReplicaSet, err := GetReplicaSetForWebLogicManagedServer(server, clientset)
+	if err != nil {
+		glog.Errorf("Error finding replica set for server: %v", err)
+		return nil, err
+	}
+
+	if existingReplicaSet != nil {
+		glog.V(2).Infof("Updating existing Replica set with label %s", getLabelSelectorForServer(server))
+
+		glog.V(4).Infof("Creating updated replica set for server %s", server.Name)
+		rs := replicasets.NewForServer(server, service.Name)
+
+		glog.V(4).Infof("Creating server %+v", rs)
+		return clientset.ExtensionsV1beta1().ReplicaSets(server.Namespace).Update(rs)
+	}
+
+	return nil, nil
+}
+
 // DeleteReplicaSetForWebLogicManagedServer will delete a replica set by name
 func DeleteReplicaSetForWebLogicManagedServer(clientset kubernetes.Interface, server *types.WebLogicManagedServer) error {
 
@@ -165,13 +186,8 @@ func createWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient
 			server.Labels = make(map[string]string)
 		}
 		server.Labels[constants.WebLogicManagedServerLabel] = server.Name
-		server.Labels[server.Spec.Domain.Name] = server.Name
-		return updateWebLogicManagedServer(server, restClient)
-	}
-
-	for i := 0; i < int(server.Spec.ServersToRun); i++ {
-		server.Spec.Domain.Spec.ServersRunning = append(server.Spec.Domain.Spec.ServersRunning, server.Spec.Domain.Spec.ServersAvailable[i])
-		server.Spec.Domain.Spec.ServersAvailable = append(server.Spec.Domain.Spec.ServersAvailable[:i], server.Spec.Domain.Spec.ServersAvailable[i+1:]...)
+		server.Labels[server.Spec.Domain.Name] = "managedserver"
+		return updateWebLogicManagedServerLabel(server, restClient)
 	}
 
 	serverService, err := CreateServiceForWebLogicManagedServer(kubeClient, server)
@@ -193,7 +209,22 @@ func createWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient
 }
 
 //TODO update the replica set
-func updateWebLogicManagedServer(server *types.WebLogicManagedServer, restClient *rest.RESTClient) error {
+func updateWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient kubernetes.Interface, restClient *rest.RESTClient) error {
+	// Find Service and if it does not exist create it
+	existingService, err := GetServiceForWebLogicManagedServer(server, kubeClient)
+	if err != nil {
+		glog.Errorf("Error finding service for server: %s", err)
+		return err
+	}
+	_, err = UpdateReplicaSetForWebLogicManagedServer(kubeClient, server, existingService)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func updateWebLogicManagedServerLabel(server *types.WebLogicManagedServer, restClient *rest.RESTClient) error {
 	result := restClient.Put().
 		Resource(constants.WebLogicManagedServerResourceKindPlural).
 		Namespace(server.Namespace).

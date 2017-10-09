@@ -141,7 +141,7 @@ func (m *WebLogicManagedServerController) onUpdate(old, cur interface{}) {
 		return
 	}
 
-	err := createWebLogicManagedServer(curServer, m.client, m.restClient)
+	err := updateWebLogicManagedServer(curServer, m.client, m.restClient)
 	if err != nil {
 		glog.Errorf("Failed to update server: %s", err)
 	}

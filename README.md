@@ -71,16 +71,31 @@ kubectl apply -f examples/domain.yaml
 kubectl get weblogicdomains,services
 ``` 
 
+**Create objects of type _WebLogicManagedServer_**
+```
+#Domain created in persistant volume will be used
+#Next available server is calculated from $DOMAIN_HOME/serverList.json and starts the requested no:of servers
+#Default credentials used are weblogic/welcome1.  
+  
+kubectl apply -f examples/server.yaml
+kubectl get weblogicservers,services
+``` 
+
 **Delete objects of type _WebLogicDomain_**
 ```
 kubectl delete weblogicdomain basedomain
 ``` 
 
+**Delete objects of type _WebLogicManagedServer_**
+```
+kubectl delete weblogicmanagedserver basedomain-managedserver
+``` 
+
 **Cleanup**
 ```
+kubectl delete weblogicmanagedservers --all
 kubectl delete weblogicdomains --all
-kubectl delete -n weblogic-operator deployment weblogic-operator
-kubectl delete ns weblogic-operator
+kubectl delete deployment weblogic-operator
 ```
 
 

@@ -60,7 +60,7 @@ if [ -d ${DOMAIN_HOME} ]; then
     if [[ ! -z "${msname// }" ]]; then
         echo "Stopping $msname..."
 
-        ${DOMAIN_HOME}/bin/stopManagedWebLogic.sh ${msname}
+        ${DOMAIN_HOME}/bin/stopManagedWebLogic.sh ${msname} "t3://basedomain:7001"
     fi
 fi
 

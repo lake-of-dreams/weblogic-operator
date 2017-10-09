@@ -72,7 +72,6 @@ func NewForServer(server *types.WebLogicManagedServer, serviceName string) *v1be
 			Name:      server.Name,
 			Labels: map[string]string{
 				constants.WebLogicManagedServerLabel: server.Name,
-				constants.WebLogicDomainLabel:        server.Spec.DomainName,
 				server.Spec.DomainName:               "managedserver",
 			},
 		},
@@ -82,7 +81,6 @@ func NewForServer(server *types.WebLogicManagedServer, serviceName string) *v1be
 			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{
 					constants.WebLogicManagedServerLabel: server.Name,
-					constants.WebLogicDomainLabel:        server.Spec.DomainName,
 					server.Spec.DomainName:               "managedserver",
 				},
 			},
@@ -91,7 +89,6 @@ func NewForServer(server *types.WebLogicManagedServer, serviceName string) *v1be
 					Name: server.Spec.DomainName + "-managedserver",
 					Labels: map[string]string{
 						constants.WebLogicManagedServerLabel: server.Name,
-						constants.WebLogicDomainLabel:        server.Spec.DomainName,
 						server.Spec.DomainName:               "managedserver",
 					},
 				},

@@ -22,5 +22,5 @@ metadata:
   name: basedomain-managedserver
 spec:
   domainName: basedomain
-  serversToRun: 1
+  serversToRun: 2
 ---

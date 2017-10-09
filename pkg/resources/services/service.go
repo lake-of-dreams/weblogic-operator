@@ -25,8 +25,10 @@ func NewServiceForServer(server *types.WebLogicManagedServer) *v1.Service {
 	}
 	svc := &v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Labels: map[string]string{constants.WebLogicManagedServerLabel: server.Name,
-				constants.WebLogicDomainLabel: server.Spec.DomainName},
+			Labels: map[string]string{
+				constants.WebLogicManagedServerLabel: server.Name,
+				server.Spec.DomainName:               "managedserver",
+			},
 			Name:      server.Name,
 			Namespace: server.Namespace,
 		},
@@ -35,7 +37,7 @@ func NewServiceForServer(server *types.WebLogicManagedServer) *v1.Service {
 			Ports: weblogicPorts,
 			Selector: map[string]string{
 				constants.WebLogicManagedServerLabel: server.Name,
-				constants.WebLogicDomainLabel:        server.Spec.DomainName,
+				server.Spec.DomainName:               "managedserver",
 			},
 		},
 	}
@@ -46,7 +48,9 @@ func NewServiceForDomain(domain *types.WebLogicDomain) *v1.Service {
 	weblogicPort := v1.ServicePort{Port: 7001}
 	svc := &v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Labels:    map[string]string{constants.WebLogicDomainLabel: domain.Name},
+			Labels: map[string]string{
+				constants.WebLogicDomainLabel: domain.Name,
+			},
 			Name:      domain.Name,
 			Namespace: domain.Namespace,
 		},
@@ -69,7 +73,9 @@ func NewHeadlessServiceForDomain(domain *types.WebLogicDomain) *v1.Service {
 	}
 	svc := &v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Labels:    map[string]string{constants.WebLogicDomainLabel: domain.Name},
+			Labels: map[string]string{
+				constants.WebLogicDomainLabel: domain.Name,
+			},
 			Name:      domain.Name,
 			Namespace: domain.Namespace,
 		},
