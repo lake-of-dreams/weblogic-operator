@@ -80,7 +80,7 @@ try:
     # ================
     serverListFile = '%s/serverList.json' % domainHome
     os.system("touch %s" % serverListFile)
-    file = open(serverListFile, "w+")
+    file = open(serverListFile, "w")
     file.write("[")
     for item in serverlist:
         file.write("\n%s," % item)
