@@ -85,10 +85,10 @@ kubectl get weblogicservers,services
 ``` 
 kubectl delete weblogicmanagedserver seconddomain-ms
 kubectl delete weblogicdomain seconddomain
-
-Scale up firstdomain
-Scale down firstdomain
-
+  
+---Scale up firstdomain  
+---Scale down firstdomain  
+  
 kubectl delete weblogicmanagedserver --all
 kubectl delete weblogicdomain --all
 ``` 
