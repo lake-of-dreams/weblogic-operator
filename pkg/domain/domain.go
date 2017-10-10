@@ -17,6 +17,7 @@ import (
 	"weblogic-operator/pkg/types"
 	"io/ioutil"
 	"encoding/json"
+	"reflect"
 )
 
 // HasDomainNameLabel returns true if the given labels map matches the given
@@ -205,11 +206,9 @@ func GetDomainForReplicaSet(replicaset *v1beta1.ReplicaSet, restClient *rest.RES
 }
 
 func updateDomainWithReplicaSet(domain *types.WebLogicDomain, replicaSet *v1beta1.ReplicaSet, kubeClient kubernetes.Interface, restClient *rest.RESTClient) (err error) {
-	if domain.Spec.ServersAvailable == nil && domain.Spec.ServersRunning == nil {
-		err = PopulateServerDetailsForWebLogicDomain(domain, restClient)
-		if err != nil {
-			return err
-		}
+	err = PopulateServerDetailsForWebLogicDomain(domain, restClient)
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -221,10 +220,16 @@ func PopulateServerDetailsForWebLogicDomain(domain *types.WebLogicDomain, restCl
 	if err != nil {
 		glog.V(4).Infof(err.Error())
 	}
+
 	err = json.Unmarshal(file, &domain.Spec.ServersAvailable)
 	if err != nil {
 		glog.V(4).Infof(err.Error())
 	}
+
+	//err = json.Unmarshal(file, &domain.Spec.ServersRunning)
+	//if err != nil {
+	//	glog.V(4).Infof(err.Error())
+	//}
 
 	err = updateWebLogicDomain(domain, restClient)
 	if err != nil {
