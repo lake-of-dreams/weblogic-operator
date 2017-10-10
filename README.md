@@ -81,14 +81,23 @@ kubectl apply -f examples/server.yaml
 kubectl get weblogicservers,services
 ``` 
 
+**Sample Operations**
+``` 
+kubectl delete weblogicmanagedserver seconddomain-ms
+kubectl delete weblogicdomain seconddomain
+
+Scale up firstdomain
+Scale down firstdomain
+``` 
+
 **Delete objects of type _WebLogicDomain_**
 ```
-kubectl delete weblogicdomain basedomain
+kubectl delete weblogicdomain firstdomain
 ``` 
 
 **Delete objects of type _WebLogicManagedServer_**
 ```
-kubectl delete weblogicmanagedserver basedomain-managedserver
+kubectl delete weblogicmanagedserver firstdomain-ms
 ``` 
 
 **Cleanup**
