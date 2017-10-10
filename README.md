@@ -88,6 +88,9 @@ kubectl delete weblogicdomain seconddomain
 
 Scale up firstdomain
 Scale down firstdomain
+
+kubectl delete weblogicmanagedserver --all
+kubectl delete weblogicdomain --all
 ``` 
 
 **Delete objects of type _WebLogicDomain_**
