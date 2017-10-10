@@ -17,7 +17,6 @@ import (
 	"weblogic-operator/pkg/types"
 	"io/ioutil"
 	"encoding/json"
-	"reflect"
 )
 
 // HasDomainNameLabel returns true if the given labels map matches the given
