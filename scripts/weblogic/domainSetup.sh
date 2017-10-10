@@ -7,7 +7,7 @@ echo Start - Domain Setup
 if [ ! -d ${DOMAIN_HOME} ]; then
     $ORACLE_HOME/oracle_common/common/bin/wlst.sh -skipWLSModuleScanning /u01/oracle/user_projects/kubeCreateDomain.py \
                                                         $MY_POD_NAME $ORACLE_HOME $DOMAIN_NAME $DOMAIN_HOME $MANAGED_SERVER_COUNT "7001" "weblogic" "welcome1" \
-                                                        >> /u01/oracle/user_projects/domainSetup.log 2>&1
+                                                        >> /u01/oracle/user_projects/domainSetup"_${DOMAIN_NAME}".log 2>&1
 fi
 echo End - Domain Setup
 

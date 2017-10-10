@@ -19,8 +19,17 @@
 apiVersion: "weblogic.oracle.com/v1"
 kind: WebLogicManagedServer
 metadata:
-  name: basedomain-managedserver
+  name: firstdomain-ms
 spec:
-  domainName: basedomain
-  serversToRun: 2
+  domainName: firstdomain
+  serversToRun: 1
+---
+---
+apiVersion: "weblogic.oracle.com/v1"
+kind: WebLogicManagedServer
+metadata:
+  name: seconddomain-ms
+spec:
+  domainName: seconddomain
+  serversToRun: 1
 ---

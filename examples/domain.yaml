@@ -16,8 +16,17 @@
 apiVersion: "weblogic.oracle.com/v1"
 kind: WebLogicDomain
 metadata:
-  name: basedomain
+  name: firstdomain
 spec:
   version: 12.2.1.2
-  managedServerCount: 5
+  managedServerCount: 3
+---
+---
+apiVersion: "weblogic.oracle.com/v1"
+kind: WebLogicDomain
+metadata:
+  name: seconddomain
+spec:
+  version: 12.2.1.2
+  managedServerCount: 2
 ---

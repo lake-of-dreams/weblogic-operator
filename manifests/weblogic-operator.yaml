@@ -35,7 +35,7 @@ spec:
       containers:
       - name: weblogic-operator-controller
         imagePullPolicy: IfNotPresent
-        image: fmwplt/weblogic-operator:1710092128
+        image: fmwplt/weblogic-operator:1710102318
         volumeMounts:
         - mountPath: "/u01/oracle/user_projects"
           name: weblogic-operator-storage

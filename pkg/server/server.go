@@ -187,7 +187,7 @@ func createWebLogicManagedServer(server *types.WebLogicManagedServer, kubeClient
 		}
 		server.Labels[constants.WebLogicManagedServerLabel] = server.Name
 		server.Labels[server.Spec.Domain.Name] = "managedserver"
-		return updateWebLogicManagedServerLabel(server, restClient)
+		updateWebLogicManagedServerLabel(server, restClient)
 	}
 
 	serverService, err := CreateServiceForWebLogicManagedServer(kubeClient, server)
