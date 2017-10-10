@@ -1,18 +1,4 @@
 ---
-#apiVersion: "weblogic.oracle.com/v1"
-#kind: WebLogicDomain
-#metadata:
-#  name: basedomain
-#  spec:
-#    version: 12.2.1.2
-#    server:
-#      metadata:
-#        name: managedserver
-#        spec:
-#          version: 12.2.1.2
-#          replicas: 5
----
----
 apiVersion: "weblogic.oracle.com/v1"
 kind: WebLogicDomain
 metadata:
