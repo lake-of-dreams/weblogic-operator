@@ -63,7 +63,7 @@ if [ -d ${DOMAIN_HOME} ]; then
         mkdir -p ${DOMAIN_HOME}/servers/${msname}/security/
         cp -r ${DOMAIN_HOME}/servers/AdminServer/security/boot.properties ${DOMAIN_HOME}/servers/${msname}/security/boot.properties
 
-        ${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${msname} "t3://basedomain:7001"
+        ${DOMAIN_HOME}/bin/startManagedWebLogic.sh ${msname} "t3://${DOMAIN_NAME}:7001"
 
         mkdir -p ${DOMAIN_HOME}/servers/${msname}/logs/
         touch ${DOMAIN_HOME}/servers/${msname}/logs/${msname}.log

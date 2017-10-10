@@ -16,13 +16,14 @@ def addManagedServer(serverName, serverPort):
 try:
     # Variable Definitions
     # ======================
-    oracleHome = sys.argv[1]
-    domainName = sys.argv[2]
-    domainHome = sys.argv[3]
-    managedServerCount = int(sys.argv[4])
-    adminPort = int(sys.argv[5])
-    username = sys.argv[6]
-    password = sys.argv[7]
+    myPodName = sys.argv[1]
+    oracleHome = sys.argv[2]
+    domainName = sys.argv[3]
+    domainHome = sys.argv[4]
+    managedServerCount = int(sys.argv[5])
+    adminPort = int(sys.argv[6])
+    username = sys.argv[7]
+    password = sys.argv[8]
 
     print('ORACLE_HOME              : [%s]' % oracleHome);
     print('DOMAIN_NAME              : [%s]' % domainName);
@@ -58,7 +59,7 @@ try:
     # =====================================
     port = adminPort;
     serverlist = [];
-    dictServer = {"serverName": "AdminServer", "port": adminPort, "host": "localhost", "podName": ""}
+    dictServer = {"serverName": "AdminServer", "port": adminPort, "host": "localhost", "podName": myPodName}
     serverlist.append(dictServer)
     for x in range(1, managedServerCount + 1):
         port += 2

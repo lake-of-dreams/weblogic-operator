@@ -51,6 +51,7 @@ func weblogicDomainContainer(domain *types.WebLogicDomain) v1.Container {
 		},
 		Env: []v1.EnvVar{
 			oracleHomeEnvVar(),
+			podNameEnvVar(),
 			domainNameEnvVar(domain),
 			domainHomeEnvVar(domain),
 			managedServerCountEnvVar(domain),
