@@ -21,7 +21,7 @@ build:
   # Steps make up the actions in your pipeline
   # Read more about steps on our dev center:
   # http://devcenter.wercker.com/docs/steps/index.html
-  base-path: /go/src/github.com/sczachariah/weblogic-operator
+  base-path: C:\Go\bin\src\weblogic-operator
   steps:
     # Sets the go workspace and places you package
     # at the right place in the workspace tree
