@@ -30,6 +30,9 @@ build:
     - script:
         name: go get
         code: |
+          export GOROOT=C:\Users\priprabh.ORADEV\go
+          export GOPATH=C:\Users\priprabh.ORADEV\go\bin
+          export PATH=$PATH:$GOROOT/bin
           cd $WERCKER_SOURCE_DIR
           go version
           go get ./...
