@@ -30,6 +30,7 @@ build:
     - script:
         name: go get
         code: |
+          cd $WERCKER_SOURCE_DIR
           go version
           make clean
           make vendor
@@ -38,7 +39,6 @@ build:
     - script:
         name: go build
         code: |
-        cd $WERCKER_SOURCE_DIR
         make build
 
     # Test the project
