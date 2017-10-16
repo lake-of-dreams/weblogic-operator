@@ -33,7 +33,7 @@ build:
           unset GOROOT
           cd $WERCKER_SOURCE_DIR
           go version
-          go get /go/src/github.com/sczachariah/weblogic-operator
+          go get
           go version
 
 
