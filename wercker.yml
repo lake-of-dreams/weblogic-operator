@@ -3,7 +3,12 @@
 # If you want Google's container you would reference google/golang
 # Read more about containers on our dev center
 # http://devcenter.wercker.com/docs/containers/index.html
-box: golang
+start:
+  box: golang
+  steps:
+    - script:
+        name: Weblogic-Operator
+        code: echo "start of pipeline"
 # This is the build pipeline. Pipelines are the core of wercker
 # Read more about pipelines on our dev center
 # http://devcenter.wercker.com/docs/pipelines/index.html
@@ -21,6 +26,7 @@ build:
   # Steps make up the actions in your pipeline
   # Read more about steps on our dev center:
   # http://devcenter.wercker.com/docs/steps/index.html
+  base-path: /go/src/github.com/sczachariah/weblogic-operator
   steps:
     # Sets the go workspace and places you package
     # at the right place in the workspace tree
@@ -30,9 +36,6 @@ build:
     - script:
         name: go get
         code: |
-          export GOROOT=C:\Users\priprabh.ORADEV\go
-          export GOPATH=C:\Users\priprabh.ORADEV\go\bin
-          export PATH=$PATH:$GOROOT/bin
           cd $WERCKER_SOURCE_DIR
           go version
           go get ./...
