@@ -30,7 +30,9 @@ build:
     - script:
         name: go get
         code: |
-          get -u github.com/golang/dep/cmd/dep
+          cd $WERCKER_SOURCE_DIR
+          go version
+          go get ./...
 
     # Build the project
     - script:
