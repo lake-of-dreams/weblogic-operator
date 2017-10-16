@@ -39,8 +39,7 @@ build:
         name: go build
         code: |
         cd $WERCKER_SOURCE_DIR
-          make build
-          make push
+        make build
 
     # Test the project
     - script:
