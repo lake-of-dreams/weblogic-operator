@@ -30,9 +30,13 @@ build:
     - script:
         name: go get
         code: |
-          unset GOROOT
           cd $WERCKER_SOURCE_DIR
           go version
+          echo `pwd`
+          unset GOROOT
+          set GOPATH=C:\Go\bin
+          set PATH=$PATH;$GOPATH
+          go get ./...
 
 
     # Build the project
