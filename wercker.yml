@@ -30,9 +30,9 @@ build:
     - script:
         name: go get
         code: |
-          #cd $WERCKER_SOURCE_DIR
           go version
-          go get ./...
+          make vendor
+          make build
 
 
     # Build the project
