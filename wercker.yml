@@ -33,7 +33,8 @@ build:
           unset GOROOT
           cd $WERCKER_SOURCE_DIR
           go version
-          go get
+          go get -d
+          go get ./...
           go version
 
 
