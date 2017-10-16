@@ -31,12 +31,14 @@ build:
         name: go get
         code: |
           go version
+          make clean
           make vendor
 
     # Build the project
     - script:
         name: go build
         code: |
+        cd $WERCKER_SOURCE_DIR
           make build
           make push
 
