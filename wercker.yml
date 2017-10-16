@@ -32,14 +32,13 @@ build:
         code: |
           go version
           make vendor
-          make build
-
 
     # Build the project
     - script:
         name: go build
         code: |
-          go build ./...
+          make build
+          make push
 
     # Test the project
     - script:
