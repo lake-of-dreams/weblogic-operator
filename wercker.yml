@@ -30,9 +30,12 @@ build:
     - script:
         name: go get
         code: |
+          unset GOROOT
           cd $WERCKER_SOURCE_DIR
           go version
-          go get ./...
+          go get /go/src/github.com/sczachariah/weblogic-operator
+          go version
+
 
     # Build the project
     - script:
