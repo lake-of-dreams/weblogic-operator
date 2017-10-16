@@ -33,7 +33,7 @@ build:
           cd $WERCKER_SOURCE_DIR
           go version
           echo `pwd`
-          export GOPATH=C:\Go\bin
+          export GOPATH=C:/Go/bin
           export PATH=$PATH;$GOPATH
           go get ./...
 
