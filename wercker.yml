@@ -28,18 +28,17 @@ build:
 
     # Gets the dependencies
     - script:
-        name: go get
+        name: make vendor
         code: |
           cd $WERCKER_SOURCE_DIR
           go version
-          make clean
           make vendor
 
     # Build the project
-#    - script:
-#        name: go build
-#        code: |
-#        make build
+    - script:
+        name: make build
+        code: |
+        make build
 #
 #    # Test the project
 #    - script:
