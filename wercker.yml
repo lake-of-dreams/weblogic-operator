@@ -32,8 +32,6 @@ build:
         code:
           make build
 
-push-image-to-deploy:
-  steps:
     - internal/docker-push:
         cmd: COPY dist/scripts/weblogic/ /scripts
         cmd: COPY dist/bin/weblogic-operator /
