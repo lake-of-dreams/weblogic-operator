@@ -31,16 +31,3 @@ build:
         name: build the project
         code:
           make build
-
-    #Push the latest image of the weblogic-operator
-    - script:
-        name: Push the latest image of the weblogic-operator
-        code:
-          make push
-
-    # Copy binary to a location that gets passed along to the deploy pipeline
-    - script:
-        name: copy to deployment directory
-        code: |
-          echo $WERCKER_OUTPUT_DIR
-          cp -av dist/bin/weblogic-operator "$WERCKER_OUTPUT_DIR"
