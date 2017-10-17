@@ -3,7 +3,7 @@ box: golang
 build:
   steps:
     - setup-go-workspace:
-        package-dir: github.com/sczachariah/weblogic-operator
+        package-dir: weblogic-operator
 
     - script:
         name: install go tools
