@@ -11,14 +11,14 @@ build:
           go version
           go get -u -v github.com/golang/dep
           go get -u -v github.com/golang/dep/cmd/dep
-          go help gopath
+          go env GOPATH
 
     - script:
         name: install dependencies
         code: |
-          dep ensure
-          cd $HOME/go/src
           echo `pwd`
+          dep ensure
+          cd /go/bin/src
           git clone https://github.com/sczachariah/weblogic-operator.git
           make vendor
 
