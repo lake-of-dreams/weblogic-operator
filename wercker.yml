@@ -26,13 +26,13 @@ build:
         name: install dependencies
         code: |
           dep ensure
+          cd $WERCKER_SOURCE_DIR
           make vendor
 
     # Statically build the project
     - script:
         name: build the project
         code:
-          cd $WERCKER_SOURCE_DIR
           make build
 
     #Push the latest image of the weblogic-operator
