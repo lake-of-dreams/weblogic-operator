@@ -14,7 +14,6 @@ build:
           export PATH=$GOPATH:$GOBIN:$PATH
           cd $GOPATH/src
           git clone https://github.com/sczachariah/weblogic-operator.git
-          cd $WERCKER_SOURCE_DIR
 
     - script:
         name: install go tools
@@ -33,6 +32,7 @@ build:
     - script:
         name: build the project
         code:
+          cd $WERCKER_SOURCE_DIR
           make build
 
     #Push the latest image of the weblogic-operator
