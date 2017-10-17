@@ -21,15 +21,15 @@ build:
           git clone https://github.com/sczachariah/weblogic-operator.git weblogic-operator
           cd /go/src/weblogic-operator
           make vendor
+          set GOROOT=/usr/local/go
+          set GOPATH=$HOME/go
+          set GOBIN=$GOPATH/bin
+          set PATH=$GOPATH:$GOBIN:$PATH
 
     # Statically build the project
     - script:
         name: build the project
         code:
-          export GOROOT=/usr/local/go
-          export GOPATH=$HOME/go
-          export GOBIN=$GOPATH/bin
-          export PATH=$GOPATH:$GOBIN:$PATH
           make build
 
     #Push the latest image of the weblogic-operator
