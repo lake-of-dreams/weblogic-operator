@@ -29,5 +29,4 @@ build:
     - script:
         name: build the project
         code:
-          echo `pwd`
           make build
