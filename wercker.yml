@@ -18,8 +18,8 @@ build:
         code: |
           dep ensure
           cd `pwd`/../../../
-          git clone https://github.com/sczachariah/weblogic-operator.git
-          cd /go/src/github.com/sczachariah/weblogic-operator
+          git clone https://github.com/sczachariah/weblogic-operator.git weblogic-operator
+          cd /go/src/weblogic-operator
           make vendor
           set GOROOT=/usr/local/go
           set GOPATH=$HOME/go
