@@ -21,6 +21,7 @@ build:
           cd `pwd`/../../../
           echo `pwd`
           git clone https://github.com/sczachariah/weblogic-operator.git
+          cd /go/src/github.com/sczachariah/weblogic-operator
           make vendor
 
     # Statically build the project
