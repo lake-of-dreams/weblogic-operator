@@ -18,7 +18,8 @@ build:
         code: |
           echo `pwd`
           dep ensure
-          cd /go/bin/src
+          cd `pwd`/../../../
+          echo `pwd`
           git clone https://github.com/sczachariah/weblogic-operator.git
           make vendor
 
