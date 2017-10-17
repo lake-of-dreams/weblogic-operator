@@ -31,6 +31,7 @@ build:
         name: make clean
         code: |
           go version
+          echo $GOPATH
           make clean
 
     # Gets the dependencies
@@ -38,6 +39,7 @@ build:
         name: make vendor
         code: |
           cd $WERCKER_SOURCE_DIR
+          go get -u github.com/golang/dep/cmd/dep
           make vendor
 
     # Build the project
