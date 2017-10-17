@@ -8,6 +8,10 @@ build:
     - script:
         name: install go tools
         code: |
+          export GOROOT=/usr/local/go
+          export GOPATH=$HOME/go
+          export GOBIN=$GOPATH/bin
+          export PATH=$GOPATH:$GOBIN:$PATH
           go version
           go get -u -v github.com/golang/dep
           go get -u -v github.com/golang/dep/cmd/dep
@@ -22,10 +26,6 @@ build:
     - script:
         name: build the project
         code:
-          export GOROOT=/usr/local/go
-          export GOPATH=$HOME/go
-          export GOBIN=$GOPATH/bin
-          export PATH=$GOPATH:$GOBIN:$PATH
           make build
 
 # Push the latest image of the weblogic-operator
