@@ -16,18 +16,20 @@ build:
     - script:
         name: install dependencies
         code: |
-          echo `pwd`
           dep ensure
           cd `pwd`/../../../
-          echo `pwd`
-          git clone https://github.com/sczachariah/weblogic-operator.git
-          cd /go/src/github.com/sczachariah/weblogic-operator
+          git clone https://github.com/sczachariah/weblogic-operator.git weblogic-operator
+          cd /go/src/weblogic-operator
           make vendor
 
     # Statically build the project
     - script:
         name: build the project
         code:
+          export GOROOT=/usr/local/go
+          export GOPATH=$HOME/go
+          export GOBIN=$GOPATH/bin
+          export PATH=$GOPATH:$GOBIN:$PATH
           make build
 
     #Push the latest image of the weblogic-operator
