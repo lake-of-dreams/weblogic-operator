@@ -6,27 +6,20 @@ build:
         package-dir: github.com/sczachariah/weblogic-operator
 
     - script:
-        name: prerequiste - env setup
-        code: |
-          export GOROOT=/usr/local/go
-          export GOPATH=$HOME/go
-          export GOBIN=$GOPATH/bin
-          export PATH=$GOPATH:$GOBIN:$PATH
-          echo `pwd`
-          git clone https://github.com/sczachariah/weblogic-operator.git
-
-    - script:
         name: install go tools
         code: |
           go version
           go get -u -v github.com/golang/dep
           go get -u -v github.com/golang/dep/cmd/dep
+          go help gopath
 
     - script:
         name: install dependencies
         code: |
           dep ensure
-          cd $WERCKER_SOURCE_DIR
+          cd $HOME/go/src
+          echo `pwd`
+          git clone https://github.com/sczachariah/weblogic-operator.git
           make vendor
 
     # Statically build the project
