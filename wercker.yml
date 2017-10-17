@@ -12,7 +12,7 @@ build:
           export GOPATH=$HOME/go
           export GOBIN=$GOPATH/bin
           export PATH=$GOPATH:$GOBIN:$PATH
-          cd $HOME/go/src
+          echo `pwd`
           git clone https://github.com/sczachariah/weblogic-operator.git
 
     - script:
