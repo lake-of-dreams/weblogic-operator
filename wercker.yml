@@ -16,12 +16,23 @@ build:
         name: install dependencies
         code: |
           dep ensure
+          make vendor
 
     # Statically build the project
     - script:
         name: build the project
         code:
+          export GOROOT=/usr/local/go
+          export GOPATH=$HOME/go
+          export GOBIN=$GOPATH/bin
+          export PATH=$GOPATH:$GOBIN:$PATH
           make build
+
+# Push the latest image of the weblogic-operator
+    - script:
+        name: Push the latest image of the weblogic-operator
+        code:
+          make push
 
     # Copy binary to a location that gets passed along to the deploy pipeline
     - script:
