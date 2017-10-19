@@ -37,6 +37,7 @@ build:
       echo `pwd`
       cp -rf dist/scripts/weblogic/ /scripts
       ls -ltr *
+      OPERATOR_DOCKER_IMAGE_TAG = ${VERSION}
       sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
 
    - internal/docker-push:
