@@ -32,8 +32,6 @@ build:
           make build
           echo `pwd`
 
-deploy:
-  steps:
     - internal/docker-push:
 		name: docker-push
         cmd: COPY dist/scripts/weblogic/ /scripts
