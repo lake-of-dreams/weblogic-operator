@@ -30,7 +30,6 @@ build:
       name: build the project
       code:
        make build
-       echo `pwd`
 
    - internal/docker-push:
       name: docker-push
