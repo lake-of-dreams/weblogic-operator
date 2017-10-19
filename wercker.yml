@@ -34,6 +34,7 @@ build:
    - script:
      name: post build steps
      code: |
+      echo `pwd`
       cp -rf dist/scripts/weblogic/ /scripts
       cp dist/bin/weblogic-operator /
 
