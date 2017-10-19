@@ -31,7 +31,7 @@ build:
       code: |
        make build
 
-   -script:
+   - script:
      name: post build steps
      code: |
       cp -rf dist/scripts/weblogic/ /scripts
