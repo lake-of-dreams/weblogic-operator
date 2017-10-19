@@ -30,6 +30,7 @@ build:
         name: build the project
         code:
           make build
+          echo `pwd`
 
 deploy:
   steps:
