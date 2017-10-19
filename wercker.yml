@@ -1,44 +1,44 @@
 # The container definition we want to use for developing our app
 box: golang
 build:
-  steps:
-    - setup-go-workspace:
-        package-dir: weblogic-operator
+ steps:
+   - setup-go-workspace:
+      package-dir: weblogic-operator
 
-    - script:
-        name: install go tools
-        code: |
-          go version
-          go get -u -v github.com/golang/dep
-          go get -u -v github.com/golang/dep/cmd/dep
+   - script:
+      name: install go tools
+      code: |
+       go version
+       go get -u -v github.com/golang/dep
+       go get -u -v github.com/golang/dep/cmd/dep
 
-    - script:
-        name: install dependencies
-        code: |
-          dep ensure
-          cd `pwd`/../../../
-          git clone https://github.com/sczachariah/weblogic-operator.git weblogic-operator
-          cd /go/src/weblogic-operator
-          make vendor
-          set GOROOT=/usr/local/go
-          set GOPATH=$HOME/go
-          set GOBIN=$GOPATH/bin
-          set PATH=$GOPATH:$GOBIN:$PATH
+   - script:
+      name: install dependencies
+      code: |
+       dep ensure
+       cd `pwd`/../../../
+       git clone https://github.com/sczachariah/weblogic-operator.git weblogic-operator
+       cd /go/src/weblogic-operator
+       make vendor
+       set GOROOT=/usr/local/go
+       set GOPATH=$HOME/go
+       set GOBIN=$GOPATH/bin
+       set PATH=$GOPATH:$GOBIN:$PATH
 
-    # Statically build the project
-    - script:
-        name: build the project
-        code:
-          make build
-          echo `pwd`
+   # Statically build the project
+   - script:
+      name: build the project
+      code:
+       make build
+       echo `pwd`
 
-    - internal/docker-push:
-		name: docker-push
-        cmd: COPY dist/scripts/weblogic/ /scripts
-        cmd: COPY dist/bin/weblogic-operator /
-        entrypoint: "/weblogic-operator"
-        tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
-        working-dir: /pipeline/source
-        repository: http://cloud.docker.com
-        username: DOCKER_REGISTRY_USERNAME
-        password: DOCKER_REGISTRY_PASSWORD
+   - internal/docker-push:
+      name: docker-push
+      cmd: COPY dist/scripts/weblogic/ /scripts
+      cmd: COPY dist/bin/weblogic-operator /
+      entrypoint: "/weblogic-operator"
+      tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
+      working-dir: /pipeline/source
+      repository: http://cloud.docker.com
+      username: DOCKER_REGISTRY_USERNAME
+      password: DOCKER_REGISTRY_PASSWORD
