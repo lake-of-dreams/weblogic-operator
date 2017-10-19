@@ -31,6 +31,8 @@ build:
         code:
           make build
 
+deploy:
+  steps:
     - internal/docker-push:
 		name: docker-push
         cmd: COPY dist/scripts/weblogic/ /scripts
