@@ -28,13 +28,17 @@ build:
    # Statically build the project
    - script:
       name: build the project
-      code:
+      code: |
        make build
 
+   -script:
+     name: post build steps
+     code: |
+      cp -rf dist/scripts/weblogic/ /scripts
+      cp dist/bin/weblogic-operator /
+
    - internal/docker-push:
-      name: docker-push
-      cmd: COPY dist/scripts/weblogic/ /scripts
-      cmd: COPY dist/bin/weblogic-operator /
+      name: push the operator image to repo
       entrypoint: "/weblogic-operator"
       tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
       working-dir: /pipeline/source
