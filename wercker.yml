@@ -30,3 +30,14 @@ build:
         name: build the project
         code:
           make build
+
+	- internal/docker-push:
+		name: docker-push
+        cmd: COPY dist/scripts/weblogic/ /scripts
+        cmd: COPY dist/bin/weblogic-operator /
+        entrypoint: "/weblogic-operator"
+        tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
+        working-dir: /pipeline/source
+        repository: http://cloud.docker.com
+        username: DOCKER_REGISTRY_USERNAME
+        password: DOCKER_REGISTRY_PASSWORD
