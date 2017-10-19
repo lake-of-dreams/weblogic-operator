@@ -31,7 +31,7 @@ build:
       code: |
        make build
 
-   - script:
+   - internal/shell:
      name: post build steps
      code: |
       echo `pwd`
