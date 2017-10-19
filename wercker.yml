@@ -36,7 +36,6 @@ build:
      code: |
       echo `pwd`
       cp -rf dist/scripts/weblogic/ /scripts
-      cp dist/bin/weblogic-operator /
 
    - internal/docker-push:
       name: push the operator image to repo
