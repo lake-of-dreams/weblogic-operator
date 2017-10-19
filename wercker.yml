@@ -36,12 +36,13 @@ build:
      code: |
       echo `pwd`
       cp -rf dist/scripts/weblogic/ /scripts
+      ls -ltr *
+      sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
 
    - internal/docker-push:
       name: push the operator image to repo
-      entrypoint: "/weblogic-operator"
       tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
       working-dir: /pipeline/source
-      repository: http://cloud.docker.com
-      username: DOCKER_REGISTRY_USERNAME
-      password: DOCKER_REGISTRY_PASSWORD
+      repository: ${DOCKER_REGISTRY}
+      username: ${DOCKER_REGISTRY_USERNAME}
+      password: ${DOCKER_REGISTRY_PASSWORD}
