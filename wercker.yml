@@ -39,8 +39,8 @@ build:
 
    - internal/docker-push:
       name: push the operator image to repo
-      tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
+      #tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
       working-dir: /pipeline/source
-      repository: ${DOCKER_REGISTRY}
-      username: ${DOCKER_USERNAME}
-      password: ${DOCKER_PASSWORD}
+      repository: quay.io/fmwplt/weblogic-operator
+      username: ${QUAY_IO_USERNAME}
+      password: ${QUAY_IO_PASSWORD}
