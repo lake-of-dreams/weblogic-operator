@@ -39,7 +39,8 @@ deploy:
      code: |
       docker --help
       docker -v
-      ls /usr/sbin/
+      which usermod
+      ls /usr/bin/
       sudo /usr/sbin/usermod -aG docker $(whoami)
       sudo chgrp docker /usr/bin/docker
       sudo chgrp docker /var/run/docker.sock
