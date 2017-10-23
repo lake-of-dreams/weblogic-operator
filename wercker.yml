@@ -35,9 +35,9 @@ deploy:
  box: docker
  steps:
    - script:
-     name: docker version
+     name: docker ls
      code: |
-      sudo docker images
+      docker ls
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
