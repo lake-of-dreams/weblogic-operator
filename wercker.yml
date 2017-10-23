@@ -39,7 +39,7 @@ deploy:
      code: |
       docker --help
       docker -v
-      docker ps
+      dockerd
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
