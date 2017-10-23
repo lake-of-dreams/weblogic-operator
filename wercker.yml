@@ -39,9 +39,9 @@ deploy:
      code: |
       docker --help
       docker -v
-      sudo -i
-      sudo groupadd docker
-      sudo gpasswd -a $(whoami) docker
+      ls /usr/sbin
+      sudo /usr/sbin/groupadd docker
+      sudo /usr/sbin/gpasswd -a $(whoami) docker
       sudo /usr/sbin/adduser -G  $(whoami) docker
       sudo chgrp docker /usr/bin/docker
       sudo chgrp docker /var/run/docker.sock
