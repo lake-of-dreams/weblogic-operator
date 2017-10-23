@@ -40,7 +40,7 @@ deploy:
       docker --help
       docker -v
       ls /usr/sbin
-      sudo /usr/sbin/addgroup docker
+      sudo /usr/sbin/addgroup docker -p docker
       sudo /usr/sbin/adduser -G  $(whoami) docker
       sudo chgrp docker /usr/bin/docker
       sudo chgrp docker /var/run/docker.sock
