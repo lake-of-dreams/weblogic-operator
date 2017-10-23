@@ -37,9 +37,6 @@ deploy:
    - script:
      name: docker commands
      code: |
-#      docker --help
-#      docker -v
-      ls /usr/bin
       /usr/bin/which groupadd
       /usr/bin/which useradd
       sudo /usr/sbin/addgroup docker -p docker
