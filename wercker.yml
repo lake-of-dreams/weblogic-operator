@@ -37,7 +37,7 @@ deploy:
    - script:
      name: docker commands
      code: |
-      sudo /usr/sbin/addgroup docker
+      sudo /usr/sbin/addgroup docker <<< "password"
       sudo /usr/sbin/adduser -G  $(whoami) docker
       sudo -S <<< "password"
       sudo chgrp docker /usr/bin/docker
