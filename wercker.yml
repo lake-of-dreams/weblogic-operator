@@ -35,15 +35,11 @@ deploy:
  box: docker
  steps:
    - script:
-     name: usage
-     code: |
-      sudo passwd root < 12345
-      sudo root
-   - script:
      name: docker commands
      code: |
       docker --help
       docker -v
+      sudo -i
       sudo groupadd docker
       sudo gpasswd -a $(whoami) docker
       sudo /usr/sbin/adduser -G  $(whoami) docker
