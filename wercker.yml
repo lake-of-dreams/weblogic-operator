@@ -38,7 +38,8 @@ deploy:
      name: docker ls
      code: |
       docker --help
-      docker -v
+      docker --version
+      docker --images
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
