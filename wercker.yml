@@ -38,7 +38,7 @@ deploy:
      name: docker commands
      code: |
       docker --help
-      docker --v
+      docker -v
       docker ps
 
 #   - internal/docker-push:
