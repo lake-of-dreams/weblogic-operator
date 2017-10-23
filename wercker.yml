@@ -31,8 +31,8 @@ build:
       code: |
        make build
 
+box: docker
 deploy:
- box: docker
   steps:
    - script:
      name: docker version
