@@ -37,9 +37,7 @@ deploy:
    - script:
      name: docker commands
      code: |
-      /usr/bin/which groupadd
-      /usr/bin/which useradd
-      sudo /usr/sbin/addgroup docker -p docker
+      sudo /usr/sbin/addgroup docker
       sudo /usr/sbin/adduser -G  $(whoami) docker
       sudo chgrp docker /usr/bin/docker
       sudo chgrp docker /var/run/docker.sock
