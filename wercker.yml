@@ -39,7 +39,7 @@ deploy:
      code: |
       docker --help
       docker -v
-      ls /usr/sbin
+      ls /usr/bin
       sudo /usr/sbin/addgroup docker -p docker
       sudo /usr/sbin/adduser -G  $(whoami) docker
       sudo chgrp docker /usr/bin/docker
