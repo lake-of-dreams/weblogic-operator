@@ -39,7 +39,9 @@ deploy:
      code: |
       docker --help
       docker -v
-      sudo /usr/sbin/adduser -G docker $(whoami)
+      sudo groupadd docker
+      sudo gpasswd -a $(whoami) docker
+      sudo /usr/sbin/adduser -G  $(whoami) docker
       sudo chgrp docker /usr/bin/docker
       sudo chgrp docker /var/run/docker.sock
       set DOCKER_HOST=unix:///var/run/docker.sock
