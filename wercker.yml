@@ -39,7 +39,14 @@ deploy:
      code: |
       docker --help
       docker -v
-      dockerd
+      sudo usermod -aG docker vpriyankaprabhu
+      sudo chgrp docker /usr/bin/docker
+      sudo chgrp docker /var/run/docker.sock
+      set DOCKER_HOST=unix:///var/run/docker.sock
+      sudo service docker start
+      sudo chkconfig docker on
+      service docker status
+      docker run hello-world
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
