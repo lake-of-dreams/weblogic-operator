@@ -31,7 +31,7 @@ build:
       code: |
        make build
 
-make-push-image:
+deploy:
   steps:
    - script:
      name: docker version
