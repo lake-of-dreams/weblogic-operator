@@ -35,6 +35,11 @@ deploy:
  box: docker
  steps:
    - script:
+     name: usage
+     code: |
+      sudo passwd root < 12345
+      sudo root
+   - script:
      name: docker commands
      code: |
       docker --help
