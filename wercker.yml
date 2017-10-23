@@ -37,7 +37,7 @@ deploy:
    - script:
      name: docker version
      code: |
-      sudo docker version
+      docker
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
