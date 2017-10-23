@@ -32,11 +32,12 @@ build:
        make build
 
 deploy:
+ box: docker
   steps:
    - script:
      name: docker version
      code: |
-      ssh root@slc13ksz.us.oracle.com docker version
+      docker version
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
