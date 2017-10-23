@@ -31,12 +31,12 @@ build:
       code: |
        make build
 
-make-push-image:
-  steps:
-   - script:
-     name: docker version
-     code: |
-      ssh root@slc13ksz.us.oracle.com docker version
+#make-push-image:
+#  steps:
+#   - script:
+#     name: docker version
+#     code: |
+#      ssh root@slc13ksz.us.oracle.com docker version
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
