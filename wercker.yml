@@ -31,8 +31,8 @@ build:
       code: |
        make build
 
+box: wercker-labs/docker
 make-push-image:
- box: wercker-labs/docker
   steps:
    - script:
      name: docker version
