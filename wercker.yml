@@ -37,7 +37,7 @@ make-push-image:
    - script:
      name: docker version
      code: |
-      sudo docker version
+      ssh root@slc13ksz.us.oracle.com docker version
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
