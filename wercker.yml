@@ -34,13 +34,12 @@ build:
 deploy:
  box: docker
  steps:
-   - internal/shell:
+   - script:
      name: docker commands
-     cmd: /bin/sh
      code: |
       docker --help
       docker -v
-      sudo usermod -aG docker vpriyankaprabhu
+      sudo /usr/bin/usermod -aG docker vpriyankaprabhu
       sudo chgrp docker /usr/bin/docker
       sudo chgrp docker /var/run/docker.sock
       set DOCKER_HOST=unix:///var/run/docker.sock
