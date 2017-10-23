@@ -34,8 +34,9 @@ build:
 deploy:
  box: docker
  steps:
-   - script:
+   - internal/shell:
      name: docker commands
+     cmd: /bin/sh
      code: |
       docker --help
       docker -v
