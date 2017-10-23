@@ -31,16 +31,18 @@ build:
       code: |
        make build
 
+make-push-image:
+ box: wercker-labs/docker
+  steps:
    - script:
-     name: post build steps
+     name: docker version
      code: |
-      echo `pwd`
-      make image
+      sudo docker version
 
-   - internal/docker-push:
-      name: push the operator image to repo
-      #tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
-      working-dir: /pipeline/source
-      repository: quay.io/fmwplt/weblogic-operator
-      username: ${QUAY_IO_USERNAME}
-      password: ${QUAY_IO_PASSWORD}
+#   - internal/docker-push:
+#      name: push the operator image to repo
+#      #tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
+#      working-dir: /pipeline/source
+#      repository: quay.io/fmwplt/weblogic-operator
+#      username: ${QUAY_IO_USERNAME}
+#      password: ${QUAY_IO_PASSWORD}
