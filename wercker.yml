@@ -50,11 +50,12 @@ deploy:
       name: building a image fo weblogic-operator
       code: |
        /usr/sbin/addgroup docker
-       groups
        sudo /usr/sbin/adduser -G docker vpriyankaprabhu | echo "password123" > /dev/null
        echo 'export DOCKER_HOST="tcp://$(boot2docker ip 2>/dev/null):2375";' >> ~/.bashrc
        sudo chgrp docker /usr/local/bin/docker
        set DOCKER_HOST=unix:///var/run/docker.sock
+       docker info
+       docker ps
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
