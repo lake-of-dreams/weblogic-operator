@@ -32,7 +32,7 @@ build:
        make build
 
 deploy:
- box: alpine
+ box: docker-dev
  steps:
    - script:
      name: docker commands
