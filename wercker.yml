@@ -49,7 +49,7 @@ deploy:
    - script:
       name: building a image fo weblogic-operator
       code: |
-       sudo docker build -t fmwplt/weblogic-operator .
+       sudo docker build .
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
