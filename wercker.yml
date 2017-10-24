@@ -49,10 +49,9 @@ deploy:
    - script:
       name: building a image fo weblogic-operator
       code: |
-       echo ${whoami}
        /usr/sbin/addgroup docker
        groups
-       sudo /usr/sbin/adduser -G docker $whoami
+       sudo /usr/sbin/adduser $whoami -G docker
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
