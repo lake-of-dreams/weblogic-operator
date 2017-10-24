@@ -37,11 +37,9 @@ deploy:
    - script:
      name: docker commands
      code: |
-      unset ${!DOCKER*}
       set DOCKER_TLS_VERIFY="1"
       set DOCKER_HOST="tcp://192.168.99.100:2376"
       set DOCKER_MACHINE_NAME="default"
-      unset ${!DOCKER*}
       sudo docker run hello-world
       env | grep DOCKER
 
