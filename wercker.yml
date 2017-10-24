@@ -54,7 +54,6 @@ deploy:
        docker build \
         --build-arg=http_proxy \
        	--build-arg=https_proxy \
-       	-t ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} \
        	.
 
 #   - internal/docker-push:
