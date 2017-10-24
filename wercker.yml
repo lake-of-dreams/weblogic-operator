@@ -34,14 +34,20 @@ build:
 deploy:
  box: docker
  steps:
+   - internal/shell:
+     cmd: /bin/sh  #defaults to /bin/bash
+      code: |
+       # some code to automatically run in your shell session
+       # before you start interacting
+       set OPERATOR_DOCKER_IMAGE_NAME = "weblogic-operator"
+       set OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
+       sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
+
    - script:
-     name: building a image fo weblogic-operator
-     code: |
-      set OPERATOR_DOCKER_IMAGE_NAME = "weblogic-operator"
-      set OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
-      sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
-      cat manifests/weblogic-operator.yaml
-      docker build --help
+      name: building a image fo weblogic-operator
+      code: |
+       cat manifests/weblogic-operator.yaml
+       docker build --help
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
