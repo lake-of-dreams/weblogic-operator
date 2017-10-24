@@ -49,9 +49,6 @@ deploy:
    - script:
       name: building a image fo weblogic-operator
       code: |
-       newgrp docker
-       which service
-       sudo service docker start
        sudo docker build .
 
 #   - internal/docker-push:
