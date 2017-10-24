@@ -38,8 +38,7 @@ deploy:
      name: docker commands
      code: |
       which docker
-      ls /usr/local/bin/
-      rm -rf /var/run/docker.sock
+      docker-init
       dockerd
       docker -v
       env | grep DOCKER
