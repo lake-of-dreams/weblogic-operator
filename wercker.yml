@@ -38,7 +38,7 @@ deploy:
      name: docker commands
      code: |
       which docker
-      /usr/bin/docker daemon -H unix:///var/run/docker.sock -H tcp://127.0.0.1:2376 --pidfile=/var/run/docker.pid
+      /usr/local/bin/docker daemon -H unix:///var/run/docker.sock -H tcp://127.0.0.1:2376 --pidfile=/var/run/docker.pid
       docker -v
       env | grep DOCKER
 
