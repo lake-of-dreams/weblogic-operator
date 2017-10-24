@@ -54,6 +54,12 @@ deploy:
        echo 'export DOCKER_HOST="tcp://$(boot2docker ip 2>/dev/null):2375";' >> ~/.bashrc
        sudo chgrp docker /usr/local/bin/docker
        set DOCKER_HOST=unix:///var/run/docker.sock
+       docker run -d -v /var/run/docker.sock:/var/run/docker.sock -v
+       /usr/bin/docker:/usr/bin/docker:ro -v
+       /lib64/libdevmapper.so.1.02:/usr/lib/x86_64-linux-gnu/libdevmapper.so.1.02
+       -v /lib64/libudev.so.0:/usr/lib/x86_64-linux-gnu/libudev.so.0
+       -p 8080:8080 --name jenkins -u root --privileged=true -t -i
+       my-jenkins:1.0
        docker build -t fmwplt/weblogic-operator:1710102353 .
 #   - internal/docker-push:
 #      name: push the operator image to repo
