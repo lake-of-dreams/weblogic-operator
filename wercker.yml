@@ -50,6 +50,7 @@ deploy:
       name: building a image fo weblogic-operator
       code: |
        cat manifests/weblogic-operator.yaml
+       docker build --help
        docker build \
         --build-arg=http_proxy \
        	--build-arg=https_proxy \
