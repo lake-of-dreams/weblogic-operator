@@ -50,9 +50,8 @@ deploy:
       name: building a image fo weblogic-operator
       code: |
        groups
-       ls /usr/local/bin
-       ls /usr/sbin
-       ls /usr/bin
+       sudo /usr/sbin/addgroup docker
+       groups
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
