@@ -48,13 +48,15 @@ deploy:
        which adduser
        which addgroup
        which groupadd
-       which adduser
+       which useradd
 
    - script:
       name: building a image fo weblogic-operator
       code: |
-       groups
-       `which groupadd` docker
+       which adduser
+       which addgroup
+       which groupadd
+       which useradd
        groups
        sudo /usr/sbin/adduser -G docker $(whoami)
 
