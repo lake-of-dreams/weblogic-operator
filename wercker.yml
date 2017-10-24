@@ -32,7 +32,7 @@ build:
        make build
 
 deploy:
- box: docker
+ box: node:4-slim
  steps:
    - internal/shell:
       cmd: /bin/sh  #defaults to /bin/bash
@@ -49,12 +49,17 @@ deploy:
    - script:
       name: building a image fo weblogic-operator
       code: |
-       /usr/sbin/addgroup docker
-       sudo /usr/sbin/adduser -G docker vpriyankaprabhu | echo "password123" >> /dev/null
-       echo 'export DOCKER_HOST="tcp://$(boot2docker ip 2>/dev/null):2375";' >> ~/.bashrc
-       sudo chgrp docker /usr/local/bin/docker
-       set DOCKER_HOST=unix:///var/run/docker.sock
-       find / -name wget -print
+       sudo apt-get update
+       sudo apt-get install \
+       linux-image-extra-$(uname -r) \
+       linux-image-extra-virtual
+       sudo apt-get install docker-ce
+#       /usr/sbin/addgroup docker
+#       sudo /usr/sbin/adduser -G docker vpriyankaprabhu | echo "password123" >> /dev/null
+#       echo 'export DOCKER_HOST="tcp://$(boot2docker ip 2>/dev/null):2375";' >> ~/.bashrc
+#       sudo chgrp docker /usr/local/bin/docker
+#       set DOCKER_HOST=unix:///var/run/docker.sock
+#       find / -name wget -print
 #   - internal/docker-push:
 #      name: push the operator image to repo
 #      #tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
