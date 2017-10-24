@@ -65,6 +65,7 @@ deploy:
        echo 5
        sudo apt-get install
        echo 6
+       sudo groupadd docker
        sudo usermod -aG docker ${whoami}
        sudo docker run hello-world
        sudo docker ps
