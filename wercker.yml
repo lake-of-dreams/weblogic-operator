@@ -37,7 +37,7 @@ deploy:
    - script:
      name: docker commands
      code: |
-      cat /etc/default/docker
+      sudo cat /etc/default/docker
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
