@@ -41,13 +41,19 @@ deploy:
        # before you start interacting
        set OPERATOR_DOCKER_IMAGE_NAME = "weblogic-operator"
        set OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
+       set http_proxy = "http://www-proxy.us.oracle.com:80"
+       set https_proxy = "http://www-proxy.us.oracle.com:80"
        sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
 
    - script:
       name: building a image fo weblogic-operator
       code: |
        cat manifests/weblogic-operator.yaml
-       docker build --help
+       docker build \
+        --build-arg=http_proxy \
+       	--build-arg=https_proxy \
+       	-t ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} \
+       	.
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
