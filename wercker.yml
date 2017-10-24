@@ -51,14 +51,20 @@ deploy:
       code: |
        uname -a
        sudo apt-get update
+       echo 1
        sudo apt-get install  apt-transport-https \
        ca-certificates \
        curl \
        software-properties-common
+       echo 2
        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+       echo 3
        sudo apt-key fingerprint 0EBFCD88
+       echo 4
        sudo apt-get update
+       echo 5
        sudo apt-get install
+       echo 6
        sudo usermod -aG docker ${whoami}
        sudo docker run hello-world
        sudo docker ps
