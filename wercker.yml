@@ -38,8 +38,6 @@ deploy:
      name: docker commands
      code: |
       set DOCKER_HOST=unix:///var/run/docker.sock
-      ls -l ///var/run/docker.sock
-      sudo chown ${whoami} /var/run/docker.sock
       docker info
       docker run hello-world
 
