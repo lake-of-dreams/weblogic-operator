@@ -37,8 +37,7 @@ deploy:
    - script:
      name: docker commands
      code: |
-      RUN apk add ca-certificates wget && update-ca-certificates
-      wget -qO- https://get.docker.com/ | sh
+      cat /etc/default/docker
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
