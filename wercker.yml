@@ -53,6 +53,7 @@ deploy:
    - script:
       name: building a image fo weblogic-operator
       code: |
+       su -
        /usr/sbin/addgroup docker
        groups
        sudo /usr/sbin/adduser -G docker $(whoami)
