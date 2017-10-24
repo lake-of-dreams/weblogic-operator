@@ -56,7 +56,7 @@ deploy:
        su -
        /usr/sbin/addgroup docker
        groups
-       sudo /usr/sbin/adduser -G docker $(whoami)
+       sudo /usr/sbin/adduser -G docker root
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
