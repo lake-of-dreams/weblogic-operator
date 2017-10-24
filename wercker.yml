@@ -38,7 +38,7 @@ deploy:
      name: docker commands
      code: |
       which docker
-      docker-init
+      uname -a
       dockerd
       docker -v
       env | grep DOCKER
