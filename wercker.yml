@@ -37,8 +37,8 @@ deploy:
    - script:
      name: building a image fo weblogic-operator
      code: |
-      OPERATOR_DOCKER_IMAGE_NAME = "weblogic-operator"
-      OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
+      set OPERATOR_DOCKER_IMAGE_NAME = "weblogic-operator"
+      set OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
       sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
       cat manifests/weblogic-operator.yaml
       docker build --help
