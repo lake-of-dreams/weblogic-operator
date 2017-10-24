@@ -49,10 +49,13 @@ deploy:
    - script:
       name: building a image fo weblogic-operator
       code: |
+       uname -a
+       sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+       sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
        sudo apt-get update
-       apt-cache policy docker-ce
-       sudo apt-get install docker.io
+       apt-cache search docker-ce
+       sudo apt-get install docker-ce
        sudo systemctl status docker
        sudo usermod -aG docker ${whoami}
        sudo docker run hello-world
