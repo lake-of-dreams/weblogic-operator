@@ -49,9 +49,7 @@ deploy:
    - script:
       name: building a image fo weblogic-operator
       code: |
-       cat manifests/weblogic-operator.yaml
-       docker build --help
-       docker build .
+       sudo -E docker build -t fmwplt/weblogic-operator:${OPERATOR_DOCKER_IMAGE_TAG} .
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
