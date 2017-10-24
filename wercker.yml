@@ -54,6 +54,7 @@ deploy:
        echo 'export DOCKER_HOST="tcp://$(boot2docker ip 2>/dev/null):2375";' >> ~/.bashrc
        sudo chgrp docker /usr/local/bin/docker
        set DOCKER_HOST=unix:///var/run/docker.sock
+       apt-get update && apt-get install make
        make image
 #   - internal/docker-push:
 #      name: push the operator image to repo
