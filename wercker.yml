@@ -38,10 +38,6 @@ deploy:
      name: docker commands
      code: |
       docker -v
-      docker-machine -v
-      docker-machine create -d none --url="tcp://192.168.59.103:2376" boot2docker
-      docker-machine ls
-      eval "$(docker-machine env boot2docker)"
       env | grep DOCKER
       docker info
 
