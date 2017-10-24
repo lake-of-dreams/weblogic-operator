@@ -50,10 +50,9 @@ deploy:
       name: building a image fo weblogic-operator
       code: |
        groups
-       su -
-       which usermod
-       which useradd
-       sudo docker build .
+       ls /usr/local/bin
+       ls /usr/sbin
+       ls /usr/bin
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
