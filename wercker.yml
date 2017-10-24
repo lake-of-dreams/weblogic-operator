@@ -50,10 +50,10 @@ deploy:
       name: building a image fo weblogic-operator
       code: |
        groups
-       docker -d
+       docker -D
        sudo start docker.io
        dmesg | tail -n5
-       sudo docker -d
+       sudo docker -D
        sudo docker build .
 
 #   - internal/docker-push:
