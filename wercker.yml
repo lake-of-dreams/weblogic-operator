@@ -49,6 +49,7 @@ deploy:
    - script:
       name: building a image fo weblogic-operator
       code: |
+       usermod -aG docker ${whoami}
        sudo docker build .
 
 #   - internal/docker-push:
