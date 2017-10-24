@@ -63,12 +63,13 @@ deploy:
        echo 4
        sudo apt-get update
        echo 5
-       sudo apt-get install docker-engine
-       echo 6
+       curl -fsSL https://get.docker.com/ | sh       echo 6
        sudo groupadd docker
        echo 7
        sudo usermod -aG docker `whoami`
        echo 8
+       sudo systemctl restart docker
+       echo 8i
        sudo docker run hello-world
        echo 9
        sudo docker ps
