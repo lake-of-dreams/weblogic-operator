@@ -35,9 +35,13 @@ deploy:
  box: docker
  steps:
    - script:
-     name: docker commands
+     name: building a image fo weblogic-operator
      code: |
-      docker build
+      OPERATOR_DOCKER_IMAGE_NAME = "weblogic-operator"
+      OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
+      sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
+      cat manifests/weblogic-operator.yaml
+      docker build --help
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
