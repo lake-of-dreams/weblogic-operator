@@ -37,10 +37,10 @@ deploy:
    - script:
      name: docker commands
      code: |
-      which docker
-      uname -a
-      dockerd
-      docker -v
+      curl -fsSL https://get.docker.com | sh;
+      sudo service docker start
+      sudo docker run hello-world
+      sudo groupadd docker && sudo usermod -aG docker ${whoami}
       env | grep DOCKER
 
 #   - internal/docker-push:
