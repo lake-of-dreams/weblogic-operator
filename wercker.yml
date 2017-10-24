@@ -39,6 +39,7 @@ deploy:
       code: |
        # some code to automatically run in your shell session
        # before you start interacting
+       set DOCKER_USER = "fmwplt"
        set OPERATOR_DOCKER_IMAGE_NAME = "weblogic-operator"
        set OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
        set http_proxy = "http://www-proxy.us.oracle.com:80"
@@ -52,7 +53,7 @@ deploy:
        docker build \
         --build-arg=http_proxy \
        	--build-arg=https_proxy \
-       	-t ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} \
+       	-t ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} \
        	.
 
 #   - internal/docker-push:
