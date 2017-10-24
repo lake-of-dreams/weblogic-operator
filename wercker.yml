@@ -63,7 +63,7 @@ deploy:
        echo 4
        sudo apt-get update
        echo 5
-       sudo apt-get install
+       sudo apt-get install docker-engine
        echo 6
        sudo groupadd docker
        echo 7
