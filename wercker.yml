@@ -53,9 +53,7 @@ deploy:
        groups
        sudo /usr/sbin/adduser -G docker vpriyankaprabhu | echo "password123" > /dev/null
        echo 'export DOCKER_HOST="tcp://$(boot2docker ip 2>/dev/null):2375";' >> ~/.bashrc
-       sudo env
        sudo chgrp docker /usr/local/bin/docker
-       sudo chgrp docker /var/run/docker.sock
        set DOCKER_HOST=unix:///var/run/docker.sock
 
 #   - internal/docker-push:
