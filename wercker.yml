@@ -50,7 +50,7 @@ deploy:
       name: building a image fo weblogic-operator
       code: |
        groups
-       /usr/sbin/addgroup docker
+       `which groupadd` docker
        groups
 
 #   - internal/docker-push:
