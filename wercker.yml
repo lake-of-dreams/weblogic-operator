@@ -37,8 +37,9 @@ deploy:
    - script:
      name: docker commands
      code: |
-      sudo service docker start
-      service docker status
+      ls -l /var/run/docker.sock
+      sudo chown ${whoami} /var/run/docker.sock
+      docker info
       docker run hello-world
 
 #   - internal/docker-push:
