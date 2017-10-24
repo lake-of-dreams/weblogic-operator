@@ -32,7 +32,7 @@ build:
        make build
 
 deploy:
- box: docker-dev
+ box: docker
  steps:
    - script:
      name: docker commands
