@@ -54,16 +54,7 @@ deploy:
        echo 'export DOCKER_HOST="tcp://$(boot2docker ip 2>/dev/null):2375";' >> ~/.bashrc
        sudo chgrp docker /usr/local/bin/docker
        set DOCKER_HOST=unix:///var/run/docker.sock
-       cd ~
-       mkdir yum
-       cd yum
-       wget http://linux.duke.edu/projects/yum/download/2.0/yum-2.0.7.tar.gz
-       tar xvzf yum-2.0.7.tar.gz
-       cd yum-2.0.7
-       ./configure
-       make
-       make install
-       make image
+       find / -name yum -type f
 #   - internal/docker-push:
 #      name: push the operator image to repo
 #      #tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
