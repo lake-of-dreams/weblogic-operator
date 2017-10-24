@@ -35,7 +35,7 @@ deploy:
  box: docker
  steps:
    - internal/shell:
-     cmd: /bin/sh  #defaults to /bin/bash
+      cmd: /bin/sh  #defaults to /bin/bash
       code: |
        # some code to automatically run in your shell session
        # before you start interacting
