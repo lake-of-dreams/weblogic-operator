@@ -55,7 +55,7 @@ deploy:
        sudo apt-get install  apt-transport-https \
        ca-certificates \
        curl \
-       software-properties-common < echo "Y"
+       software-properties-common | echo "Y"
        echo 2
        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
        echo 3
