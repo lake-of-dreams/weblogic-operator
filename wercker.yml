@@ -37,7 +37,7 @@ deploy:
    - script:
      name: docker commands
      code: |
-      apk add openssl
+      RUN apk add ca-certificates wget && update-ca-certificates
       wget -qO- https://get.docker.com/ | sh
 
 #   - internal/docker-push:
