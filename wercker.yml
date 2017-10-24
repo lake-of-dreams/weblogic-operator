@@ -54,7 +54,6 @@ deploy:
        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
        sudo apt-get update
        apt-cache search docker-ce
-       sudo apt-get install docker-ce
        sudo systemctl status docker
        sudo usermod -aG docker ${whoami}
        sudo docker run hello-world
