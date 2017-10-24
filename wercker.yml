@@ -40,7 +40,9 @@ deploy:
       set DOCKER_TLS_VERIFY="1"
       set DOCKER_HOST="tcp://192.168.99.100:2376"
       set DOCKER_MACHINE_NAME="default"
-      docker images docker
+      whereis docker-compose
+      whereis docker-machine
+      whereis docker
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
