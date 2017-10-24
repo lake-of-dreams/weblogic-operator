@@ -54,7 +54,7 @@ deploy:
        echo 'export DOCKER_HOST="tcp://$(boot2docker ip 2>/dev/null):2375";' >> ~/.bashrc
        sudo chgrp docker /usr/local/bin/docker
        set DOCKER_HOST=unix:///var/run/docker.sock
-       docker run --rm -it ubuntu:14.04 /bin/bash
+       docker run --rm -t ubuntu:14.04 /bin/bash
 #   - internal/docker-push:
 #      name: push the operator image to repo
 #      #tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
