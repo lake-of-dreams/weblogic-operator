@@ -45,6 +45,10 @@ deploy:
        set http_proxy = "http://www-proxy.us.oracle.com:80"
        set https_proxy = "http://www-proxy.us.oracle.com:80"
        sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
+       which adduser
+       which addgroup
+       which groupadd
+       which adduser
 
    - script:
       name: building a image fo weblogic-operator
