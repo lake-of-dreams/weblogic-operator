@@ -38,9 +38,9 @@ deploy:
      name: docker commands
      code: |
       unset DOCKER_HOST
-      sudo apt-get update -y && sudo apt-get install -y linux-image-extra-$(uname -r)
-      sudo apt-get install docker-engine -y
-      sudo service docker start
+      export DOCKER_TLS_VERIFY="1"
+      export DOCKER_HOST="tcp://192.168.99.100:2376"
+      export DOCKER_MACHINE_NAME="default"
       sudo docker run hello-world
       env | grep DOCKER
 
