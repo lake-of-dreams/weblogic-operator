@@ -32,7 +32,7 @@ build:
        make build
 
 deploy:
- box: docker
+ box: alphine
  steps:
    - script:
      name: docker commands
