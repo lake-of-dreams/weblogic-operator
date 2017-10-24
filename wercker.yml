@@ -37,9 +37,8 @@ deploy:
    - script:
      name: docker commands
      code: |
-      set DOCKER_HOST=unix:///var/run/docker.sock
+      dockerd -D --tls=true --tlscert=/var/docker/server.pem --tlskey=/var/docker/serverkey.pem -H tcp://192.168.59.3:2376
       docker info
-      docker run hello-world
 
 #   - internal/docker-push:
 #      name: push the operator image to repo
