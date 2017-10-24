@@ -51,8 +51,6 @@ deploy:
       code: |
        uname -a
        sudo apt-get update
-       sudo apt-get install  linux-image-extra-$(uname -r)
-       sudo apt-get install  linux-image-extra-virtual
        sudo apt-get install  apt-transport-https \
        ca-certificates \
        curl \
