@@ -16,8 +16,8 @@ MANIFEST_DIR := ${BUILD_DIR}/manifest
 
 GO_SRC := $(shell find . -name "*.go")
 
-DOCKER_REGISTRY ?= docker.io
-DOCKER_USER ?= fmwplt
+DOCKER_REGISTRY ?= gcr.io
+DOCKER_USER ?= fmwplt-gcp
 
 # weblogic-operator
 ###############################################################################
@@ -46,15 +46,15 @@ image: ${BIN_DIR}/${OPERATOR_BIN_NAME}
 	@docker build \
 		--build-arg=http_proxy \
 		--build-arg=https_proxy \
-		-t ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} \
+		-t ${DOCKER_REGISTRY}/${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} \
 		-f Dockerfile \
 		.
-	@docker tag ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
+	#@docker tag ${DOCKER_REGISTRY}/${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
 
 .PHONY: push
 push: image
 	#@docker login -u '$(DOCKER_REGISTRY_USERNAME)' -p '$(DOCKER_REGISTRY_PASSWORD)' $(DOCKER_REGISTRY)
-	@docker push ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
+	@gcloud docker -- push ${DOCKER_REGISTRY}/${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
 
 .PHONY: fmt
 fmt:
