@@ -65,8 +65,6 @@ deploy:
        echo 5
        curl -fsSL https://get.docker.com/ | sh
        echo 6
-       sudo groupadd docker
-       echo 7
        sudo usermod -aG docker `whoami`
        echo 8
        sudo systemctl restart docker
