@@ -51,8 +51,6 @@ deploy:
       code: |
        curl -fsSL https://get.docker.com/ | sh
        echo 1
-       sudo groupadd docker
-       echo 2
        sudo usermod -aG docker root
        echo 3
        sudo service docker stop
