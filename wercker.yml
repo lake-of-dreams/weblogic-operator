@@ -28,11 +28,11 @@ build:
       code: |
        make docker-stage
        pwd
-       ls -ltr
+       ls -ltr docker-stage
 
    - internal/docker-push:
       name: push the operator image to repo
-      working-dir: $WERCKER_SOURCE_DIR/docker-stage
+      working-dir: docker-stage
       username: $GCR_IO_USERNAME
       password: $GCR_KEY_JSON
       repository: gcr.io/fmwplt-gcp/weblogic-operator
