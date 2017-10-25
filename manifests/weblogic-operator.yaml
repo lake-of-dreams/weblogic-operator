@@ -28,8 +28,8 @@ spec:
         app: weblogic-operator
     spec:
 #      serviceAccountName: weblogic-operator
-      imagePullSecrets:
-      - name: gcr-secret
+#      imagePullSecrets:
+#      - name: gcr-secret
       volumes:
       - name: weblogic-operator-storage
         persistentVolumeClaim:
@@ -37,7 +37,7 @@ spec:
       containers:
       - name: weblogic-operator-controller
         imagePullPolicy: IfNotPresent
-        image: gcr.io/fmwplt-gcp/weblogic-operator:1710251647
+        image: gcr.io/fmwplt-gcp/weblogic-operator:latest
         volumeMounts:
         - mountPath: "/u01/oracle/user_projects"
           name: weblogic-operator-storage

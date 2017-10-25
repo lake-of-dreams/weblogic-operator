@@ -1,8 +1,8 @@
 # The container definition we want to use for developing our app
-#box: oraclelinux:7.3
+box: oraclelinux:7.3
 
 build:
-  box: golang
+#  box: golang
   steps:
    - setup-go-workspace:
       package-dir: weblogic-operator
@@ -11,7 +11,6 @@ build:
       name: install go tools
       code: |
        go version
-       go get -u -v github.com/golang/dep/cmd/dep
 
    - script:
       name: install dependencies
@@ -28,10 +27,9 @@ build:
       name: build and stage the project
       code: |
        make docker-stage
+       pwd
+       ls -ltr
 
-push-release:
-  box: oraclelinux:7.3
-  steps:
    - internal/docker-push:
       name: push the operator image to repo
       working-dir: $WERCKER_SOURCE_DIR/docker-stage
