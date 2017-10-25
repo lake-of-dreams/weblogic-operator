@@ -2,7 +2,7 @@
 box: oraclelinux:7.3
 
 build:
-box: golang
+ box: golang
   steps:
    - setup-go-workspace:
       package-dir: weblogic-operator
