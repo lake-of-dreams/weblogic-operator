@@ -1,6 +1,14 @@
 # The container definition we want to use for developing our app
 box: golang
+
 build:
+
+ box:
+  id: quay.io/fmwplt/weblogic-operator
+  username: $QUAY_IO_USERNAME
+  password: $QUAY_IO_PASSWORD
+  tag: 12.2.1.3
+
  steps:
    - setup-go-workspace:
       package-dir: weblogic-operator
@@ -31,41 +39,30 @@ build:
       code: |
        make build
 
-deploy:
- box: wercker
- steps:
    - internal/shell:
       cmd: /bin/sh  #defaults to /bin/bash
       code: |
-       # some code to automatically run in your shell session
-       # before you start interacting
-       set DOCKER_USER = "fmwplt"
+       # some code to automatically run in your shell session before you start interacting
        set OPERATOR_DOCKER_IMAGE_NAME = "weblogic-operator"
        set OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
-       set http_proxy = "http://www-proxy.us.oracle.com:80"
-       set https_proxy = "http://www-proxy.us.oracle.com:80"
        sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
 
+   # Copy binary to a location that gets passed along to the deploy pipeline
    - script:
-      name: building a image fo weblogic-operator
+      name: packaging the built weblogic-operator to war file and then copy to deployment directory
       code: |
-       curl -fsSL https://get.docker.com/ | sh
-       echo 1
-       sudo usermod -aG docker root
-       echo 3
-       sudo service docker stop
-       echo 4
-       sudo service docker start
-       echo 5
-       sudo docker run hello-world
-       echo 6
-       sudo docker ps
-       echo 7
-       sudo docker info
-#   - internal/docker-push:
-#      name: push the operator image to repo
-#      #tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
-#      working-dir: /pipeline/source
-#      repository: quay.io/fmwplt/weblogic-operator
-#      username: ${QUAY_IO_USERNAME}
-#      password: ${QUAY_IO_PASSWORD}
+       cp -rf ./dist/scripts/weblogic/ ./scripts
+       cp -rf ./dist/bin/weblogic-operator ./
+       jar -cvf weblogic-operator.war ./dist/bin/weblogic-operator ./dist/scripts/weblogic/
+       cp -avrf weblogic-operator.war "$WERCKER_OUTPUT_DIR"
+
+push:
+ steps:
+   - internal/docker-push:
+      name: push the operator image to repo
+      username: $QUAY_IO_USERNAME
+      password: $QUAY_IO_PASSWORD
+      working-dir: /pipeline/source
+      repository: quay.io/fmwplt/weblogic-operator
+      tag: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
+      entrypoint: "./weblogic-operator"
