@@ -56,7 +56,7 @@ push-release:
    - script:
       name: docker commands
       code: |
-      docker ps
+       docker ps
 
    - internal/docker-push:
       name: push the operator image to repo
