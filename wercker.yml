@@ -46,7 +46,8 @@ build:
       code: |
        cp -rf ./dist/scripts/weblogic/ ./scripts
        cp -rf ./dist/bin/weblogic-operator ./
-       jar -cvf weblogic-operator.war ./dist/bin/weblogic-operator ./dist/scripts/weblogic/
+       which tar
+       tar -cvf weblogic-operator.war ./dist/bin/weblogic-operator ./dist/scripts/weblogic/
        cp -avrf weblogic-operator.war "$WERCKER_OUTPUT_DIR"
 
 push-release:
