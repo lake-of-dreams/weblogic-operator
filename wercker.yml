@@ -23,7 +23,7 @@ build:
 
        cd $WERCKER_SOURCE_DIR
        make vendor
-s
+
    - script:
       name: build and stage the project
       code: |
