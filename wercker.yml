@@ -27,6 +27,7 @@ build:
       name: build and stage the project
       code: |
        make docker-stage
+       ls -ltr
        cp -r docker-stage/. $WERCKER_OUTPUT_DIR/
 
 
