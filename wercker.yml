@@ -47,7 +47,7 @@ push-release:
       repository: gcr.io/fmwplt-gcp/weblogic-operator
       tag: latest
       working-dir: /u01/oracle/
-      entrypoint: "\./weblogic-operator"
+      entrypoint: "/u01/oracle/weblogic-operator"
       registry: https://gcr.io/v2
 
 #deploy-to-kubernetes:
