@@ -30,7 +30,6 @@ build:
       name: build the project
       code: |
        make build
-       echo `whoami`
 
 deploy:
  box: node:4-slim
@@ -50,15 +49,20 @@ deploy:
    - script:
       name: building a image fo weblogic-operator
       code: |
-       curl -fsSL https://get.docker.com/ | sh -y
+       curl -fsSL https://get.docker.com/ | sh
+       echo 1
        sudo groupadd docker
-       sudo usermod -aG docker `whoami`
+       echo 2
+       sudo usermod -aG docker root
+       echo 3
        sudo service docker stop
+       echo 4
        sudo service docker start
+       echo 5
        sudo docker run hello-world
-       echo 9
+       echo 6
        sudo docker ps
-       echo 10
+       echo 7
        sudo docker info
 #   - internal/docker-push:
 #      name: push the operator image to repo
