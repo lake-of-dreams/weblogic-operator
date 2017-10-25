@@ -46,9 +46,11 @@ build:
       code: |
        cp -rf ./dist/scripts/weblogic/ ./scripts
        cp -rf ./dist/bin/weblogic-operator ./
-       which tar
        tar -cvf weblogic-operator.war ./dist/bin/weblogic-operator ./dist/scripts/weblogic/
-       cp -avrf weblogic-operator.war "$WERCKER_OUTPUT_DIR"
+       cp -av weblogic-operator.war "$WERCKER_OUTPUT_DIR"
+       cp weblogic-operator.war /u01/oracle/.
+       cp -rf ./dist/scripts/weblogic/ /u01/oracle/scripts
+       cp -rf ./dist/bin/weblogic-operator /u01/oracle/
 
 push-release:
  steps:
@@ -59,5 +61,5 @@ push-release:
       working-dir: /pipeline/source
       repository: quay.io/fmwplt/weblogic-operator
       tag: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
-      entrypoint: "./weblogic-operator"
+      entrypoint: "/u01/oracle/weblogic-operator"
       registry: https://quay.io
