@@ -3,45 +3,45 @@ box: oraclelinux:7.3
 
 build:
  box: golang
-   steps:
-     - setup-go-workspace:
-        package-dir: weblogic-operator
+  steps:
+   - setup-go-workspace:
+      package-dir: weblogic-operator
 
-     - script:
-        name: install go tools
-        code: |
-         go version
-         go get -u -v github.com/golang/dep
-         go get -u -v github.com/golang/dep/cmd/dep
+   - script:
+      name: install go tools
+      code: |
+       go version
+       go get -u -v github.com/golang/dep
+       go get -u -v github.com/golang/dep/cmd/dep
 
-     - script:
-        name: install dependencies
-        code: |
-         dep ensure
-         cd `pwd`/../../../
-         git clone https://github.com/sczachariah/weblogic-operator.git weblogic-operator
-         cd /go/src/weblogic-operator
-         make vendor
-         set GOROOT=/usr/local/go
-         set GOPATH=$HOME/go
-         set GOBIN=$GOPATH/bin
-         set PATH=$GOPATH:$GOBIN:$PATH
+   - script:
+      name: install dependencies
+      code: |
+       dep ensure
+       cd `pwd`/../../../
+       git clone https://github.com/sczachariah/weblogic-operator.git weblogic-operator
+       cd /go/src/weblogic-operator
+       make vendor
+       set GOROOT=/usr/local/go
+       set GOPATH=$HOME/go
+       set GOBIN=$GOPATH/bin
+       set PATH=$GOPATH:$GOBIN:$PATH
 
-     # Statically build the project
-     - script:
-        name: build the project
-        code: |
-         make build
+   # Statically build the project
+   - script:
+      name: build the project
+      code: |
+       make build
 
-     - internal/shell:
-        cmd: /bin/sh  #defaults to /bin/bash
-        code: |
-         # some code to automatically run in your shell session before you start interacting
-         set OPERATOR_DOCKER_IMAGE_NAME = "weblogic-operator"
-         set OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
-         sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
+   - internal/shell:
+      cmd: /bin/sh  #defaults to /bin/bash
+      code: |
+        # some code to automatically run in your shell session before you start interacting
+        set OPERATOR_DOCKER_IMAGE_NAME = "weblogic-operator"
+        set OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
+        sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
 
-     # Copy binary to a location that gets passed along to the deploy pipeline
+   # Copy binary to a location that gets passed along to the deploy pipeline
 #     - script:
 #        name: packaging the built weblogic-operator to war file and then copy to deployment directory
 #        code: |
