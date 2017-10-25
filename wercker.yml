@@ -41,23 +41,8 @@ build:
         set OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
         sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
 
-   # Copy binary to a location that gets passed along to the deploy pipeline
-#     - script:
-#        name: packaging the built weblogic-operator to war file and then copy to deployment directory
-#        code: |
-#         cp -rf ./dist/scripts/weblogic/ ./scripts
-#         cp -rf ./dist/bin/weblogic-operator ./
-#         tar -cvf weblogic-operator.war ./dist/bin/weblogic-operator ./dist/scripts/weblogic/
-#         cp -av weblogic-operator.war "$WERCKER_OUTPUT_DIR"
-
 push-release:
- box: docker
  steps:
-   - script:
-      name: docker commands
-      code: |
-       docker ps
-
    - internal/docker-push:
       name: push the operator image to repo
       username: $QUAY_IO_USERNAME
