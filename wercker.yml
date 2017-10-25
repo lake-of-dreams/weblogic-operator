@@ -37,7 +37,8 @@ push-release:
    - script:
       name: copy distribution
       code: |
-       cp -r $WERCKER_SOURCE_DIR/. /
+       mkdir -p /u01/oracle
+       cp -r $WERCKER_SOURCE_DIR/. /u01/oracle/
 
    - internal/docker-push:
       name: push the operator image to repo
@@ -45,6 +46,7 @@ push-release:
       password: $GCR_KEY_JSON
       repository: gcr.io/fmwplt-gcp/weblogic-operator
       tag: latest
+      working-dir: /u01/oracle/
       cmd: "./weblogic-operator"
       registry: https://gcr.io/v2
 
