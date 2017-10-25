@@ -32,7 +32,7 @@ build:
        make build
 
 deploy:
- box: node:4-slim
+ box: wercker
  steps:
    - internal/shell:
       cmd: /bin/sh  #defaults to /bin/bash
