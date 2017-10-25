@@ -56,7 +56,7 @@ build:
        jar -cvf weblogic-operator.war ./dist/bin/weblogic-operator ./dist/scripts/weblogic/
        cp -avrf weblogic-operator.war "$WERCKER_OUTPUT_DIR"
 
-push:
+push-release:
  steps:
    - internal/docker-push:
       name: push the operator image to repo
