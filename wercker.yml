@@ -29,7 +29,7 @@ build:
        make docker-stage
        pwd
        ls -ltr docker-stage
-       cp -r docker-stage/ $WERCKER_OUTPUT_DIR
+       cp -r docker-stage/. $WERCKER_OUTPUT_DIR/
 
 
 push-release:
