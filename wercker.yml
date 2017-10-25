@@ -1,5 +1,4 @@
 # The container definition we want to use for developing our app
-# box: oraclelinux:7.3
 
 build:
   box: golang
@@ -45,11 +44,11 @@ push-release:
    - internal/docker-push:
       name: push the operator image to repo
       username: $GCR_IO_USERNAME
-      password: $GCR_KEY_JSON
+      password: $GCP_KEY_JSON
       repository: gcr.io/fmwplt-gcp/weblogic-operator
       tag: $WERCKER_GIT_COMMIT
       working-dir: /u01/oracle/
-      cmd: ./weblogic-operator
+      entrypoint: ./weblogic-operator
       registry: https://gcr.io/v2
 
 
@@ -57,27 +56,18 @@ deploy-to-kubernetes:
     box: golang
     steps:
 
-    # https://github.com/wercker/step-bash-template
-    # This Wercker step will look for files in our repo with a .template extension.
-    # It will expand any environment variables in those files, then remove the
-    # template extension.
     - bash-template
 
     - script:
-        name: Prepare Kubernetes files
+        name: prepare kubernetes files
         code: |
-          ls -ltr
           mkdir $WERCKER_OUTPUT_DIR/kubernetes
           mv k8s-*.yml $WERCKER_OUTPUT_DIR/kubernetes
-    # Since we're using GKE, we'll use a fork of the kubectl step that supports
-    # GKE service account authentication. We need to pass some GKE specific configuration
-    # to ensure we can authenticate, then point kubectl at the directory containing our
-    # Kubernetes configuration.
 
     - riceo/kubectl:
         name: deploy to kubernetes
         server: $KUBERNETES_MASTER
-        gcloud-key-json: $GCR_KEY_JSON
+        gcloud-key-json: $GCP_KEY_JSON
         gke-cluster-name: $GKE_CLUSTER_NAME
         gke-cluster-zone: $GKE_CLUSTER_ZONE
         gke-cluster-project: $GKE_CLUSTER_PROJECT
