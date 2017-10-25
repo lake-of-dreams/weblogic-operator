@@ -41,6 +41,11 @@ build:
         set OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
         sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
 
+        curl -fsSLO https://get.docker.com/builds/Linux/x86_64/docker-17.03.1-ce.tgz35 && \
+        tar --strip-components=1 -xvzf docker-17.03.1-ce.tgz -C /usr/local/bin
+        docker build -v /var/run/docker.sock:/var/run/docker.sock -t ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} -f Dockerfile
+
+
 push-release:
  steps:
    - internal/docker-push:
