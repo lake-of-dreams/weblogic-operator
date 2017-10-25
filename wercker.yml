@@ -37,12 +37,11 @@ push-release:
   steps:
    - internal/docker-push:
       name: push the operator image to repo
-      working-dir: docker-stage
       username: $GCR_IO_USERNAME
       password: $GCR_KEY_JSON
       repository: gcr.io/fmwplt-gcp/weblogic-operator
       tag: $OPERATOR_DOCKER_IMAGE_TAG
-      entrypoint: "/dist/bin/weblogic-operator"
+      entrypoint: "/weblogic-operator"
       registry: https://gcr.io/v2
 
 #deploy-to-kubernetes:
