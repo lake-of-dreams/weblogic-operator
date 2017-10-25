@@ -39,6 +39,7 @@ push-release:
       code: |
        mkdir -p /u01/oracle
        cp -r $WERCKER_SOURCE_DIR/. /u01/oracle/
+       echo "./weblogic-operator" >> /u01/oracle/entrypoint.sh
 
    - internal/docker-push:
       name: push the operator image to repo
@@ -47,7 +48,7 @@ push-release:
       repository: gcr.io/fmwplt-gcp/weblogic-operator
       tag: latest
       working-dir: /u01/oracle/
-      entrypoint: "/u01/oracle/weblogic-operator"
+      cmd: "entrypoint.sh"
       registry: https://gcr.io/v2
 
 #deploy-to-kubernetes:
