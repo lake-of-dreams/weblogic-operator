@@ -45,7 +45,7 @@ push-release:
       password: $GCR_KEY_JSON
       repository: gcr.io/fmwplt-gcp/weblogic-operator
       tag: $OPERATOR_DOCKER_IMAGE_TAG
-      entrypoint: "./weblogic-operator"
+      cmd: "./weblogic-operator"
       registry: https://gcr.io/v2
 
 #deploy-to-kubernetes:
