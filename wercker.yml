@@ -55,7 +55,6 @@ push-release:
       name: push the operator image to repo
       username: $QUAY_IO_USERNAME
       password: $QUAY_IO_PASSWORD
-      working-dir: /pipeline/source
       repository: quay.io/fmwplt/weblogic-operator
       tag: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
       entrypoint: "/weblogic-operator"
