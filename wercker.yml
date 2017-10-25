@@ -1,5 +1,5 @@
 # The container definition we want to use for developing our app
-box: oraclelinux:7.3
+#box: oraclelinux:7.3
 
 build:
   box: golang
@@ -21,19 +21,17 @@ build:
        set GOBIN=$GOPATH/bin
        set PATH=$GOPATH:$GOBIN:$PATH
 
-       ls -ltr
-
        cd $WERCKER_SOURCE_DIR
        make vendor
-
-   # Statically build the project
+s
    - script:
-      name: build the project
+      name: build and stage the project
       code: |
        make docker-stage
 
 push-release:
- steps:
+  box: oraclelinux:7.3
+  steps:
    - internal/docker-push:
       name: push the operator image to repo
       working-dir: $WERCKER_SOURCE_DIR/docker-stage

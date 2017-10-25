@@ -18,7 +18,7 @@ metadata:
 spec:
   storageClassName: weblogic-operator-disk
   capacity:
-    storage: 5Gi
+    storage: 100Gi
   accessModes:
     - ReadWriteMany
   gcePersistentDisk:
@@ -38,6 +38,6 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 5Gi
+      storage: 100Gi
 ---
 ---
