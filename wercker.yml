@@ -57,6 +57,8 @@ build:
       name: checking prev step
       code: |
        cat manifests/weblogic-operator.yaml
+       docker ps
+       docker info
 
 push-release:
  steps:
