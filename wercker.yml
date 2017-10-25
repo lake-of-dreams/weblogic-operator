@@ -47,8 +47,7 @@ build:
         cp -rf dist/scripts/weblogic/ docker-stage/scripts
         cp -rf dist/bin/weblogic-operator docker-stage/
 
-push-release:
- steps:
+
    - internal/docker-push:
       name: push the operator image to repo
       working-dir: docker-stage
