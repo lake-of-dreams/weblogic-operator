@@ -27,8 +27,6 @@ build:
       name: build and stage the project
       code: |
        make docker-stage
-       pwd
-       ls -ltr docker-stage
        cp -r docker-stage/. $WERCKER_OUTPUT_DIR/
 
 
@@ -41,6 +39,7 @@ push-release:
       password: $GCR_KEY_JSON
       repository: gcr.io/fmwplt-gcp/weblogic-operator
       tag: $OPERATOR_DOCKER_IMAGE_TAG
+      working-dir: /pipeline/source
       entrypoint: "/weblogic-operator"
       registry: https://gcr.io/v2
 
