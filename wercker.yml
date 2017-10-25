@@ -5,7 +5,7 @@ build:
   box: golang
   steps:
    - setup-go-workspace:
-      package-dir: weblogic-operator/docker-stage
+      package-dir: weblogic-operator
 
    - script:
       name: install go tools
