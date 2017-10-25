@@ -30,6 +30,7 @@ build:
       name: build the project
       code: |
        make build
+       echo `whoami`
 
 deploy:
  box: node:4-slim
@@ -49,11 +50,11 @@ deploy:
    - script:
       name: building a image fo weblogic-operator
       code: |
-       curl -fsSL https://get.docker.com/ | sh
-       echo 6
+       curl -fsSL https://get.docker.com/ | sh -y
+       sudo groupadd docker
        sudo usermod -aG docker `whoami`
-       echo 8
-       echo 8i
+       sudo service docker stop
+       sudo service docker start
        sudo docker run hello-world
        echo 9
        sudo docker ps
