@@ -57,6 +57,6 @@ push-release:
       username: $QUAY_IO_USERNAME
       password: $QUAY_IO_PASSWORD
       repository: quay.io/fmwplt/weblogic-operator
-      tag: $WERCKER_GIT_BRANCH-wercker
+      tag: $WERCKER_GIT_BRANCH-wercker-$WERCKER_GIT_COMMIT
       entrypoint: "/weblogic-operator"
       registry: https://quay.io
