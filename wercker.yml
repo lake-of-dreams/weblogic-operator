@@ -34,13 +34,18 @@ build:
 push-release:
   box: oraclelinux:7.3
   steps:
+   - script:
+      name: copy distribution
+      code: |
+       cp -r $WERCKER_SOURCE_DIR/. /
+
    - internal/docker-push:
       name: push the operator image to repo
       username: $GCR_IO_USERNAME
       password: $GCR_KEY_JSON
       repository: gcr.io/fmwplt-gcp/weblogic-operator
       tag: $OPERATOR_DOCKER_IMAGE_TAG
-      entrypoint: "/pipeline/source/weblogic-operator"
+      entrypoint: "/weblogic-operator"
       registry: https://gcr.io/v2
 
 #deploy-to-kubernetes:
