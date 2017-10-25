@@ -1,11 +1,11 @@
 # The container definition we want to use for developing our app
-box: oraclelinux:7.3
+# box: oraclelinux:7.3
 
 build:
   box: golang
   steps:
    - setup-go-workspace:
-      package-dir: weblogic-operator
+      package-dir: weblogic-operator/docker-stage
 
    - script:
       name: install go tools
@@ -29,7 +29,12 @@ build:
        make docker-stage
        pwd
        ls -ltr docker-stage
+       cp -r docker-stage/ $WERCKER_OUTPUT_DIR
 
+
+push-release:
+box: oraclelinux:7.3
+ steps:
    - internal/docker-push:
       name: push the operator image to repo
       working-dir: docker-stage
@@ -37,7 +42,7 @@ build:
       password: $GCR_KEY_JSON
       repository: gcr.io/fmwplt-gcp/weblogic-operator
       tag: $OPERATOR_DOCKER_IMAGE_TAG
-      entrypoint: "/weblogic-operator"
+      entrypoint: "/dist/bin/weblogic-operator"
       registry: https://gcr.io/v2
 
 #deploy-to-kubernetes:
