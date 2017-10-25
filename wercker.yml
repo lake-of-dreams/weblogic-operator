@@ -49,20 +49,6 @@ deploy:
    - script:
       name: building a image fo weblogic-operator
       code: |
-       uname -a
-       sudo apt-get update
-       echo 1
-       sudo apt-get install  apt-transport-https \
-       ca-certificates \
-       curl \
-       software-properties-common | echo "Y"
-       echo 2
-       curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-       echo 3
-       sudo apt-key fingerprint 0EBFCD88
-       echo 4
-       sudo apt-get update
-       echo 5
        curl -fsSL https://get.docker.com/ | sh
        echo 6
        sudo usermod -aG docker `whoami`
@@ -73,12 +59,6 @@ deploy:
        sudo docker ps
        echo 10
        sudo docker info
-#       /usr/sbin/addgroup docker
-#       sudo /usr/sbin/adduser -G docker vpriyankaprabhu | echo "password123" >> /dev/null
-#       echo 'export DOCKER_HOST="tcp://$(boot2docker ip 2>/dev/null):2375";' >> ~/.bashrc
-#       sudo chgrp docker /usr/local/bin/docker
-#       set DOCKER_HOST=unix:///var/run/docker.sock
-#       find / -name wget -print
 #   - internal/docker-push:
 #      name: push the operator image to repo
 #      #tag: ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} ${DOCKER_USER}/${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG}
