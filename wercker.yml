@@ -67,7 +67,6 @@ deploy:
        echo 6
        sudo usermod -aG docker `whoami`
        echo 8
-       sudo systemctl restart docker
        echo 8i
        sudo docker run hello-world
        echo 9
