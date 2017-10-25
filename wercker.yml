@@ -29,6 +29,7 @@ build:
        make docker-stage
        ls -ltr
        cp -r docker-stage/. $WERCKER_OUTPUT_DIR/
+       cp -r manifests/. $WERCKER_OUTPUT_DIR/
 
 
 push-release:
@@ -62,11 +63,10 @@ deploy-to-kubernetes:
     # template extension.
     - bash-template
 
-    # The step above should leave us with a Kubernetes service and deployment yml files.
-    # We'll create a directory to move them to.
     - script:
         name: Prepare Kubernetes files
         code: |
+          ls -ltr
           mkdir $WERCKER_OUTPUT_DIR/kubernetes
           mv k8s-*.yml $WERCKER_OUTPUT_DIR/kubernetes
     # Since we're using GKE, we'll use a fork of the kubectl step that supports
@@ -74,7 +74,6 @@ deploy-to-kubernetes:
     # to ensure we can authenticate, then point kubectl at the directory containing our
     # Kubernetes configuration.
 
-    # `apply` is a good command to use here, as it'll create Kubernetes entities if they are missing.
     - riceo/kubectl:
         name: deploy to kubernetes
         server: $KUBERNETES_MASTER
