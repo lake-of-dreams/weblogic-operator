@@ -39,13 +39,13 @@ push-release:
       code: |
        cp -r $WERCKER_SOURCE_DIR/. /
 
-   - internal/docker-scratch-push:
+   - internal/docker-push:
       name: push the operator image to repo
       username: $GCR_IO_USERNAME
       password: $GCR_KEY_JSON
       repository: gcr.io/fmwplt-gcp/weblogic-operator
       tag: latest
-      entrypoint: "./weblogic-operator"
+      cmd: "./weblogic-operator"
       registry: https://gcr.io/v2
 
 #deploy-to-kubernetes:
