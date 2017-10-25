@@ -2,13 +2,6 @@
 box: golang
 
 build:
-
- box:
-  id: quay.io/fmwplt/weblogic-operator
-  username: $QUAY_IO_USERNAME
-  password: $QUAY_IO_PASSWORD
-  tag: latest
-
  steps:
    - setup-go-workspace:
       package-dir: weblogic-operator
