@@ -47,6 +47,10 @@ build:
 
         docker build -v /var/run/docker.sock:/var/run/docker.sock -t ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} -f Dockerfile
 
+   - script:
+      name: checking prev step
+      code: |
+       cat manifests/weblogic-operator.yaml
 
 push-release:
  steps:
