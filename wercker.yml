@@ -42,19 +42,18 @@ build:
         set OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
         sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
 
-        curl -fsSLO https://get.docker.com/builds/Linux/x86_64/docker-17.03.1-ce.tgz && \
-        tar --strip-components=1 -xvzf docker-17.03.1-ce.tgz -C /usr/local/bin
+        mkdir docker-stage
+        ls -ltr
+        cp -rf dist/scripts/weblogic/ docker-stage/scripts
+        cp -rf dist/bin/weblogic-operator docker-stage/
 
-        docker build -v /var/run/docker.sock:/var/run/docker.sock -t ${OPERATOR_DOCKER_IMAGE_NAME}:${OPERATOR_DOCKER_IMAGE_TAG} -f Dockerfile
 
-
-push-release:
- steps:
    - internal/docker-push:
       name: push the operator image to repo
-      username: $QUAY_IO_USERNAME
-      password: $QUAY_IO_PASSWORD
-      repository: quay.io/fmwplt/weblogic-operator
-      tag: $WERCKER_GIT_BRANCH-wercker-$WERCKER_GIT_COMMIT
+      working-dir: docker-stage
+      username: $GCR_IO_USERNAME
+      password: $GCR_KEY_JSON
+      repository: gcr.io/fmwplt/weblogic-operator
+      tag: $OPERATOR_DOCKER_IMAGE_TAG
       entrypoint: "/weblogic-operator"
-      registry: https://quay.io
+      registry: https://gcr.io
