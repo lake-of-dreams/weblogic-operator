@@ -11,21 +11,20 @@ build:
       name: install go tools
       code: |
        go version
-       go get -u -v github.com/golang/dep
        go get -u -v github.com/golang/dep/cmd/dep
 
    - script:
       name: install dependencies
       code: |
-       dep ensure
-       cd `pwd`/../../../
-       git clone https://github.com/sczachariah/weblogic-operator.git weblogic-operator
-       cd /go/src/weblogic-operator
-       make vendor
        set GOROOT=/usr/local/go
        set GOPATH=$HOME/go
        set GOBIN=$GOPATH/bin
        set PATH=$GOPATH:$GOBIN:$PATH
+
+       ls -ltr
+
+       cd $WERCKER_SOURCE_DIR
+       make vendor
 
    # Statically build the project
    - script:
@@ -33,9 +32,11 @@ build:
       code: |
        make docker-stage
 
+push-release:
+ steps:
    - internal/docker-push:
       name: push the operator image to repo
-      working-dir: docker-stage
+      working-dir: $WERCKER_SOURCE_DIR/docker-stage
       username: $GCR_IO_USERNAME
       password: $GCR_KEY_JSON
       repository: gcr.io/fmwplt-gcp/weblogic-operator
