@@ -40,6 +40,14 @@ ${BIN_DIR}/${OPERATOR_BIN_NAME}: ${GO_SRC}
 	GOOS=$(GOOS) CGO_ENABLED=0 $(GO) build -v -ldflags '${LD_FLAGS}' -o $@ ./cmd/weblogic-operator
 	@cp -r scripts ${BUILD_DIR}/
 
+.PHONY: docker-stage
+docker-stage: ${BIN_DIR}/${OPERATOR_BIN_NAME}
+	@sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
+
+	@mkdir -p docker-stage
+	@cp -rf ${BUILD_DIR}/scripts/weblogic/ docker-stage/scripts/
+	@cp -rf ${BIN_DIR}/weblogic-operator docker-stage/
+
 .PHONY: image
 image: ${BIN_DIR}/${OPERATOR_BIN_NAME}
 	sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml

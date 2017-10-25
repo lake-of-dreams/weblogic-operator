@@ -31,20 +31,7 @@ build:
    - script:
       name: build the project
       code: |
-       make build
-
-#   - internal/shell:
-#      cmd: /bin/sh  #defaults to /bin/bash
-#      code: |
-        # some code to automatically run in your shell session before you start interacting
-        set OPERATOR_DOCKER_IMAGE_NAME = "weblogic-operator"
-        set OPERATOR_DOCKER_IMAGE_TAG = $(shell date +%y%m%d%H%M)
-        sed "s/{{VERSION}}/$(OPERATOR_DOCKER_IMAGE_TAG)/g" manifests/weblogic-operator-template.yaml > manifests/weblogic-operator.yaml
-
-        mkdir docker-stage
-        ls -ltr
-        cp -rf dist/scripts/weblogic/ docker-stage/scripts
-        cp -rf dist/bin/weblogic-operator docker-stage/
+       make docker-stage
 
    - internal/docker-push:
       name: push the operator image to repo
@@ -56,34 +43,34 @@ build:
       entrypoint: "/weblogic-operator"
       registry: https://gcr.io/v2
 
-deploy-to-kubernetes:
-    box: python:2.7
-    steps:
-
-    # https://github.com/wercker/step-bash-template
-    # This Wercker step will look for files in our repo with a .template extension.
-    # It will expand any environment variables in those files, then remove the
-    # template extension.
-    - bash-template
-
-    # The step above should leave us with a Kubernetes service and deployment yml files.
-    # We'll create a directory to move them to.
-    - script:
-        name: Prepare Kubernetes files
-        code: |
-          mkdir $WERCKER_OUTPUT_DIR/kubernetes
-          mv kubernetes_*.yml $WERCKER_OUTPUT_DIR/kubernetes
-    # Since we're using GKE, we'll use a fork of the kubectl step that supports
-    # GKE service account authentication. We need to pass some GKE specific configuration
-    # to ensure we can authenticate, then point kubectl at the directory containing our
-    # Kubernetes configuration.
-
-    # `apply` is a good command to use here, as it'll create Kubernetes entities if they are missing.
-    - riceo/kubectl:
-        name: deploy to kubernetes
-        server: $KUBERNETES_MASTER
-        gcloud-key-json: $GCP_KEY_JSON
-        gke-cluster-name: $GKE_CLUSTER_NAME
-        gke-cluster-zone: $GKE_CLUSTER_ZONE
-        gke-cluster-project: $GKE_CLUSTER_PROJECT
-        command: apply -f $WERCKER_OUTPUT_DIR/kubernetes/
+#deploy-to-kubernetes:
+#    box: python:2.7
+#    steps:
+#
+#    # https://github.com/wercker/step-bash-template
+#    # This Wercker step will look for files in our repo with a .template extension.
+#    # It will expand any environment variables in those files, then remove the
+#    # template extension.
+#    - bash-template
+#
+#    # The step above should leave us with a Kubernetes service and deployment yml files.
+#    # We'll create a directory to move them to.
+#    - script:
+#        name: Prepare Kubernetes files
+#        code: |
+#          mkdir $WERCKER_OUTPUT_DIR/kubernetes
+#          mv kubernetes_*.yml $WERCKER_OUTPUT_DIR/kubernetes
+#    # Since we're using GKE, we'll use a fork of the kubectl step that supports
+#    # GKE service account authentication. We need to pass some GKE specific configuration
+#    # to ensure we can authenticate, then point kubectl at the directory containing our
+#    # Kubernetes configuration.
+#
+#    # `apply` is a good command to use here, as it'll create Kubernetes entities if they are missing.
+#    - riceo/kubectl:
+#        name: deploy to kubernetes
+#        server: $KUBERNETES_MASTER
+#        gcloud-key-json: $GCP_KEY_JSON
+#        gke-cluster-name: $GKE_CLUSTER_NAME
+#        gke-cluster-zone: $GKE_CLUSTER_ZONE
+#        gke-cluster-project: $GKE_CLUSTER_PROJECT
+#        command: apply -f $WERCKER_OUTPUT_DIR/kubernetes/
