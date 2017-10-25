@@ -51,7 +51,13 @@ build:
 #         cp -av weblogic-operator.war "$WERCKER_OUTPUT_DIR"
 
 push-release:
+ box: docker
  steps:
+   - script:
+      name: docker commands
+      code: |
+      docker ps
+
    - internal/docker-push:
       name: push the operator image to repo
       username: $QUAY_IO_USERNAME
