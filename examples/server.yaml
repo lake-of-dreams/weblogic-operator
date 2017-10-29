@@ -22,14 +22,14 @@ metadata:
   name: firstdomain-ms
 spec:
   domainName: firstdomain
-  serversToRun: 1
+  serversToRun: 2
 ---
 ---
-apiVersion: "weblogic.oracle.com/v1"
-kind: WebLogicManagedServer
-metadata:
-  name: seconddomain-ms
-spec:
-  domainName: seconddomain
-  serversToRun: 1
+#apiVersion: "weblogic.oracle.com/v1"
+#kind: WebLogicManagedServer
+#metadata:
+#  name: seconddomain-ms
+#spec:
+#  domainName: seconddomain
+#  serversToRun: 1
 ---

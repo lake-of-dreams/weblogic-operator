@@ -1,0 +1,43 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: weblogic-operator-disk
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-standard
+  zones: asia-southeast1-a, asia-southeast1-b
+---
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: weblogic-operator-volume
+  labels:
+    type: local
+spec:
+  storageClassName: weblogic-operator-disk
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteMany
+  gcePersistentDisk:
+    pdName: weblogic-operator-disk
+    fsType: ext4
+#  hostPath:
+#    path: "/scratch"
+---
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: weblogic-operator-claim
+spec:
+  storageClassName: weblogic-operator-disk
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 25Gi
+---
+---
