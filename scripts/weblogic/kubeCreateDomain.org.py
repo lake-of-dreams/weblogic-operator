@@ -1,30 +1,12 @@
 import os
 import sys
 
-def addNodeManager(machineName):
-    cd('/')
-    machine = create(machineName, 'Machine')
-
-    cd('/Machines/' + machineName)
-    nm = create(machineName, 'NodeManager')
-    nm.setListenAddress('localhost')
-    nm.setListenPort(8886)
-    nm.setDebugEnabled(true)
-    cd('/')
-    print(nm)
-    return machine;
-
-
 def addManagedServer(serverName, serverPort):
-    mac=addNodeManager('Machine-'+serverName)
-
     cd('/')
     create(serverName, 'Server')
     cd('Servers/' + serverName)
     set('ListenPort', serverPort)
     set('ListenAddress', '')
-    set('Machine', mac)
-
     cd('/')
     return;
 
@@ -72,18 +54,6 @@ try:
     cd('Security/' + domainName + '/User/weblogic')
     cmo.setName(username)
     cmo.setPassword(password)
-
-    cd('/')
-    macA = create('Machine-AdminServer', 'Machine')
-    cd('/Machines/' + 'Machine-AdminServer')
-    nm = create('Machine-AdminServer', 'NodeManager')
-    nm.setListenAddress('localhost')
-    nm.setListenPort(8886)
-    nm.setDebugEnabled(true)
-
-    cd('/')
-    cd('/Servers/AdminServer')
-    set('Machine', macA)
 
     # Create Managed Servers
     # =====================================
