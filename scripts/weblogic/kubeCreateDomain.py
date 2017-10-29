@@ -77,7 +77,7 @@ try:
     macA = create('Machine-AdminServer', 'Machine')
     cd('/Machines/' + 'Machine-AdminServer')
     nm = create('Machine-AdminServer', 'NodeManager')
-    nm.setListenAddress('localhost')
+    nm.setListenAddress(myPodName)
     nm.setListenPort(8886)
     nm.setDebugEnabled(true)
 

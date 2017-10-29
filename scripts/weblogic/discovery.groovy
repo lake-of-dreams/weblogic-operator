@@ -11,6 +11,8 @@ import oracle.fmwplatform.credentials.wallet.WalletStoreProvider;
 def credentials = new Credentials();
 credentials.setCredential("WLS/ADMIN", "weblogic", "welcome1".toCharArray());
 
+new File("/u01/oracle/user_projects/firstdomainWallet").deleteDir()
+new File("/u01/oracle/user_projects/firstdomainWallet").mkdirs()
 def walletStoreProvider = new WalletStoreProvider("/u01/oracle/user_projects/firstdomainWallet", "welcome1".toCharArray());
 walletStoreProvider.createWallet();
 walletStoreProvider.storeCredentials(credentials);
