@@ -28,7 +28,7 @@ build:
        make docker-stage
        ls -ltr
        cp -r docker-stage/. $WERCKER_OUTPUT_DIR/
-       cp -r manifests/. $WERCKER_OUTPUT_DIR/
+       cp -r wercker/. $WERCKER_OUTPUT_DIR/
 
 
 push-release:
@@ -39,7 +39,6 @@ push-release:
       code: |
        mkdir -p /u01/oracle
        cp -r $WERCKER_SOURCE_DIR/. /u01/oracle/
-       echo "./weblogic-operator" >> /u01/oracle/entrypoint.sh
 
    - internal/docker-push:
       name: push the operator image to repo
@@ -71,4 +70,22 @@ deploy-to-kubernetes:
         gke-cluster-name: $GKE_CLUSTER_NAME
         gke-cluster-zone: $GKE_CLUSTER_ZONE
         gke-cluster-project: $GKE_CLUSTER_PROJECT
-        command: apply -f $WERCKER_OUTPUT_DIR/kubernetes/
+        command: apply -f $WERCKER_OUTPUT_DIR/kubernetes/k8s-weblogic-crd.yml
+
+    - riceo/kubectl:
+        name: deploy to kubernetes
+        server: $KUBERNETES_MASTER
+        gcloud-key-json: $GCP_KEY_JSON
+        gke-cluster-name: $GKE_CLUSTER_NAME
+        gke-cluster-zone: $GKE_CLUSTER_ZONE
+        gke-cluster-project: $GKE_CLUSTER_PROJECT
+        command: apply -f $WERCKER_OUTPUT_DIR/kubernetes/k8s-weblogic-operator.yml
+
+    - riceo/kubectl:
+        name: deploy to kubernetes
+        server: $KUBERNETES_MASTER
+        gcloud-key-json: $GCP_KEY_JSON
+        gke-cluster-name: $GKE_CLUSTER_NAME
+        gke-cluster-zone: $GKE_CLUSTER_ZONE
+        gke-cluster-project: $GKE_CLUSTER_PROJECT
+        command: apply -f $WERCKER_OUTPUT_DIR/kubernetes/k8s-weblogic-domain.yml

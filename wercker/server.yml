@@ -1,0 +1,35 @@
+---
+#apiVersion: "weblogic.oracle.com/v1"
+#kind: WebLogicManagedServer
+#metadata:
+#  name: managedserver
+#spec:
+#  version: 12.2.1.2
+#  replicas: 2
+#  domainName: basedomain
+#  resources:
+#    requests:
+#      memory: "64Mi"
+#      cpu: "250m"
+#    limits:
+#      memory: "128Mi"
+#      cpu: "500m"
+---
+---
+apiVersion: "weblogic.oracle.com/v1"
+kind: WebLogicManagedServer
+metadata:
+  name: firstdomain-ms
+spec:
+  domainName: firstdomain
+  serversToRun: 2
+---
+---
+#apiVersion: "weblogic.oracle.com/v1"
+#kind: WebLogicManagedServer
+#metadata:
+#  name: seconddomain-ms
+#spec:
+#  domainName: seconddomain
+#  serversToRun: 1
+---
