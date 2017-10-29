@@ -6,6 +6,7 @@ target/
 # IntelliJ Idea
 .idea/
 vendor/
+docker-stage/
 out/
 *.ipr
 *.iws
