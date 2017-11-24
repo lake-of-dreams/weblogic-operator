@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: soadb
+  labels:
+    app: soadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: soadb
+  template:
+    metadata:
+      labels:
+        app: soadb
+    spec:
+      imagePullSecrets:
+      - name: quay-secret
+      containers:
+      - name: soadb
+        imagePullPolicy: IfNotPresent
+        image: quay.io/jayarajg123/db_for_soa:latest
+        ports:
+        - containerPort: 1521
+        command: ["/u01/user_projects/domains/base_domain/startWebLogic.sh"]
+---
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: soadb
+spec:
+  selector:
+    app: soadb
+  ports:
+  - name: http
+    protocol: TCP
+    port: 1521
+    targetPort: 1521
+    nodePort: 30040
+  type: NodePort
+#  type: LoadBalancer
+---
+---

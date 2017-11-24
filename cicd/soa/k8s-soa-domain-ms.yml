@@ -1,0 +1,89 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: soa_server1
+  labels:
+    app: soa_server1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: soa_server1
+  template:
+    metadata:
+      labels:
+        app: soa_server1
+    spec:
+      imagePullSecrets:
+      - name: quay-secret
+      containers:
+      - name: soa_server1
+        imagePullPolicy: IfNotPresent
+        image: quay.io/jayarajg123/soa_with_domain:latest
+        ports:
+        - containerPort: 8001
+        command: ["/u01/user_projects/domains/base_domain/bin/startManagedWebLogic.sh"]
+---
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: soa_server1
+spec:
+  selector:
+    app: soa_server1
+  ports:
+  - name: t3
+    protocol: TCP
+    port: 8001
+    targetPort: 8001
+    nodePort: 30020
+  type: NodePort
+#  type: LoadBalancer
+---
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: soa_server2
+  labels:
+    app: soa_server2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: soa_server2
+  template:
+    metadata:
+      labels:
+        app: soa_server2
+    spec:
+      imagePullSecrets:
+      - name: quay-secret
+      containers:
+      - name: soa_server2
+        imagePullPolicy: IfNotPresent
+        image: quay.io/jayarajg123/soa_with_domain:latest
+        ports:
+        - containerPort: 8001
+        command: ["/u01/user_projects/domains/base_domain/bin/startManagedWebLogic.sh"]
+---
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: soa_server2
+spec:
+  selector:
+    app: soa_server2
+  ports:
+  - name: t3
+    protocol: TCP
+    port: 8001
+    targetPort: 8001
+    nodePort: 30030
+  type: NodePort
+#  type: LoadBalancer
+---
+---

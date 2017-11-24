@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: soaadmin
+  labels:
+    app: soaadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: soaadmin
+  template:
+    metadata:
+      labels:
+        app: soaadmin
+    spec:
+      imagePullSecrets:
+      - name: quay-secret
+      containers:
+      - name: soaadmin
+        imagePullPolicy: IfNotPresent
+        image: quay.io/jayarajg123/soa_with_domain:latest
+        ports:
+        - containerPort: 7001
+        command: ["/u01/user_projects/domains/base_domain/startWebLogic.sh"]
+---
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: soaadmin
+spec:
+  selector:
+    app: soaadmin
+  ports:
+  - name: t3
+    protocol: TCP
+    port: 7001
+    targetPort: 7001
+    nodePort: 30010
+  type: NodePort
+#  type: LoadBalancer
+---
+---
