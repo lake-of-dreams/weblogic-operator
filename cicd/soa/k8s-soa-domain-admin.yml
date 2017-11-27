@@ -20,10 +20,10 @@ spec:
       containers:
       - name: soaadmin
         imagePullPolicy: IfNotPresent
-        image: quay.io/jayarajg123/soa_with_domain:latest
+        image: quay.io/jayarajg123/soa_with_domain:12.2.1.3
         ports:
         - containerPort: 7001
-        command: ["/u01/user_projects/domains/base_domain/startWebLogic.sh"]
+        command: ["/u01/oracle/user_projects/domains/soainfra/startWebLogic.sh"]
 ---
 ---
 kind: Service

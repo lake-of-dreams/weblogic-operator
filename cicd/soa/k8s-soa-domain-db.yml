@@ -20,10 +20,11 @@ spec:
       containers:
       - name: soadb
         imagePullPolicy: IfNotPresent
-        image: quay.io/jayarajg123/db_for_soa:latest
+        image: quay.io/jayarajg123/db_for_soa:12.1.0.2
         ports:
         - containerPort: 1521
-        command: ["/u01/user_projects/domains/base_domain/startWebLogic.sh"]
+        - containerPort: 5500
+        command: ["/opt/oracle/startDBforSOA.sh"]
 ---
 ---
 kind: Service
@@ -34,11 +35,16 @@ spec:
   selector:
     app: soadb
   ports:
-  - name: http
+  - name: db
     protocol: TCP
     port: 1521
     targetPort: 1521
     nodePort: 30040
+  - name: http
+    protocol: TCP
+    port: 5500
+    targetPort: 5500
+    nodePort: 30050
   type: NodePort
 #  type: LoadBalancer
 ---
