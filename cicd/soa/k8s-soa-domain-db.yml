@@ -35,12 +35,12 @@ spec:
   selector:
     app: soadb
   ports:
-  - name: db
+  - name: jdbc
     protocol: TCP
     port: 1521
     targetPort: 1521
     nodePort: 30040
-  - name: http
+  - name: em
     protocol: TCP
     port: 5500
     targetPort: 5500
