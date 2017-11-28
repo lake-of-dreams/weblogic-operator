@@ -24,6 +24,7 @@ spec:
         ports:
         - containerPort: 8001
         command: ["/u01/oracle/user_projects/domains/soainfra/bin/startManagedWebLogic.sh"]
+        args: ["soa_server1", "t3://soaadmin:7001"]
 ---
 ---
 kind: Service
@@ -68,6 +69,7 @@ spec:
         ports:
         - containerPort: 8001
         command: ["/u01/oracle/user_projects/domains/soainfra/bin/startManagedWebLogic.sh"]
+        args: ["soa_server2", "t3://soaadmin:7001"]
 ---
 ---
 kind: Service
