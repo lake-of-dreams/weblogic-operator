@@ -39,7 +39,7 @@ spec:
     port: 7001
     targetPort: 7001
     nodePort: 30010
-  type: NodePort
-#  type: LoadBalancer
+#  type: NodePort
+  type: LoadBalancer
 ---
 ---
