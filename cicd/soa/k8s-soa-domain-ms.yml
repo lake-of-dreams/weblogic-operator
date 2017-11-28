@@ -2,23 +2,23 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: soa_server1
+  name: soaserver1
   labels:
-    app: soa_server1
+    app: soaserver1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: soa_server1
+      app: soaserver1
   template:
     metadata:
       labels:
-        app: soa_server1
+        app: soaserver1
     spec:
       imagePullSecrets:
       - name: quay-secret
       containers:
-      - name: soa_server1
+      - name: soaserver1
         imagePullPolicy: IfNotPresent
         image: quay.io/jayarajg123/soa_with_domain:12.2.1.3
         ports:
@@ -30,10 +30,10 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: soa_server1
+  name: soaserver1
 spec:
   selector:
-    app: soa_server1
+    app: soaserver1
   ports:
   - name: t3
     protocol: TCP
@@ -47,23 +47,23 @@ spec:
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: soa_server2
+  name: soaserver2
   labels:
-    app: soa_server2
+    app: soaserver2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: soa_server2
+      app: soaserver2
   template:
     metadata:
       labels:
-        app: soa_server2
+        app: soaserver2
     spec:
       imagePullSecrets:
       - name: quay-secret
       containers:
-      - name: soa_server2
+      - name: soaserver2
         imagePullPolicy: IfNotPresent
         image: quay.io/jayarajg123/soa_with_domain:12.2.1.3
         ports:
@@ -75,10 +75,10 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: soa_server2
+  name: soaserver2
 spec:
   selector:
-    app: soa_server2
+    app: soaserver2
   ports:
   - name: t3
     protocol: TCP
